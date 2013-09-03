@@ -107,6 +107,22 @@ public final class StringHelper {
 	}
 
 	// ____________________________________________________________________________
+	public static final String join(String separator, String... values) {
+		if (values == null)
+			return null;
+		else if (values.length == 0)
+			return "";
+
+		StringBuilder builder = new StringBuilder(values.length * 10);
+		builder.append(values[0]);
+		for (int i = 1; i < values.length; i++) {
+			builder.append(separator);
+			builder.append(values[i]);
+		}
+		return builder.toString();
+	}
+
+	// ____________________________________________________________________________
 	public static final String join(String separator, Object... values) {
 		if (values == null)
 			return null;
@@ -119,6 +135,26 @@ public final class StringHelper {
 			builder.append(separator);
 			builder.append(values[i]);
 		}
+		return builder.toString();
+	}
+
+	// ____________________________________________________________________________
+	public static final String join(String separator, Iterable<?> values) {
+		if (values == null)
+			return null;
+
+		boolean prependSepa = false;
+		StringBuilder builder = new StringBuilder();
+
+		for (Object o : values) {
+			if (prependSepa)
+				builder.append(separator);
+
+			else
+				prependSepa = true;
+			builder.append(o);
+		}
+
 		return builder.toString();
 	}
 
