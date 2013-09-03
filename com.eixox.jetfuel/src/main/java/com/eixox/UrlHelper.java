@@ -46,4 +46,20 @@ public final class UrlHelper {
 		return hashmap;
 	}
 
+	public static final String friendlyfy(String url) {
+		if (url == null || url.isEmpty())
+			return url;
+
+		StringBuilder builder = new StringBuilder(url.length());
+		boolean isPreviousNonLetterOrDigit = false;
+		for (int i = 0; i < url.length(); i++)
+			if (Character.isLetterOrDigit(url.charAt(i))) {
+				builder.append(url.charAt(i));
+				isPreviousNonLetterOrDigit = false;
+			} else if (!isPreviousNonLetterOrDigit && i < (url.length() - 1)) {
+				builder.append('-');
+				isPreviousNonLetterOrDigit = true;
+			}
+		return builder.toString();
+	}
 }
