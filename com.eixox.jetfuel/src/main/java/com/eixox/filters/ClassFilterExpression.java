@@ -36,7 +36,7 @@ public class ClassFilterExpression implements ClassFilter {
 		return this._First;
 	}
 
-	@Override
+	
 	public final Aspect getAspect() {
 		return this._Aspect;
 	}

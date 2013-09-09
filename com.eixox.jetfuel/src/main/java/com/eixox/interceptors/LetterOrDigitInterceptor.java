@@ -4,7 +4,7 @@ import com.eixox.StringHelper;
 
 public class LetterOrDigitInterceptor implements Interceptor {
 
-	@Override
+	
 	public final Object intercept(Object input) {
 		if (input == null || !(input instanceof String))
 			return input;

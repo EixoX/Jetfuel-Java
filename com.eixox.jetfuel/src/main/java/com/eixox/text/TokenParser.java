@@ -81,7 +81,7 @@ public class TokenParser extends ArrayList<TokenType> {
 
 	public final List<Token> parse(String input) {
 
-		ArrayList<Token> list = new ArrayList<>();
+		ArrayList<Token> list = new ArrayList<Token>();
 
 		if (input == null || input.isEmpty())
 			return list;

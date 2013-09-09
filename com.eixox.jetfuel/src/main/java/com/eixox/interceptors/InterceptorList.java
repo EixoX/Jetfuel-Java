@@ -6,7 +6,7 @@ public class InterceptorList extends ArrayList<Interceptor> implements Intercept
 
 	private static final long serialVersionUID = 8477298505128170581L;
 
-	@Override
+	
 	public final Object intercept(Object input) {
 		if (size() > 0)
 			for (Interceptor i : this)

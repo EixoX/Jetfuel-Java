@@ -2,7 +2,7 @@ package com.eixox.adapters;
 
 public class ShortAdapter implements ValueAdapter<Short> {
 
-	@Override
+	
 	public final Short adapt(Object input) {
 		if (input == null)
 			return null;
@@ -14,12 +14,12 @@ public class ShortAdapter implements ValueAdapter<Short> {
 			return Short.parseShort(input.toString());
 	}
 
-	@Override
+	
 	public final Short parse(String input) {
 		return Short.parseShort(input);
 	}
 
-	@Override
+	
 	public final String format(Short input) {
 		return input.toString();
 	}

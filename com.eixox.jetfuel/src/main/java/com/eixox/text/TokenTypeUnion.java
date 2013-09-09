@@ -26,7 +26,7 @@ public final class TokenTypeUnion implements TokenType {
 		this.maxLength = max;
 	}
 
-	@Override
+	
 	public final String getName() {
 		return this.name;
 	}
@@ -35,7 +35,7 @@ public final class TokenTypeUnion implements TokenType {
 		return this.tokenTypes;
 	}
 
-	@Override
+	
 	public final boolean contains(char symbol, int position) {
 		for (int i = 0; i < this.tokenTypes.length; i++)
 			if (this.tokenTypes[i].contains(symbol, position))
@@ -44,12 +44,12 @@ public final class TokenTypeUnion implements TokenType {
 		return false;
 	}
 
-	@Override
+	
 	public final int getMinLength() {
 		return this.minLength;
 	}
 
-	@Override
+	
 	public final int getMaxLength() {
 		return this.maxLength;
 	}

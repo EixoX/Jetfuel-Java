@@ -12,7 +12,7 @@ public class RequiredRestriction implements Restriction {
 		//just complying to a constructor pattern.
 	}
 
-	@Override
+	
 	public final boolean validate(Object input) {
 		if (input == null)
 			return false;
@@ -26,12 +26,12 @@ public class RequiredRestriction implements Restriction {
 			return true;
 	}
 
-	@Override
+	
 	public String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : "required";
 	}
 
-	@Override
+	
 	public void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

@@ -18,7 +18,7 @@ public class DbStorageProcessorForClass<T> implements ResultsetProcessor<SelectR
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
+	
 	public SelectResult<T> process(ResultSet resultSet) {
 
 		SelectResult<T> result = new SelectResult<T>(pageSize, pageOrdinal);

@@ -2,7 +2,7 @@ package com.eixox.adapters;
 
 public class DoubleAdapter implements ValueAdapter<Double> {
 
-	@Override
+	
 	public final Double adapt(Object input) {
 		if (input == null)
 			return null;
@@ -14,12 +14,12 @@ public class DoubleAdapter implements ValueAdapter<Double> {
 			return Double.parseDouble(input.toString());
 	}
 
-	@Override
+	
 	public final Double parse(String input) {
 		return Double.parseDouble(input);
 	}
 
-	@Override
+	
 	public final String format(Double input) {
 		return input.toString();
 	}

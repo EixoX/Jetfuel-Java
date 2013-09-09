@@ -27,7 +27,7 @@ public class XmlAspectMemberComposite extends XmlAspectMember {
 		Object item;
 		try {
 			item = this.childClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 

@@ -35,7 +35,7 @@ public class XmlAspectMemberCompositeList extends XmlAspectMember {
 			Object item;
 			try {
 				item = childClass.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 			this.childAspect.read(item, (Element) nodes.item(i));

@@ -27,7 +27,7 @@ public class InterceptorAspect extends AbstractAspect<InterceptorAspectMember> {
 		return interceptors;
 	}
 
-	private static final HashMap<Class<?>, InterceptorAspect> _Aspects = new HashMap<>();
+	private static final HashMap<Class<?>, InterceptorAspect> _Aspects = new HashMap<Class<?>, InterceptorAspect>();
 
 	public static final InterceptorAspect getInstance(Class<?> claz) {
 		InterceptorAspect aspect = _Aspects.get(claz);

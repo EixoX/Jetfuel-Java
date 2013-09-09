@@ -2,7 +2,7 @@ package com.eixox.adapters;
 
 public class FloatAdapter implements ValueAdapter<Float> {
 
-	@Override
+	
 	public final Float adapt(Object input) {
 		if (input == null)
 			return null;
@@ -14,12 +14,12 @@ public class FloatAdapter implements ValueAdapter<Float> {
 			return Float.parseFloat(input.toString());
 	}
 
-	@Override
+	
 	public final Float parse(String input) {
 		return Float.parseFloat(input);
 	}
 
-	@Override
+	
 	public final String format(Float input) {
 		return input.toString();
 	}

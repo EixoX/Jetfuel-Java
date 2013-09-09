@@ -18,17 +18,17 @@ public class EmailRestriction implements Restriction {
 		return email != null && !email.isEmpty() && rfc2822.matcher(email).matches();
 	}
 
-	@Override
+	
 	public boolean validate(Object input) {
 		return input == null || ((String) input).isEmpty() ? true : isValid((String) input);
 	}
 
-	@Override
+	
 	public String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : "Invalid e-mail address";
 	}
 
-	@Override
+	
 	public void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

@@ -18,7 +18,7 @@ public class DateAdapter implements ValueAdapter<Date> {
 		this.dateFormat = dateFormat;
 	}
 
-	@Override
+	
 	public Date adapt(Object input) {
 		if (input == null)
 			return null;
@@ -34,7 +34,7 @@ public class DateAdapter implements ValueAdapter<Date> {
 			}
 	}
 
-	@Override
+	
 	public Date parse(String input) {
 		try {
 			return dateFormat.parse(input.toString());
@@ -43,7 +43,7 @@ public class DateAdapter implements ValueAdapter<Date> {
 		}
 	}
 
-	@Override
+	
 	public String format(Date input) {
 		return dateFormat.format(input);
 	}

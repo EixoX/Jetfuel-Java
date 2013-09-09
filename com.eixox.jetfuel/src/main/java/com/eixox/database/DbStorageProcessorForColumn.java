@@ -17,7 +17,7 @@ public class DbStorageProcessorForColumn implements ResultsetProcessor<SelectRes
 		this.pageOrdinal = pageOrdinal;
 	}
 
-	@Override
+	
 	public final SelectResult<Object> process(ResultSet resultSet) {
 
 		SelectResult<Object> result = new SelectResult<Object>(pageSize, pageOrdinal);

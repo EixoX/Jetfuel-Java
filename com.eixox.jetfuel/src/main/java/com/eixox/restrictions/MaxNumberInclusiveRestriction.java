@@ -16,7 +16,7 @@ public class MaxNumberInclusiveRestriction implements Restriction {
 		return this._Value;
 	}
 
-	@Override
+	
 	public final boolean validate(Object input) {
 		if (input == null || !(input instanceof Number))
 			return false;
@@ -24,12 +24,12 @@ public class MaxNumberInclusiveRestriction implements Restriction {
 			return ((Number) input).doubleValue() <= _Value;
 	}
 
-	@Override
+	
 	public final String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : "Value invalid or above maximum (Inclusive) " + _Value;
 	}
 
-	@Override
+	
 	public final void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

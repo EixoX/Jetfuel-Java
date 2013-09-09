@@ -22,7 +22,7 @@ public class NumberRangeRestriction implements Restriction {
 		return this.max;
 	}
 
-	@Override
+	
 	public final boolean validate(Object input) {
 		if (input == null || !(input instanceof Number))
 			return false;
@@ -32,12 +32,12 @@ public class NumberRangeRestriction implements Restriction {
 		}
 	}
 
-	@Override
+	
 	public final String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : "Value invalid or not in range [" + min + ", " + max + "]";
 	}
 
-	@Override
+	
 	public final void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

@@ -2,7 +2,7 @@ package com.eixox.adapters;
 
 public class CharAdapter implements ValueAdapter<Character> {
 
-	@Override
+	
 	public final Character adapt(Object input) {
 		if (input == null)
 			return null;
@@ -14,12 +14,12 @@ public class CharAdapter implements ValueAdapter<Character> {
 			return input.toString().charAt(0);
 	}
 
-	@Override
+	
 	public final Character parse(String input) {
 		return input == null || input.length() < 1 ? Character.MIN_VALUE : input.charAt(0);
 	}
 
-	@Override
+	
 	public final String format(Character input) {
 		return input.toString();
 	}

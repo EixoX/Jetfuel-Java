@@ -29,7 +29,7 @@ public class AgeRestriction implements Restriction {
 		return years >= _Min && years <= _Max;
 	}
 
-	@Override
+	
 	public final boolean validate(Object input) {
 		if (input == null)
 			return false;
@@ -41,13 +41,13 @@ public class AgeRestriction implements Restriction {
 			return false;
 	}
 
-	@Override
+	
 	public String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : "Invalid age";
 
 	}
 
-	@Override
+	
 	public void assertValid(Object input) throws RestrictionException {
 		String message = getRestrictionMessageFor(input);
 		if (message != null)

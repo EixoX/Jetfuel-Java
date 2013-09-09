@@ -36,7 +36,7 @@ public final class ClassSelectMember extends ClassFilterExtension<ClassSelectMem
 		return this.dataAspect.getDataName(this.ordinal);
 	}
 
-	@Override
+	
 	protected final ClassSelectMember getThis() {
 		return this;
 	}
@@ -98,7 +98,7 @@ public final class ClassSelectMember extends ClassFilterExtension<ClassSelectMem
 				this.pageOrdinal);
 	}
 
-	@Override
+	
 	public final Iterator<Object> iterator() {
 		return toList().iterator();
 	}

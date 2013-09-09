@@ -20,17 +20,17 @@ public class MaxLengthRestriction implements Restriction {
 		return this._Value;
 	}
 
-	@Override
+	
 	public final boolean validate(Object input) {
 		return input == null || input.toString().length() < _Value;
 	}
 
-	@Override
+	
 	public final String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : "Text invalid or too large for max length " + this._Value;
 	}
 
-	@Override
+	
 	public final void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

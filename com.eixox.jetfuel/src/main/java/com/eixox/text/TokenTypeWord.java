@@ -10,12 +10,12 @@ public class TokenTypeWord implements TokenType {
 		this.ignoreCase = ignoreCase;
 	}
 
-	@Override
+	
 	public final String getName() {
 		return this.name;
 	}
 
-	@Override
+	
 	public final boolean contains(char symbol, int position) {
 		if (position >= name.length())
 			return false;
@@ -25,12 +25,12 @@ public class TokenTypeWord implements TokenType {
 
 	}
 
-	@Override
+	
 	public final int getMinLength() {
 		return this.name.length();
 	}
 
-	@Override
+	
 	public final int getMaxLength() {
 		return this.name.length();
 	}

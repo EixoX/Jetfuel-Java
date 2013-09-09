@@ -41,7 +41,7 @@ public class CpfRestriction implements Restriction {
 		return (d1 == ((value / 10) % 10) && d2 == (value % 10));
 	}
 
-	@Override
+	
 	public boolean validate(Object input) {
 		if (input == null)
 			return true;
@@ -49,12 +49,12 @@ public class CpfRestriction implements Restriction {
 			return isValid((Long) input);
 	}
 
-	@Override
+	
 	public String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : "Invalid CPF";
 	}
 
-	@Override
+	
 	public void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

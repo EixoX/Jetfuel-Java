@@ -22,7 +22,7 @@ public final class ClassSelect<T> extends ClassFilterExtension<ClassSelect<T>> i
 		this.engine = engine;
 	}
 
-	@Override
+	
 	protected final ClassSelect<T> getThis() {
 		return this;
 	}
@@ -83,7 +83,7 @@ public final class ClassSelect<T> extends ClassFilterExtension<ClassSelect<T>> i
 		return this.engine.select(this.dataAspect, getWhere(), this.sortFirst, this.pageSize, this.pageOrdinal);
 	}
 
-	@Override
+	
 	public final Iterator<T> iterator() {
 		return toList().iterator();
 	}

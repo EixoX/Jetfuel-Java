@@ -31,7 +31,7 @@ public class ClassFilterNode implements ClassFilter {
 		return this._Next;
 	}
 
-	@Override
+	
 	public final Aspect getAspect() {
 		return _Filter.getAspect();
 	}

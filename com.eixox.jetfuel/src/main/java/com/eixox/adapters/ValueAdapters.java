@@ -10,7 +10,7 @@ public final class ValueAdapters {
 
 	private static synchronized final HashMap<Class<?>, ValueAdapter<?>> buildAdapters() {
 		if (_adapters == null) {
-			_adapters = new HashMap<>();
+			_adapters = new HashMap<Class<?>, ValueAdapter<?>>();
 			_adapters.put(Boolean.TYPE, new BooleanAdapter());
 			_adapters.put(Boolean.class, new BooleanAdapter());
 			_adapters.put(Byte.TYPE, new ByteAdapter());

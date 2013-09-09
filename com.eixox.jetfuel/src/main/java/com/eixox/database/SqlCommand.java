@@ -17,7 +17,7 @@ public class SqlCommand {
 
 	public SqlCommand() {
 		this.command = new StringBuilder(128);
-		this.values = new ArrayList<>();
+		this.values = new ArrayList<Object>();
 	}
 
 	public SqlCommand(SqlConnection connection) {

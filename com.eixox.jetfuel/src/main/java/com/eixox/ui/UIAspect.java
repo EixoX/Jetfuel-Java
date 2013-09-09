@@ -46,7 +46,7 @@ public class UIAspect extends AbstractAspect<UIAspectMember> {
 
 	}
 
-	private static final HashMap<Class<?>, UIAspect> _DefaultInstances = new HashMap<>();
+	private static final HashMap<Class<?>, UIAspect> _DefaultInstances = new HashMap<Class<?>, UIAspect>();
 
 	public static synchronized final UIAspect getDefaultInstance(Class<?> claz) {
 		UIAspect aspect = _DefaultInstances.get(claz);

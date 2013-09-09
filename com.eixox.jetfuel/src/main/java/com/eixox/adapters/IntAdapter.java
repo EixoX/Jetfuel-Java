@@ -2,7 +2,7 @@ package com.eixox.adapters;
 
 public class IntAdapter implements ValueAdapter<Integer> {
 
-	@Override
+	
 	public final Integer adapt(Object input) {
 		if (input == null)
 			return null;
@@ -15,12 +15,12 @@ public class IntAdapter implements ValueAdapter<Integer> {
 
 	}
 
-	@Override
+	
 	public final Integer parse(String input) {
 		return Integer.parseInt(input);
 	}
 
-	@Override
+	
 	public final String format(Integer input) {
 		return input.toString();
 	}

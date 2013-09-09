@@ -26,7 +26,7 @@ public final class ClassSelectProcessor<T> implements TableRowProcessor {
 
 			this.result.add(instance);
 
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 

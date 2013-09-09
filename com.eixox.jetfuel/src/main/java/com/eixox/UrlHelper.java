@@ -31,7 +31,7 @@ public final class UrlHelper {
 		if (encodedParameters == null || encodedParameters.isEmpty())
 			return null;
 
-		HashMap<String, String> hashmap = new HashMap<>();
+		HashMap<String, String> hashmap = new HashMap<String, String>();
 		String[] keyvaluePairs = encodedParameters.split("&");
 		for (int i = 0; i < keyvaluePairs.length; i++) {
 			String[] keyvalues = keyvaluePairs[i].split("=");

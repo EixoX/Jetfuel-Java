@@ -299,7 +299,7 @@ public final class StringHelper {
 
 		int length = input.length();
 
-		ArrayList<String> arrList = new ArrayList<>(length > 100 ? length / 10 : 10);
+		ArrayList<String> arrList = new ArrayList<String>(length > 100 ? length / 10 : 10);
 		wordifyTo(input, arrList);
 		return arrList;
 	}

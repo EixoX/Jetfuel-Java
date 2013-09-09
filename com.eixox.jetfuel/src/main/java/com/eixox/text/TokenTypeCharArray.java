@@ -25,12 +25,12 @@ public final class TokenTypeCharArray implements TokenType {
 		return false;
 	}
 
-	@Override
+	
 	public final int getMinLength() {
 		return 1;
 	}
 
-	@Override
+	
 	public final int getMaxLength() {
 		return 1;
 	}

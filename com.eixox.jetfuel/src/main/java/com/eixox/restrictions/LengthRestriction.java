@@ -30,7 +30,7 @@ public class LengthRestriction implements Restriction {
 		return length >= min && length <= max;
 	}
 
-	@Override
+	
 	public final boolean validate(Object input) {
 		if (input == null)
 			return false;
@@ -39,12 +39,12 @@ public class LengthRestriction implements Restriction {
 		return length >= _Min && length <= _Max;
 	}
 
-	@Override
+	
 	public final String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : ("Invalid length [" + _Min + ", " + _Max + "]");
 	}
 
-	@Override
+	
 	public final void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

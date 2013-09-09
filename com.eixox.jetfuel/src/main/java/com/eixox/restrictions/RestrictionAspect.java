@@ -8,7 +8,7 @@ import com.eixox.reflection.AspectMember;
 
 public class RestrictionAspect extends AbstractAspect<RestrictionAspectMember> {
 
-	private static final HashMap<Class<?>, RestrictionAspect> _Aspects = new HashMap<>();
+	private static final HashMap<Class<?>, RestrictionAspect> _Aspects = new HashMap<Class<?>, RestrictionAspect>();
 
 	public static final RestrictionAspect getInstance(Class<?> claz) {
 		RestrictionAspect aspect = _Aspects.get(claz);
