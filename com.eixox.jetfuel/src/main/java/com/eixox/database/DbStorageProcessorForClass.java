@@ -3,6 +3,7 @@ package com.eixox.database;
 import java.sql.ResultSet;
 
 import com.eixox.data.ClassStorage;
+import com.eixox.data.ClassStorageMember;
 import com.eixox.data.SelectResult;
 
 public class DbStorageProcessorForClass<T> implements ResultsetProcessor<SelectResult<T>> {
@@ -17,8 +18,7 @@ public class DbStorageProcessorForClass<T> implements ResultsetProcessor<SelectR
 		this.pageOrdinal = pageOrdinal;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	
+	@SuppressWarnings({ "unchecked" })
 	public SelectResult<T> process(ResultSet resultSet) {
 
 		SelectResult<T> result = new SelectResult<T>(pageSize, pageOrdinal);
@@ -29,11 +29,10 @@ public class DbStorageProcessorForClass<T> implements ResultsetProcessor<SelectR
 				T instance = (T) this.aspect.newInstance();
 				for (int i = 0; i < count; i++) {
 					Object value = resultSet.getObject(i + 1);
-					Class<?> dataType = this.aspect.getType(i);
+					ClassStorageMember member = this.aspect.get(i);
 					if (value != null) {
-						if (dataType.isEnum())
-							value = Enum.valueOf((Class<Enum>) dataType, value.toString());
-						this.aspect.setValue(instance, i, value);
+						value = member.getValueAdapter().adapt(value);
+						member.setValue(instance, value);
 					}
 				}
 				result.add(instance);

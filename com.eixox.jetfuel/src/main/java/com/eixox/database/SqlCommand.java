@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.eixox.data.ClassStorage;
+import com.eixox.data.ClassStorageMember;
 
 public class SqlCommand {
 
@@ -210,8 +211,11 @@ public class SqlCommand {
 		int count = aspect.getCount();
 		for (int i = 0; i < count; i++) {
 			Object o = resultSet.getObject(i + 1);
-			if (o != null)
-				aspect.setValue(instance, i, o);
+			if (o != null) {
+				ClassStorageMember member = aspect.get(i);
+				o = member.getValueAdapter().adapt(o);
+				member.setValue(instance, o);
+			}
 		}
 		return instance;
 	}

@@ -42,6 +42,15 @@ public final class Convert {
 			return (input instanceof Number) ? ((Number) input).doubleValue() : Double.parseDouble(input.toString());
 		}
 
+		if (claz == Date.class) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+				return sdf.parse(input.toString());
+			} catch (ParseException e) {
+				throw new RuntimeException(input.toString(), e);
+			}
+		}
+
 		if (Calendar.class.isAssignableFrom(claz)) {
 			try {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
@@ -81,8 +90,7 @@ public final class Convert {
 		}
 	}
 
-	private static final DateFormat rfc2822DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz",
-			Locale.ENGLISH);
+	private static final DateFormat rfc2822DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 
 	public static final Date toDateRfc2822(String input) throws ParseException {
 
@@ -92,5 +100,5 @@ public final class Convert {
 			return rfc2822DateFormat.parse(input);
 
 	}
-	
+
 }

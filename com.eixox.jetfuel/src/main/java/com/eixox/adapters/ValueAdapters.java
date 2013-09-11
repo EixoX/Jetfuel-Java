@@ -1,6 +1,6 @@
 package com.eixox.adapters;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -32,9 +32,14 @@ public final class ValueAdapters {
 		return _adapters;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static final ValueAdapter<?> getAdapter(Class<?> claz) {
 
-		ValueAdapter<?> adapter = buildAdapters().get(claz);
-		return adapter;
+		if (claz.isEnum())
+			return new EnumAdapter(claz);
+		else {
+			ValueAdapter<?> adapter = buildAdapters().get(claz);
+			return adapter;
+		}
 	}
 }
