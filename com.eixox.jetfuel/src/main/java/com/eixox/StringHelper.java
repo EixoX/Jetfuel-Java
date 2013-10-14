@@ -2,9 +2,7 @@ package com.eixox;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Locale;
 
 public final class StringHelper {
 
@@ -60,6 +58,18 @@ public final class StringHelper {
 			return right == null || right.isEmpty();
 		else
 			return left.equalsIgnoreCase(right);
+	}
+
+	// ____________________________________________________________________________
+	public static final boolean equalsAnyIgnoreCase(String left, String... items) {
+
+		if (left != null && !left.isEmpty())
+			for (int i = 0; i < items.length; i++)
+				if (left.equalsIgnoreCase(items[i]))
+					return true;
+
+		return false;
+
 	}
 
 	// ____________________________________________________________________________
@@ -309,45 +319,42 @@ public final class StringHelper {
 	}
 
 	// ____________________________________________________________________________
-	public static final List<String> wordify(String input) {
-		if (input == null || input.isEmpty())
-			return new LinkedList<String>();
+	public static final boolean noneIsNullOrEmpty(String... items) {
+		for (int i = 0; i < items.length; i++)
+			if (items[i] == null || items[i].isEmpty())
+				return false;
 
-		int length = input.length();
-
-		ArrayList<String> arrList = new ArrayList<String>(length > 100 ? length / 10 : 10);
-		wordifyTo(input, arrList);
-		return arrList;
+		return true;
 	}
 
 	// ____________________________________________________________________________
-	public static final int wordifyTo(String input, List<String> output) {
-		if (input == null)
-			return 0;
-
-		int start = 0;
-		int end = 0;
-		int length = input.length();
-		int counter = 0;
-
-		if (length < 1)
-			return 0;
-
-		for (int i = 0; i < length; i++) {
-			int cpoint = input.codePointAt(i);
-			if (Character.isLetterOrDigit(cpoint)) {
-				end++;
-			} else {
-				if ((end - start) > 1) {
-					String word = input.substring(start, end);
-					output.add(word);
-					counter++;
-				}
-				start = i + 1;
-				end = start;
-			}
+	public static final String right(String input, int length) {
+		if (input == null || input.isEmpty() || input.length() <= length) {
+			return input;
+		} else {
+			return input.substring(input.length() - length, input.length());
 		}
+	}
 
-		return counter;
+	// ____________________________________________________________________________
+	public static final boolean endsWithIgnoreCase(String input, String... patterns) {
+		for (int i = 0; i < patterns.length; i++) {
+			if (patterns[i].equalsIgnoreCase(right(input.trim(), patterns[i].length())))
+				return true;
+		}
+		return false;
+	}
+
+	// ____________________________________________________________________________
+	public static boolean equalsIgnoreCaseAndAccent(String left, String right) {
+
+		if (left == null)
+			return right == null;
+		else if (left.isEmpty())
+			return right.isEmpty();
+		else if (left.length() != right.length())
+			return false;
+		else
+			return left.toLowerCase(Locale.ENGLISH).equals(right.toLowerCase(Locale.ENGLISH));
 	}
 }

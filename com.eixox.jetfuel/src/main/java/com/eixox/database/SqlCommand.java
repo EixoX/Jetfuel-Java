@@ -34,12 +34,14 @@ public class SqlCommand {
 		this.connection = connection;
 	}
 
-	public final void append(String text) {
+	public final SqlCommand append(String text) {
 		this.command.append(text);
+		return this;
 	}
 
-	public final void append(int value) {
+	public final SqlCommand append(int value) {
 		this.command.append(value);
+		return this;
 	}
 
 	public final ArrayList<Object> getValues() {

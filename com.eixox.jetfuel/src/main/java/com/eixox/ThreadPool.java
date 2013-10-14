@@ -1,6 +1,5 @@
 package com.eixox;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +51,6 @@ public class ThreadPool {
 	}
 
 	public final void complete() {
-		long startTime = new Date().getTime();
 		while (this.queue.size() > 0) {
 			try {
 				Thread.sleep(100);
@@ -61,9 +59,6 @@ public class ThreadPool {
 				if (logger != null)
 					logger.log(Level.SEVERE, getClass().toString(), e);
 			}
-
-			if ((new Date().getTime() - startTime) > 600000)
-				throw new RuntimeException("Ops, more than 10 minutes to complete a threaded job needs to be revised, sorry!");
 		}
 	}
 

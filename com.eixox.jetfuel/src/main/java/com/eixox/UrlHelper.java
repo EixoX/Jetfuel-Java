@@ -1,23 +1,29 @@
 package com.eixox;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 
+import javax.management.RuntimeErrorException;
+import javax.net.ssl.HttpsURLConnection;
+
 public final class UrlHelper {
 
+	// _____________________________________________________________________________________________
 	public static final String downloadText(String url) throws IOException {
 		String charset = "UTF-8";
 		URLConnection connection = new URL(url).openConnection();
-		connection.setDoOutput(true); // Triggers POST.
 		connection.setRequestProperty("Accept-Charset", charset);
 		InputStream inputStream = null;
 		try {
 			inputStream = connection.getInputStream();
-			return StreamHelper.readText(inputStream, Charset.forName("UTF-8"));
+			return StreamHelper.readText(inputStream, Charset.forName(charset));
 		} finally {
 			if (inputStream != null)
 				try {
@@ -27,6 +33,7 @@ public final class UrlHelper {
 		}
 	}
 
+	// _____________________________________________________________________________________________
 	public static final HashMap<String, String> parseParameters(String encodedParameters) {
 		if (encodedParameters == null || encodedParameters.isEmpty())
 			return null;
@@ -46,6 +53,7 @@ public final class UrlHelper {
 		return hashmap;
 	}
 
+	// _____________________________________________________________________________________________
 	public static final String friendlyfy(String url) {
 		if (url == null || url.isEmpty())
 			return url;
@@ -61,5 +69,48 @@ public final class UrlHelper {
 				isPreviousNonLetterOrDigit = true;
 			}
 		return builder.toString();
+	}
+
+	// _____________________________________________________________________________________________
+	public static String postTo(String url, String postData) throws IOException {
+
+		URL authUrl = new URL(url);
+		HttpsURLConnection con = (HttpsURLConnection) authUrl.openConnection();
+
+		con.setRequestMethod("POST");
+
+		con.setRequestProperty("Accept-Charset", "UTF-8");
+		con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		con.setDoOutput(true);
+
+		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+		wr.writeBytes(postData.toString());
+		wr.flush();
+		wr.close();
+
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuilder response = new StringBuilder();
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			return response.toString();
+		} catch (IOException ioe) {
+			InputStream errorStream = con.getErrorStream();
+			if (errorStream != null) {
+
+				String errorContent;
+				try {
+					errorContent = StreamHelper.readText(errorStream, Charset.forName("UTF-8"));
+				} catch (Exception e) {
+					throw ioe;
+				}
+				throw new RuntimeException(errorContent, ioe);
+			} else
+				throw ioe;
+		}
+
 	}
 }

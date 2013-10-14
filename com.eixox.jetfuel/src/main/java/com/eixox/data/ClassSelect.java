@@ -32,8 +32,8 @@ public final class ClassSelect<T> extends ClassFilterExtension<ClassSelect<T>> i
 	}
 
 	public final void setPageSize(int pageSize) {
-		if (pageSize < 1 || pageSize > 1000)
-			throw new RuntimeException("Page size must be in range [0, 1000]");
+		if (pageSize < 1 || pageSize > 1000000)
+			throw new RuntimeException("Page size must be in range [0, 1000000]");
 		else
 			this.pageSize = pageSize;
 	}
