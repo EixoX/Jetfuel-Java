@@ -82,6 +82,19 @@ public final class Convert {
 		return (Long) input;
 	}
 
+	public static final int toInt(Object input) {
+		if (input == null)
+			return 0;
+
+		if (input instanceof Number)
+			return ((Number) input).intValue();
+
+		if (input instanceof String)
+			return Integer.parseInt((String) input);
+
+		return (Integer) input;
+	}
+
 	public static int tryParseInt(String input) {
 		try {
 			return Integer.parseInt(input);
