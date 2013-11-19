@@ -12,11 +12,19 @@ public class UIAspect extends AbstractAspect<UIAspectMember> {
 		super(claz);
 	}
 
+	private final UIControlOptionList getOptions(AspectMember member) {
+		UIControlOptions options = member.getAnnotation(UIControlOptions.class);
+		if (options != null)
+			return UIControlOptionList.parse(options.values(), ':');
+		else
+			return null;
+	}
+
 	@Override
 	protected final UIAspectMember decorate(AspectMember member) {
 		UIControl ui = member.getAnnotation(UIControl.class);
 		if (ui != null) {
-			return new UIAspectMember(member, ui.Type(), ui.Label(), ui.Hint(), ui.Placeholder(), null);
+			return new UIAspectMember(member, ui.Type(), ui.Label(), ui.Hint(), ui.Placeholder(), getOptions(member), ui.Group());
 		} else {
 			return null;
 		}
@@ -25,23 +33,20 @@ public class UIAspect extends AbstractAspect<UIAspectMember> {
 	public void present(Object instance, boolean validate, UIControlPresenter presenter) {
 
 		for (UIAspectMember member : this) {
+			UIControlPresentation presentation = member.toPresentation(instance, validate);
+			presenter.present(presentation);
+		}
+	}
 
-			UIControlState state = new UIControlState();
-			state.setHint(member.getHint());
-			state.setId(member.getName());
-			state.setLabel(member.getLabel());
-			state.setMemberType(member.getMemberType());
-			state.setName(member.getName());
-			state.setOptions(member.getOptions());
-			state.setValue(member.getValue(instance));
+	public void present(Object instance, String group, boolean validate, UIControlPresenter presenter) {
 
-			if (validate) {
-				String msg = member.getRestrictionMessageFor(instance);
-				state.setError(msg != null, msg);
-				state.setSuccess(msg == null, member.getHint());
+		for (UIAspectMember member : this) {
+
+			if (group.equalsIgnoreCase(member.getGroup())) {
+
+				UIControlPresentation presentation = member.toPresentation(instance, validate);
+				presenter.present(presentation);
 			}
-			
-			presenter.present(state);
 		}
 
 	}

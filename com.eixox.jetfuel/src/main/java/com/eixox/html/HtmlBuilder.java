@@ -109,6 +109,14 @@ public class HtmlBuilder {
 		builder.append(">\r\n");
 	}
 
+	public final void beginElement(String tagName, HtmlAttribute... attributes) {
+		builder.append("<");
+		builder.append(tagName);
+		for (HtmlAttribute a : attributes)
+			writeAttribute(a.getName(), a.getValue());
+		builder.append(">");
+	}
+
 	@Override
 	public String toString() {
 		return this.builder.toString();

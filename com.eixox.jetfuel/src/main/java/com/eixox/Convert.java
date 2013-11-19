@@ -114,4 +114,14 @@ public final class Convert {
 
 	}
 
+	public static final boolean toBoolean(Object value) {
+		if (value == null)
+			return false;
+		else if (value instanceof Boolean)
+			return ((Boolean) value);
+		else if (value instanceof Number)
+			return ((Number) value).intValue() > 0;
+		else
+			return Boolean.parseBoolean(value.toString());
+	}
 }
