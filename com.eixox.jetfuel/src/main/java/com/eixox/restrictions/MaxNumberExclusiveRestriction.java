@@ -26,7 +26,7 @@ public class MaxNumberExclusiveRestriction implements Restriction {
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Value invalid or above maximum (exclusive) " + _Value;
+		return validate(input) ? null : "Valor acima do máximo (exclusivo) " + _Value;
 	}
 
 	

@@ -51,7 +51,7 @@ public class CpfRestriction implements Restriction {
 
 	
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Invalid CPF";
+		return validate(input) ? null : "CPF inválido";
 	}
 
 	

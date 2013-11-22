@@ -26,7 +26,7 @@ public class MinNumberInclusiveRestriction implements Restriction {
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Value invalid or below Minimum (Inclusive) " + _Value;
+		return validate(input) ? null : "Valor abaixo do mínimo (Inclusive) " + _Value;
 	}
 
 	

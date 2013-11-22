@@ -10,7 +10,6 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 
-import javax.management.RuntimeErrorException;
 import javax.net.ssl.HttpsURLConnection;
 
 public final class UrlHelper {
@@ -68,7 +67,7 @@ public final class UrlHelper {
 				builder.append('-');
 				isPreviousNonLetterOrDigit = true;
 			}
-		return builder.toString();
+		return builder.toString().toLowerCase();
 	}
 
 	// _____________________________________________________________________________________________

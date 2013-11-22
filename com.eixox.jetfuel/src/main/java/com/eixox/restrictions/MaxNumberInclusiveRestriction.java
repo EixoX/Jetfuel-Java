@@ -26,7 +26,7 @@ public class MaxNumberInclusiveRestriction implements Restriction {
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Value invalid or above maximum (Inclusive) " + _Value;
+		return validate(input) ? null : "Valor acima do máximo (inclusive) " + _Value;
 	}
 
 	

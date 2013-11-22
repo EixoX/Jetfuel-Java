@@ -41,7 +41,7 @@ public class LengthRestriction implements Restriction {
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : ("Invalid length [" + _Min + ", " + _Max + "]");
+		return validate(input) ? null : ("Tamanho inconsistente [" + _Min + ", " + _Max + "]");
 	}
 
 	

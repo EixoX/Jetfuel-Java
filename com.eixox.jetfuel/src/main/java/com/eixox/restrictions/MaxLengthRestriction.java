@@ -27,7 +27,7 @@ public class MaxLengthRestriction implements Restriction {
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Text invalid or too large for max length " + this._Value;
+		return validate(input) ? null : "Texto muito grande. Máx de " + this._Value;
 	}
 
 	

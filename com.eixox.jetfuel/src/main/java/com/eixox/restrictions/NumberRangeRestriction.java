@@ -34,7 +34,7 @@ public class NumberRangeRestriction implements Restriction {
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Value invalid or not in range [" + min + ", " + max + "]";
+		return validate(input) ? null : "Valor fora do range [" + min + ", " + max + "]";
 	}
 
 	
