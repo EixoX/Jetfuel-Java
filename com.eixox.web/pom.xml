@@ -3,4 +3,11 @@
   <groupId>com.eixox</groupId>
   <artifactId>com.eixox.web</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.eixox</groupId>
+  		<artifactId>com.eixox.core</artifactId>
+  		<version>1.0-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>

@@ -12,7 +12,7 @@ public enum UIControlType {
 	RadioButton,
 	RadioGroup,
 	Checkbox,
-	CheckboxGroup
-	
+	CheckboxGroup,
+	FileUpload
 	
 }

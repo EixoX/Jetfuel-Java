@@ -206,6 +206,14 @@ public class Bootstrap3Presenter implements UIControlPresenter {
 				presentation.getName()), new HtmlAttribute("value", presentation.getValue()));
 	}
 
+	private void presentFileUpload(UIControlPresentation presentation) {
+		beginControlGroup(presentation);
+		builder.writeElement("input", true, new HtmlAttribute("type", "file"), new HtmlAttribute("name", presentation.getName()), new HtmlAttribute("id",
+				presentation.getId()), new HtmlAttribute("value", presentation.getValue()), new HtmlAttribute("placeholder", presentation.getPlaceholder()),
+				new HtmlAttribute("class", this.controlClass));
+		endControlGroup(presentation);
+	}
+
 	public void present(UIControlPresentation presentation) {
 
 		switch (presentation.getControlType()) {
@@ -241,6 +249,10 @@ public class Bootstrap3Presenter implements UIControlPresenter {
 			break;
 		case Hidden:
 			presentHidden(presentation);
+			break;
+		case FileUpload:
+			presentFileUpload(presentation);
+			break;
 		default:
 			break;
 
