@@ -1,6 +1,7 @@
 package com.eixox.html.bootstrap;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import com.eixox.Convert;
 import com.eixox.html.HtmlAttribute;
@@ -167,7 +168,7 @@ public class Bootstrap3Presenter implements UIControlPresenter {
 			builder.beginElement("div", "radio");
 			builder.beginElement("label");
 
-			if (value != null && value.equals(option.getKey())) {
+			if (value != null && value.equals(Convert.changeType(value.getClass(), option.getKey(), Locale.ENGLISH))) {
 				builder.writeElement("input", true, new HtmlAttribute("type", "radio"), new HtmlAttribute("name", presentation.getName()), new HtmlAttribute(
 						"id", presentation.getName() + "_" + option.getKey()), new HtmlAttribute("value", option.getKey()), new HtmlAttribute("checked",
 						"checked"));

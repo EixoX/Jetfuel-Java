@@ -210,6 +210,24 @@ public class ViewHandler {
 		return "post".equalsIgnoreCase(this.request.getMethod());
 	}
 
+	public final String getAbsoluteUrl(String relative) {
+		String scheme = request.getScheme(); // http
+		String serverName = request.getServerName(); // hostname.com
+		int serverPort = request.getServerPort(); // 80
+		String contextPath = request.getContextPath(); // /mywebapp
+
+		// Reconstruct original requesting URL
+		StringBuilder url = new StringBuilder();
+		url.append(scheme).append("://").append(serverName);
+
+		if ((serverPort != 80) && (serverPort != 443)) {
+			url.append(":").append(serverPort);
+		}
+
+		url.append(relative.replace("~", contextPath));
+		return url.toString();
+	}
+
 	public final String mapUrl(String url) {
 		return url.replace("~", request.getContextPath());
 	}

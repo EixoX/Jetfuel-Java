@@ -12,6 +12,7 @@ public final class Convert {
 
 	public static final DateFormat rfc2822DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
 	public static final DateFormat defaultDateFormat = SimpleDateFormat.getInstance();
+	public static final DateFormat ptBrDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	public static final DateFormat dateTimeInternational = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	public static final DateFormat javaFuckup = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 
@@ -156,6 +157,11 @@ public final class Convert {
 
 	// ___________________________________________________________
 	public static final Date toDate(Object value) {
+		return toDate(value, Locale.ENGLISH);
+	}
+
+	// ___________________________________________________________
+	public static final Date toDate(Object value, Locale locale) {
 		if (value == null)
 			return null;
 		else if (value instanceof Date)
@@ -163,34 +169,23 @@ public final class Convert {
 		else if (value instanceof Calendar)
 			return ((Calendar) value).getTime();
 		else
-			try {
-				return defaultDateFormat.parse(value.toString());
-			} catch (ParseException pe) {
-				try {
-					return dateTimeInternational.parse(value.toString());
-				} catch (ParseException pe2) {
-					try {
-						return rfc2822DateFormat.parse(value.toString());
-					} catch (ParseException pe3) {
-						try {
-							return javaFuckup.parse(value.toString());
-						} catch (ParseException pe4) {
-							return null;
-						}
-					}
-				}
-			}
+			return DateHelper.parse(value.toString(), locale);
 	}
 
 	// ___________________________________________________________
 	public static final Calendar toCalendar(Object value) {
+		return toCalendar(value, Locale.ENGLISH);
+	}
+
+	// ___________________________________________________________
+	public static final Calendar toCalendar(Object value, Locale locale) {
 		if (value == null)
 			return null;
 		else if (value instanceof Calendar)
 			return ((Calendar) value);
 		else {
 			Calendar cal = Calendar.getInstance();
-			cal.setTime(toDate(value));
+			cal.setTime(toDate(value, locale));
 			return cal;
 		}
 	}
@@ -226,10 +221,10 @@ public final class Convert {
 			return toDouble(input, locale);
 
 		if (Date.class.isAssignableFrom(claz))
-			return toDate(input);
+			return toDate(input, locale);
 
 		if (Calendar.class.isAssignableFrom(claz))
-			return toCalendar(input);
+			return toCalendar(input, locale);
 
 		throw new RuntimeException("Can't convert " + claz);
 	}
