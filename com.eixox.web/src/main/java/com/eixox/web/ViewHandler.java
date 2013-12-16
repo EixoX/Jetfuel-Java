@@ -273,15 +273,25 @@ public class ViewHandler {
 	}
 
 	public final void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+		if (this.errorMessage == null || this.errorMessage.isEmpty())
+			this.errorMessage = errorMessage;
+		else
+			this.errorMessage += "<br />\r\n" + errorMessage;
+
 	}
 
 	public final void setInfoMessage(String infoMessage) {
-		this.infoMessage = infoMessage;
+		if (this.infoMessage == null || this.infoMessage.isEmpty())
+			this.infoMessage = infoMessage;
+		else
+			this.infoMessage += "<br />\r\n" + infoMessage;
 	}
 
 	public final void setSuccessMessage(String successMessage) {
-		this.successMessage = successMessage;
+		if (this.successMessage == null || this.successMessage.isEmpty())
+			this.successMessage = successMessage;
+		else
+			this.successMessage += "<br />\r\n" + successMessage;
 	}
 
 	public final String url(String url) throws UnsupportedEncodingException {

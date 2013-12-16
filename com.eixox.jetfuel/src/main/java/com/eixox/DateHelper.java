@@ -3,7 +3,9 @@ package com.eixox;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public final class DateHelper {
@@ -16,7 +18,7 @@ public final class DateHelper {
 	public static final DateFormat PtBr_DateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	public static final DateFormat Default_Java = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final DateFormat guessDateFormat(String input, Locale locale) {
 		if (input == null || input.isEmpty())
 			return DateFormat.getInstance();
@@ -47,7 +49,7 @@ public final class DateHelper {
 			return Default_Java;
 	}
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final Date parse(String input, Locale locale) {
 		try {
 			return guessDateFormat(input, locale).parse(input);
@@ -55,44 +57,55 @@ public final class DateHelper {
 			return null;
 		}
 	}
-	
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final Date parse(String input) {
 		return parse(input, Locale.ENGLISH);
 	}
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final long getTotalMilliseconds(Date start, Date end) {
 		Date dt = new Date();
 		dt.setTime(end.getTime() - start.getTime());
 		return dt.getTime();
 	}
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final double getTotalSeconds(Date start, Date end) {
 		return getTotalMilliseconds(start, end) / 1000.0;
 	}
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final double getTotalMinutes(Date start, Date end) {
 		return getTotalSeconds(start, end) / 60.0;
 	}
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final double getTotalHours(Date start, Date end) {
 		return getTotalSeconds(start, end) / 3600.0;
 	}
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final Date addDays(Date start, int days) {
 		return addHours(start, days * 24);
 	}
 
-	//______________________________________________________________________
+	// ______________________________________________________________________
 	public static final Date addHours(Date start, int hours) {
 
 		long timeToAdd = hours * 60 * 60 * 1000;
 		return new Date(start.getTime() + timeToAdd);
+	}
+
+	// ______________________________________________________________________
+	public static final Date create(int year, int month, int day) {
+		return new GregorianCalendar(year, month - 1, day).getTime();
+	}
+
+	// ______________________________________________________________________
+	public static final Date tomorrow() {
+		Calendar greg = GregorianCalendar.getInstance();
+		greg.add(Calendar.DAY_OF_MONTH, 1);
+		return greg.getTime();
 	}
 }

@@ -1,8 +1,10 @@
 package com.eixox.data;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.eixox.ArrayHelper;
+import com.eixox.Convert;
 import com.eixox.Pair;
 import com.eixox.PairList;
 import com.eixox.ValidationHelper;
@@ -46,9 +48,7 @@ public final class ClassStorage<T> extends AbstractAspect<ClassStorageMember> {
 				if (identity < 0) {
 					identity = i;
 				} else
-					throw new RuntimeException(
-							"Only one identity is permitted. Please remove the Identity Column type from "
-									+ get(i).getFullName());
+					throw new RuntimeException("Only one identity is permitted. Please remove the Identity Column type from " + get(i).getFullName());
 				break;
 			case Unique:
 				uos.add(i);
@@ -174,8 +174,7 @@ public final class ClassStorage<T> extends AbstractAspect<ClassStorageMember> {
 			for (int i = 0; i < this.uniqueOrdinals.length; i++) {
 				Object uniqueValue = super.getValue(entity, this.uniqueOrdinals[i]);
 				if (!ValidationHelper.isNullOrEmpty(uniqueValue)) {
-					identityValue = this.engine.selectMemberByMember(this, this.identityOrdinal,
-							this.uniqueOrdinals[i], uniqueValue);
+					identityValue = this.engine.selectMemberByMember(this, this.identityOrdinal, this.uniqueOrdinals[i], uniqueValue);
 					if (!ValidationHelper.isNullOrEmpty(identityValue)) {
 						super.setValue(entity, identityOrdinal, identityValue);
 						return identityValue;
@@ -184,8 +183,7 @@ public final class ClassStorage<T> extends AbstractAspect<ClassStorageMember> {
 			}
 
 		if (this.primaryKeyOrdinals != null && this.primaryKeyOrdinals.length > 0) {
-			identityValue = this.engine.selectMemberByMembers(this, this.identityOrdinal, this.primaryKeyOrdinals,
-					this.getPrimaryKeyValues(entity));
+			identityValue = this.engine.selectMemberByMembers(this, this.identityOrdinal, this.primaryKeyOrdinals, this.getPrimaryKeyValues(entity));
 			if (!ValidationHelper.isNullOrEmpty(identityValue)) {
 				super.setValue(entity, identityOrdinal, identityValue);
 				return identityValue;
@@ -235,21 +233,18 @@ public final class ClassStorage<T> extends AbstractAspect<ClassStorageMember> {
 			if (identityValue == null)
 				throw new RuntimeException("Unable to find identity value to update " + getFullName());
 			else
-				return this.engine.updateByMember(this, getValuesExcludingMember(entity, this.identityOrdinal),
-						this.identityOrdinal, identityValue);
+				return this.engine.updateByMember(this, getValuesExcludingMember(entity, this.identityOrdinal), this.identityOrdinal, identityValue);
 		}
 
 		if (this.uniqueOrdinals != null)
 			for (int i = 0; i < this.uniqueOrdinals.length; i++) {
 				Object uniqueValue = super.getValue(entity, this.uniqueOrdinals[i]);
 				if (!ValidationHelper.isNullOrEmpty(uniqueValue))
-					return this.engine.updateByMember(this, getValuesExcludingMember(entity, this.uniqueOrdinals[i]),
-							this.uniqueOrdinals[i], uniqueValue);
+					return this.engine.updateByMember(this, getValuesExcludingMember(entity, this.uniqueOrdinals[i]), this.uniqueOrdinals[i], uniqueValue);
 			}
 
 		if (this.primaryKeyOrdinals != null && this.primaryKeyOrdinals.length > 0) {
-			return this.engine.updateByMembers(this, this.getValuesExcludingPrimaryKeys(entity),
-					this.primaryKeyOrdinals, this.getPrimaryKeyValues(entity));
+			return this.engine.updateByMembers(this, this.getValuesExcludingPrimaryKeys(entity), this.primaryKeyOrdinals, this.getPrimaryKeyValues(entity));
 		}
 
 		throw new RuntimeException("Unable to find members to delete " + getFullName());
@@ -259,9 +254,8 @@ public final class ClassStorage<T> extends AbstractAspect<ClassStorageMember> {
 	// _____________________________________________________________________________________________________________
 	public final long insert(T entity) {
 		if (this.identityOrdinal >= 0) {
-			Object identityValue = this.engine.insertAndScopeIdentity(this,
-					this.getValuesExcludingMember(entity, this.identityOrdinal), this.identityOrdinal);
-
+			Object identityValue = this.engine.insertAndScopeIdentity(this, this.getValuesExcludingMember(entity, this.identityOrdinal), this.identityOrdinal);
+			identityValue = Convert.changeType(this.getType(identityOrdinal), identityValue, Locale.ENGLISH);
 			super.setValue(entity, identityOrdinal, identityValue);
 			return ValidationHelper.isNullOrEmpty(identityValue) ? 0 : 1;
 		} else {
@@ -276,21 +270,18 @@ public final class ClassStorage<T> extends AbstractAspect<ClassStorageMember> {
 			if (identityValue == null)
 				return this.insert(entity);
 			else
-				return this.engine.updateByMember(this, getValuesExcludingMember(entity, this.identityOrdinal),
-						this.identityOrdinal, identityValue);
+				return this.engine.updateByMember(this, getValuesExcludingMember(entity, this.identityOrdinal), this.identityOrdinal, identityValue);
 		}
 
 		if (this.uniqueOrdinals != null)
 			for (int i = 0; i < this.uniqueOrdinals.length; i++) {
 				Object uniqueValue = super.getValue(entity, this.uniqueOrdinals[i]);
 				if (!ValidationHelper.isNullOrEmpty(uniqueValue))
-					return this.engine.updateByMember(this, getValuesExcludingMember(entity, this.uniqueOrdinals[i]),
-							this.uniqueOrdinals[i], uniqueValue);
+					return this.engine.updateByMember(this, getValuesExcludingMember(entity, this.uniqueOrdinals[i]), this.uniqueOrdinals[i], uniqueValue);
 			}
 
 		if (this.primaryKeyOrdinals != null && this.primaryKeyOrdinals.length > 0) {
-			return this.engine.updateByMembers(this, this.getValuesExcludingPrimaryKeys(entity),
-					this.primaryKeyOrdinals, this.getPrimaryKeyValues(entity));
+			return this.engine.updateByMembers(this, this.getValuesExcludingPrimaryKeys(entity), this.primaryKeyOrdinals, this.getPrimaryKeyValues(entity));
 		}
 
 		return this.insert(entity);
@@ -347,13 +338,11 @@ public final class ClassStorage<T> extends AbstractAspect<ClassStorageMember> {
 
 	// _____________________________________________________________________________________________________________
 	public final SelectResult<T> selectByMember(String filterName, Object filterValue, int pageSize, int pageOrdinal) {
-		return this.engine.selectByMember(this, super.getOrdinalOrException(filterName), filterValue, pageSize,
-				pageOrdinal);
+		return this.engine.selectByMember(this, super.getOrdinalOrException(filterName), filterValue, pageSize, pageOrdinal);
 	}
 
 	// _____________________________________________________________________________________________________________
-	public final SelectResult<T> selectByMembers(String[] filterNames, Object[] filterValues, int pageSize,
-			int pageOrdinal) {
+	public final SelectResult<T> selectByMembers(String[] filterNames, Object[] filterValues, int pageSize, int pageOrdinal) {
 
 		return this.engine.selectByMembers(this, super.getOrdinals(filterNames), filterValues, pageSize, pageOrdinal);
 	}
@@ -387,7 +376,5 @@ public final class ClassStorage<T> extends AbstractAspect<ClassStorageMember> {
 	public final ClassInsert createInsert() {
 		return new ClassInsert(this, this.engine);
 	}
-
-	
 
 }
