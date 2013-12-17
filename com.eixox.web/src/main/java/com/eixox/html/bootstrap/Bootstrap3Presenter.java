@@ -8,6 +8,7 @@ import com.eixox.html.HtmlAttribute;
 import com.eixox.html.HtmlBuilder;
 import com.eixox.ui.UIAspect;
 import com.eixox.ui.UIControlOption;
+import com.eixox.ui.UIControlOptionList;
 import com.eixox.ui.UIControlPresentation;
 import com.eixox.ui.UIControlPresenter;
 
@@ -111,14 +112,19 @@ public class Bootstrap3Presenter implements UIControlPresenter {
 		builder.beginElement("select", new HtmlAttribute("class", this.controlClass), new HtmlAttribute("name", presentation.getName()), new HtmlAttribute(
 				"id", presentation.getId()));
 
+		builder.writeSimpleElement("option", "-", new HtmlAttribute("value", ""));
+
 		Object value = presentation.getValue();
-		for (UIControlOption option : presentation.getOptions()) {
-			if (value != null && value.equals(option.getKey())) {
-				builder.writeSimpleElement("option", option.getValue(), new HtmlAttribute("value", option.getKey()), new HtmlAttribute("selected", "selected"));
-			} else {
-				builder.writeSimpleElement("option", option.getValue(), new HtmlAttribute("value", option.getKey()));
+		UIControlOptionList options = presentation.getOptions();
+		if (options != null)
+			for (UIControlOption option : options) {
+				if (value != null && value.equals(option.getKey())) {
+					builder.writeSimpleElement("option", option.getValue(), new HtmlAttribute("value", option.getKey()), new HtmlAttribute("selected",
+							"selected"));
+				} else {
+					builder.writeSimpleElement("option", option.getValue(), new HtmlAttribute("value", option.getKey()));
+				}
 			}
-		}
 
 		builder.closeElement("select");
 
