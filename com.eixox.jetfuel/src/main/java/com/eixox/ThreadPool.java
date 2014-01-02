@@ -1,14 +1,11 @@
 package com.eixox;
 
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ThreadPool {
 
 	private final PoolWorker[] threads;
 	private final LinkedList<Runnable> queue;
-	private Logger logger = Logger.getGlobal();
 
 	public ThreadPool(int nThreads) {
 		queue = new LinkedList<Runnable>();
@@ -31,21 +28,6 @@ public class ThreadPool {
 		}
 	}
 
-	/**
-	 * @return the logger
-	 */
-	public final Logger getLogger() {
-		return logger;
-	}
-
-	/**
-	 * @param logger
-	 *            the logger to set
-	 */
-	public final void setLogger(Logger logger) {
-		this.logger = logger;
-	}
-
 	public final int getCount() {
 		return this.queue.size();
 	}
@@ -55,9 +37,7 @@ public class ThreadPool {
 			try {
 				Thread.sleep(100);
 			} catch (Throwable e) {
-				// You might want to log something here
-				if (logger != null)
-					logger.log(Level.SEVERE, getClass().toString(), e);
+			
 			}
 		}
 	}
@@ -83,9 +63,6 @@ public class ThreadPool {
 				try {
 					r.run();
 				} catch (Throwable e) {
-					// You might want to log something here
-					if (logger != null && r != null)
-						logger.log(Level.SEVERE, r.toString(), e);
 				}
 			}
 		}
