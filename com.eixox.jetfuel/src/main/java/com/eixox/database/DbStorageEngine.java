@@ -343,4 +343,17 @@ public class DbStorageEngine extends SqlConnection implements ClassStorageEngine
 
 	}
 
+	// ____________________________________________________________________________________________________________
+	public final <T> SelectResult<T> executeQuery(ClassStorage<T> aspect, int pageSize, int pageOrdinal, String commandText, Object... commandParameters)
+			throws SQLException {
+		SqlCommand cmd = this.createCommand();
+		cmd.append(commandText);
+		if (commandParameters != null)
+			for (int i = 0; i < commandParameters.length; i++)
+				cmd.addValue(commandParameters[i]);
+
+		DbStorageProcessorForClass<T> processor = new DbStorageProcessorForClass<T>(aspect, pageSize, pageOrdinal);
+		return cmd.executeQuery(processor);
+	}
+
 }

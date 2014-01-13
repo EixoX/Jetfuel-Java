@@ -45,8 +45,12 @@ public abstract class ClassFilterExtension<TClass> {
 	}
 
 	public final TClass and(ClassFilter filter) {
-		this._Last = this._Last.setNext(ClassFilterOperation.And, filter);
-		return getThis();
+		if (this._Last == null)
+			return where(filter);
+		else {
+			this._Last = this._Last.setNext(ClassFilterOperation.And, filter);
+			return getThis();
+		}
 	}
 
 	public final TClass and(int ordinal, ClassFilterComparison comparison, Object value) {
@@ -66,8 +70,12 @@ public abstract class ClassFilterExtension<TClass> {
 	}
 
 	public final TClass or(ClassFilter filter) {
-		this._Last = this._Last.setNext(ClassFilterOperation.Or, filter);
-		return getThis();
+		if (this._Last == null)
+			return where(filter);
+		else {
+			this._Last = this._Last.setNext(ClassFilterOperation.Or, filter);
+			return getThis();
+		}
 	}
 
 	public final TClass or(int ordinal, ClassFilterComparison comparison, Object value) {
