@@ -10,9 +10,11 @@ public class CpfRestriction implements Restriction {
 	}
 
 	public static boolean isValid(long value) {
-		if (value == 11111111111L || value == 22222222222L || value == 33333333333L || value == 44444444444L
-				|| value == 55555555555L || value == 66666666666L || value == 77777777777L || value == 88888888888L
-				|| value == 99999999999L)
+		if (value < 1)
+			return false;
+
+		if (value == 11111111111L || value == 22222222222L || value == 33333333333L || value == 44444444444L || value == 55555555555L || value == 66666666666L
+				|| value == 77777777777L || value == 88888888888L || value == 99999999999L)
 			return false;
 
 		long a = ((value / 10000000000L) % 10);
@@ -41,20 +43,25 @@ public class CpfRestriction implements Restriction {
 		return (d1 == ((value / 10) % 10) && d2 == (value % 10));
 	}
 
-	
 	public boolean validate(Object input) {
 		if (input == null)
 			return true;
+		else if (input instanceof String) {
+			String is = (String) input;
+			if (is.isEmpty())
+				return true;
+			else
+				return isValid(Long.parseLong(is));
+		} else if (input instanceof Number)
+			return isValid(((Number) input).longValue());
 		else
-			return isValid((Long) input);
+			return false;
 	}
 
-	
 	public String getRestrictionMessageFor(Object input) {
 		return validate(input) ? null : "CPF inválido";
 	}
 
-	
 	public void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

@@ -73,14 +73,6 @@ public final class StringHelper {
 	}
 
 	// ____________________________________________________________________________
-	public static final String htmlEncode(String input) {
-		if (input != null && !input.isEmpty()) {
-			return input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll("\"", "&quot;").replaceAll("'", "&apos;");
-		} else
-			return "";
-	}
-
-	// ____________________________________________________________________________
 	public static final int indexOf(String content, int offset, int length, char c) {
 		for (int i = offset; i < length; i++)
 			if (c == content.charAt(i))
@@ -356,5 +348,17 @@ public final class StringHelper {
 			return false;
 		else
 			return left.toLowerCase(Locale.ENGLISH).equals(right.toLowerCase(Locale.ENGLISH));
+	}
+
+	// ____________________________________________________________________________
+	public static final String ellipsis(String input, int maxlength) {
+		if (input == null || input.isEmpty() || input.length() <= maxlength)
+			return input;
+
+		while (maxlength > 1 && !Character.isWhitespace(input.charAt(maxlength)))
+			maxlength--;
+
+		return input.substring(0, maxlength) + "...";
+
 	}
 }

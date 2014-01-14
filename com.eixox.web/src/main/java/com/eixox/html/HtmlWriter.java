@@ -3,6 +3,8 @@ package com.eixox.html;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.eixox.StringHelper;
 
 public class HtmlWriter {
@@ -19,7 +21,7 @@ public class HtmlWriter {
 
 	public final void writeText(String text) throws IOException {
 		if (text != null)
-			writer.write(StringHelper.htmlEncode(text));
+			writer.write(StringEscapeUtils.escapeHtml(text));
 	}
 
 	public final void writeAttribute(String name, Object value) throws IOException {
@@ -61,7 +63,7 @@ public class HtmlWriter {
 		writer.write(tagName);
 		writer.write(">");
 		if (value != null)
-			writer.write(StringHelper.htmlEncode(value.toString()));
+			writer.write(StringEscapeUtils.escapeHtml(value.toString()));
 		writer.write("</");
 		writer.write(tagName);
 		writer.write(">\r\n");
@@ -74,7 +76,7 @@ public class HtmlWriter {
 			writeAttribute(a.getName(), a.getValue());
 		writer.write(">");
 		if (value != null)
-			writer.write(StringHelper.htmlEncode(value.toString()));
+			writer.write(StringEscapeUtils.escapeHtml(value.toString()));
 		writer.write("</");
 		writer.write(tagName);
 		writer.write(">\r\n");

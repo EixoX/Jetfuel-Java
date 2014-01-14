@@ -1,6 +1,6 @@
 package com.eixox.html;
 
-import com.eixox.StringHelper;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class HtmlBuilder {
 
@@ -20,7 +20,7 @@ public class HtmlBuilder {
 
 	public final void writeText(String text) {
 		if (text != null)
-			builder.append(StringHelper.htmlEncode(text));
+			builder.append(StringEscapeUtils.escapeHtml(text));
 	}
 
 	public final void writeAttribute(String name, Object value) {
@@ -28,7 +28,7 @@ public class HtmlBuilder {
 			builder.append(' ');
 			builder.append(name);
 			builder.append("=\"");
-			builder.append(StringHelper.attributeEncode(value));
+			builder.append(StringEscapeUtils.escapeHtml(value == null ? "" : value.toString()));
 			builder.append("\"");
 		}
 	}
@@ -62,7 +62,7 @@ public class HtmlBuilder {
 		builder.append(tagName);
 		builder.append(">");
 		if (value != null)
-			builder.append(StringHelper.htmlEncode(value.toString()));
+			builder.append(StringEscapeUtils.escapeHtml(value.toString()));
 		builder.append("</");
 		builder.append(tagName);
 		builder.append(">\r\n");
@@ -75,7 +75,7 @@ public class HtmlBuilder {
 			writeAttribute(a.getName(), a.getValue());
 		builder.append(">");
 		if (value != null)
-			builder.append(StringHelper.htmlEncode(value.toString()));
+			builder.append(StringEscapeUtils.escapeHtml(value.toString()));
 		builder.append("</");
 		builder.append(tagName);
 		builder.append(">\r\n");

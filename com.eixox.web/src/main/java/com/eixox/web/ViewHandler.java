@@ -14,11 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.eixox.Convert;
 import com.eixox.Pair;
 import com.eixox.PairList;
 import com.eixox.StreamHelper;
-import com.eixox.StringHelper;
 import com.eixox.interceptors.InterceptorAspect;
 import com.eixox.reflection.ClassSchema;
 import com.eixox.reflection.DecoratedMember;
@@ -203,7 +204,7 @@ public class ViewHandler {
 	}
 
 	public final String html(String html) {
-		return StringHelper.htmlEncode(html);
+		return StringEscapeUtils.escapeHtml(html);
 	}
 
 	public final boolean isPost() {
