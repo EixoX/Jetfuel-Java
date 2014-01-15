@@ -61,7 +61,7 @@ public final class UrlHelper {
 		boolean isPreviousNonLetterOrDigit = false;
 		for (int i = 0; i < url.length(); i++)
 			if (Character.isLetterOrDigit(url.charAt(i))) {
-				builder.append(url.charAt(i));
+				builder.append(CharHelper.removeAccent(Character.toLowerCase(url.charAt(i))));
 				isPreviousNonLetterOrDigit = false;
 			} else if (!isPreviousNonLetterOrDigit && i < (url.length() - 1)) {
 				builder.append('-');
