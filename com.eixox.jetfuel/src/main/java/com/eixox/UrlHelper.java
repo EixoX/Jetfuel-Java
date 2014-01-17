@@ -11,6 +11,12 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public final class UrlHelper {
 
@@ -30,6 +36,19 @@ public final class UrlHelper {
 				} catch (IOException logOrIgnore) {
 				}
 		}
+	}
+	
+	public static final Document downloadXml(String url) 
+		throws IOException, ParserConfigurationException, SAXException {
+		
+		URLConnection connection = new URL(url).openConnection();
+		connection.setRequestProperty("Accept", "application/xml");
+		
+		DocumentBuilderFactory objDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder objDocumentBuilder = objDocumentBuilderFactory.newDocumentBuilder();
+        Document doc = objDocumentBuilder.parse(connection.getInputStream());
+		
+		return doc;
 	}
 
 	// _____________________________________________________________________________________________

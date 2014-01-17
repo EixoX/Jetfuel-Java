@@ -10,3 +10,7 @@ project/project
 project/target
 target
 tmp
+
+com.eixox.jetfuel/target/classes/META-INF/MANIFEST.MF
+
+com.eixox.jetfuel/target/classes/META-INF/maven/com.eixox/com.eixox.core/pom.properties
