@@ -356,4 +356,19 @@ public class DbStorageEngine extends SqlConnection implements ClassStorageEngine
 		return cmd.executeQuery(processor);
 	}
 
+	// ____________________________________________________________________________________________________________
+	public final Object executeScalar(String commandText, Object... commandParameters) {
+		SqlCommand cmd = this.createCommand();
+		cmd.append(commandText);
+		if (commandParameters != null)
+			for (int i = 0; i < commandParameters.length; i++)
+				cmd.addValue(commandParameters[i]);
+
+		try {
+			return cmd.executeScalar();
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 }
