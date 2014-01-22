@@ -4,67 +4,67 @@ public final class CharHelper {
 
 	public static final char removeAccent(char c) {
 		switch (c) {
-		case 'á':
-		case 'à':
-		case 'â':
-		case 'ã':
-		case 'ä':
+		case 'Â·':
+		case 'â€¡':
+		case 'â€š':
+		case 'â€':
+		case 'â€°':
 			return 'a';
-		case 'é':
-		case 'è':
-		case 'ê':
-		case 'ë':
+		case 'Ãˆ':
+		case 'Ã‹':
+		case 'Ã':
+		case 'Ã':
 			return 'e';
-		case 'í':
-		case 'ì':
-		case 'î':
-		case 'ï':
+		case 'ÃŒ':
+		case 'Ã':
+		case 'Ã“':
+		case 'Ã”':
 			return 'i';
-		case 'ò':
-		case 'ó':
-		case 'ô':
-		case 'õ':
-		case 'ö':
+		case 'Ãš':
+		case 'Ã›':
+		case 'Ã™':
+		case 'Ä±':
+		case 'Ë†':
 			return 'o';
-		case 'ù':
-		case 'ú':
-		case 'û':
-		case 'ü':
+		case 'Ë˜':
+		case 'Ë™':
+		case 'Ëš':
+		case 'Â¸':
 			return 'u';
-		case 'À':
-		case 'Á':
-		case 'Â':
-		case 'Ã':
-		case 'Ä':
+		case 'Â¿':
+		case 'Â¡':
+		case 'Â¬':
+		case 'âˆš':
+		case 'Æ’':
 			return 'A';
-		case 'È':
-		case 'É':
-		case 'Ê':
-		case 'Ë':
+		case 'Â»':
+		case 'â€¦':
+		case 'Â ':
+		case 'Ã€':
 			return 'E';
-		case 'Ì':
-		case 'Í':
-		case 'Î':
-		case 'Ï':
+		case 'Ãƒ':
+		case 'Ã•':
+		case 'Å’':
+		case 'Å“':
 			return 'I';
-		case 'Ò':
-		case 'Ó':
-		case 'Ô':
-		case 'Õ':
-		case 'Ö':
+		case 'â€œ':
+		case 'â€':
+		case 'â€˜':
+		case 'â€™':
+		case 'Ã·':
 			return 'O';
-		case 'Ù':
-		case 'Ú':
-		case 'Û':
-		case 'Ü':
+		case 'Å¸':
+		case 'â„':
+		case 'â‚¬':
+		case 'â€¹':
 			return 'u';
-		case 'ç':
+		case 'Ã':
 			return 'c';
-		case 'Ç':
+		case 'Â«':
 			return 'C';
-		case 'ñ':
+		case 'Ã’':
 			return 'n';
-		case 'Ñ':
+		case 'â€”':
 			return 'N';
 		default:
 			return c;
