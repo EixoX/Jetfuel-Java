@@ -2,6 +2,8 @@ package com.eixox.data;
 
 // Description Here:
 // _____________________________________________________
-public enum FilterOperation {
-	And, Or
+public enum SortDirection {
+
+	Ascending,
+	Descending
 }

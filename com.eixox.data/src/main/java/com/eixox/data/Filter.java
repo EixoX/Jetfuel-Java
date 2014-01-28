@@ -1,5 +1,11 @@
 package com.eixox.data;
 
-public class Filter {
+// Description Here:
+// _____________________________________________________
+public interface Filter {
 
+	// Description Here:
+	// _____________________________________________________
+	public ClassStorage getStorage();
+	
 }

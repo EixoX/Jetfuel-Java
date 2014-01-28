@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.text.Normalizer;
 import java.util.HashMap;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -37,17 +38,16 @@ public final class UrlHelper {
 				}
 		}
 	}
-	
-	public static final Document downloadXml(String url) 
-		throws IOException, ParserConfigurationException, SAXException {
-		
+
+	public static final Document downloadXml(String url) throws IOException, ParserConfigurationException, SAXException {
+
 		URLConnection connection = new URL(url).openConnection();
 		connection.setRequestProperty("Accept", "application/xml");
-		
+
 		DocumentBuilderFactory objDocumentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder objDocumentBuilder = objDocumentBuilderFactory.newDocumentBuilder();
-        Document doc = objDocumentBuilder.parse(connection.getInputStream());
-		
+		DocumentBuilder objDocumentBuilder = objDocumentBuilderFactory.newDocumentBuilder();
+		Document doc = objDocumentBuilder.parse(connection.getInputStream());
+
 		return doc;
 	}
 
@@ -80,13 +80,15 @@ public final class UrlHelper {
 		boolean isPreviousNonLetterOrDigit = false;
 		for (int i = 0; i < url.length(); i++)
 			if (Character.isLetterOrDigit(url.charAt(i))) {
-				builder.append(CharHelper.removeAccent(Character.toLowerCase(url.charAt(i))));
+				builder.append(Character.toLowerCase(url.charAt(i)));
 				isPreviousNonLetterOrDigit = false;
 			} else if (!isPreviousNonLetterOrDigit && i < (url.length() - 1)) {
 				builder.append('-');
 				isPreviousNonLetterOrDigit = true;
 			}
-		return builder.toString().toLowerCase();
+
+		return Normalizer.normalize(builder.toString().toLowerCase(), Normalizer.Form.NFD);
+
 	}
 
 	// _____________________________________________________________________________________________

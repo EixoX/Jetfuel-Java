@@ -3,129 +3,108 @@ package com.eixox.data;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-public class ClassStorage {
+// Description Here:
+// _____________________________________________________
+public abstract class ClassStorage {
 
-	private final Class<?> claz;
+	private final Class<?> dataType;
 	private final ArrayList<ClassStorageColumn> columns;
-	private String dataName;
-	private int identityOrdinal = -1;
+	private final int identityOrdinal;
+	private final ArrayList<Integer> uniqueOrdinals;
+	private final ArrayList<Integer> primaryKeyOrdinals;
 
-	public ClassStorage(Class<?> claz) {
+	// Description Here:
+	// _____________________________________________________
+	public ClassStorage(Class<?> dataType) {
+		this.dataType = dataType;
+		Field[] fields = dataType.getDeclaredFields();
+		this.columns = new ArrayList<ClassStorageColumn>(fields.length);
+		this.uniqueOrdinals = new ArrayList<Integer>();
+		this.primaryKeyOrdinals = new ArrayList<Integer>();
 
-		this.claz = claz;
-		this.dataName = claz.getName();
-
-		Field[] declaredFields = this.claz.getDeclaredFields();
-		this.columns = new ArrayList<ClassStorageColumn>(declaredFields.length);
-		for (int i = 0; i < declaredFields.length; i++) {
-			declaredFields[i].setAccessible(true);
-			this.columns.add(new ClassStorageColumn(declaredFields[i]));
+		for (int i = 0; i < fields.length; i++) {
+			ClassStorageColumn mapping = map(fields[i]);
+			if (mapping != null) {
+				fields[i].setAccessible(true);
+				this.columns.add(mapping);
+			}
 		}
-	}
 
-	/**
-	 * @return the dataName
-	 */
-	public final String getDataName() {
-		return dataName;
-	}
+		int idOrdinal = -1;
+		int l = columns.size();
 
-	/**
-	 * @param dataName
-	 *            the dataName to set
-	 */
-	public final void setDataName(String dataName) {
-		this.dataName = dataName;
-	}
+		for (int i = 0; i < l; i++) {
+			switch (columns.get(i).getColumnType()) {
+			case Identity:
+				if (idOrdinal < 0)
+					idOrdinal = i;
+				else
+					throw new RuntimeException("Please make sure that " + dataType + " has only one identity.");
+				break;
+			case Unique:
+				this.uniqueOrdinals.add(i);
+				break;
+			case PrimaryKey:
+				this.primaryKeyOrdinals.add(i);
+				break;
+			default:
+				break;
 
-	/**
-	 * @return the claz
-	 */
-	public final Class<?> getClaz() {
-		return claz;
-	}
-
-	/**
-	 * @return the columns
-	 */
-	public final ArrayList<ClassStorageColumn> getColumns() {
-		return columns;
-	}
-
-	public final ClassStorageColumn getColumn(int ordinal) {
-		return this.columns.get(ordinal);
-	}
-
-	public final ClassStorageColumn getColumn(String name) {
-		return this.columns.get(indexOf(name));
-	}
-
-	public final boolean removeColumn(int ordinal) {
-		if (ordinal >= 0 && ordinal < this.columns.size()) {
-			this.columns.remove(ordinal);
-			return true;
-		} else
-			return false;
-	}
-
-	public final boolean removeColumn(String name) {
-		return removeColumn(indexOf(name));
-	}
-
-	public final int indexOf(String name) {
-		if (name != null && !name.isEmpty()) {
-			int l = this.columns.size();
-			for (int i = 0; i < l; i++)
-				if (name.equalsIgnoreCase(this.columns.get(i).getDataName()))
-					return i;
+			}
 		}
-		return -1;
+		this.identityOrdinal = idOrdinal;
 	}
 
-	public final int indexOfField(String fieldName) {
-		if (fieldName != null && !fieldName.isEmpty()) {
-			int l = this.columns.size();
-			for (int i = 0; i < l; i++)
-				if (fieldName.equalsIgnoreCase(this.columns.get(i).getFieldName()))
-					return i;
-		}
-		return -1;
+	// Description Here:
+	// _____________________________________________________
+	public final Class<?> getDataType() {
+		return this.dataType;
 	}
 
-	public final int getIndentityOrdinal() {
+	// Description Here:
+	// _____________________________________________________
+	public final int getIdentityOrdinal() {
 		return this.identityOrdinal;
 	}
 
-	public final void setIdentityOrdinal(int ordinal) {
-		this.identityOrdinal = ordinal;
+	// Description Here:
+	// _____________________________________________________
+	public final boolean hasIdentity() {
+		return this.identityOrdinal >= 0;
 	}
 
+	// Description Here:
+	// _____________________________________________________
+	public final ClassStorageColumn getIdentity() {
+		return this.identityOrdinal >= 0 ? this.columns.get(this.identityOrdinal) : null;
+	}
+
+	// Description Here:
+	// _____________________________________________________
 	public final String getIdentityName() {
-		return this.identityOrdinal >= 0 ? this.columns.get(identityOrdinal).getDataName() : null;
+		return this.identityOrdinal >= 0 ? this.columns.get(this.identityOrdinal).getColumnName() : null;
 	}
 
-	public final void setIdentityName(String name) {
-		this.identityOrdinal = indexOf(name);
+	// Description Here:
+	// _____________________________________________________
+	protected abstract ClassStorageColumn map(Field field);
+
+	// Description Here:
+	// _____________________________________________________
+	public final int getOrdinal(String name) {
+		if (name != null && !name.isEmpty()) {
+			int l = columns.size();
+			for (int i = 0; i < l; i++)
+				if (name.equalsIgnoreCase(columns.get(i).getName()))
+					return i;
+		}
+		return -1;
 	}
 
-	public final String getDataName(int ordinal) {
-		return ordinal < 0 ? null : this.columns.get(ordinal).getDataName();
-	}
-
-	public final void setDataName(int ordinal, String dataName) {
-		this.columns.get(ordinal).setDataName(dataName);
-	}
-
-	public final String getDataName(String fieldName) {
-		return getDataName(indexOfField(fieldName));
-	}
-
-	public final boolean setDataName(String fieldName, String dataName) {
-		int ordinal = indexOfField(fieldName);
-		if (ordinal < 0)
-			return false;
-		this.columns.get(ordinal).setDataName(dataName);
-		return true;
+	// Description Here:
+	// _____________________________________________________
+	public final int getColumnCount() {
+		return this.columns.size();
 	}
 
 }
