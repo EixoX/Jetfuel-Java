@@ -38,6 +38,12 @@ public class FilterTerm implements Filter {
 
 	// Description Here:
 	// _____________________________________________________
+	public final FilterType getFilterType() {
+		return FilterType.Term;
+	}
+
+	// Description Here:
+	// _____________________________________________________
 	public final ClassStorage getStorage() {
 		return storage;
 	}
@@ -47,17 +53,28 @@ public class FilterTerm implements Filter {
 	public final int getOrdinal() {
 		return ordinal;
 	}
-	
+
 	// Description Here:
 	// _____________________________________________________
 	public final FilterComparison getComparison() {
 		return comparison;
 	}
-	
+
 	// Description Here:
 	// _____________________________________________________
 	public final Object getValue() {
 		return value;
 	}
 
+	// Description Here:
+	// _____________________________________________________
+	public final ClassStorageColumn getColumn() {
+		return this.storage.getColumn(this.ordinal);
+	}
+
+	// Description Here:
+	// _____________________________________________________
+	public final String getColumnName() {
+		return this.storage.getColumn(this.ordinal).getColumnName();
+	}
 }

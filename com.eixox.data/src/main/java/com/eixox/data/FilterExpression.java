@@ -15,6 +15,12 @@ public class FilterExpression implements Filter {
 
 	// Description Here:
 	// _____________________________________________________
+	public final FilterType getFilterType(){
+		return FilterType.Expression;
+	}
+
+	// Description Here:
+	// _____________________________________________________
 	public FilterExpression(ClassStorage storage, int ordinal, FilterComparison comparison, Object value) {
 		this(new FilterTerm(storage, ordinal, comparison, value));
 	}

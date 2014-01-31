@@ -12,15 +12,17 @@ public abstract class ClassStorage {
 	private final int identityOrdinal;
 	private final ArrayList<Integer> uniqueOrdinals;
 	private final ArrayList<Integer> primaryKeyOrdinals;
+	private final String tableName;
 
 	// Description Here:
 	// _____________________________________________________
-	public ClassStorage(Class<?> dataType) {
+	public ClassStorage(Class<?> dataType, String tableName) {
 		this.dataType = dataType;
 		Field[] fields = dataType.getDeclaredFields();
 		this.columns = new ArrayList<ClassStorageColumn>(fields.length);
 		this.uniqueOrdinals = new ArrayList<Integer>();
 		this.primaryKeyOrdinals = new ArrayList<Integer>();
+		this.tableName = tableName == null || tableName.isEmpty() ? dataType.getName() : tableName;
 
 		for (int i = 0; i < fields.length; i++) {
 			ClassStorageColumn mapping = map(fields[i]);
@@ -59,6 +61,12 @@ public abstract class ClassStorage {
 	// _____________________________________________________
 	public final Class<?> getDataType() {
 		return this.dataType;
+	}
+
+	// Description Here:
+	// _____________________________________________________
+	public final String getTableName() {
+		return this.tableName;
 	}
 
 	// Description Here:
@@ -107,4 +115,17 @@ public abstract class ClassStorage {
 		return this.columns.size();
 	}
 
+	// Description Here:
+	// _____________________________________________________
+	public final ClassStorageColumn getColumn(int ordinal) {
+		return this.columns.get(ordinal);
+	}
+
+	public abstract ClassDelete delete();
+
+	public abstract ClassUpdate update();
+
+	public abstract ClassInsert insert();
+
+	public abstract <T> ClassSelect<T> select();
 }

@@ -1,5 +1,5 @@
 package com.eixox.data.database;
 
-public class ClassToTable {
+public class SqlClassSelect {
 
 }

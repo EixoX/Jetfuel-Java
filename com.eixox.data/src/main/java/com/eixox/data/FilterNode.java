@@ -16,6 +16,12 @@ public class FilterNode implements Filter {
 
 	// Description Here:
 	// _____________________________________________________
+	public final FilterType getFilterType() {
+		return FilterType.Node;
+	}
+
+	// Description Here:
+	// _____________________________________________________
 	public final FilterOperation getOperation() {
 		return operation;
 	}

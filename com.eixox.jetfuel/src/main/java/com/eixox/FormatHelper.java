@@ -1,5 +1,8 @@
 package com.eixox;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class FormatHelper {
 
@@ -34,7 +37,7 @@ public class FormatHelper {
 				zeroPadLeft(((value / 1000000) % 1000), 3), "/", zeroPadLeft(((value / 100) % 10000), 4), "-", zeroPadLeft((value % 100), 2));
 	}
 
-	public static final String Filesize(long size, int digits) {
+	public static final String fileSize(long size, int digits) {
 
 		double sz = size;
 		String term = " B";
@@ -57,6 +60,11 @@ public class FormatHelper {
 
 		return Double.toString(Math.round(sz * dec) / dec) + term;
 
+	}
+	
+	public static final String date(Date date, String format){
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(date);
 	}
 
 }
