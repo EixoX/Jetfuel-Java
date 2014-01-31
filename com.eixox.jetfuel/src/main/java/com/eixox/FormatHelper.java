@@ -5,6 +5,15 @@ import java.util.Date;
 
 
 public class FormatHelper {
+	
+	public static final String moneyBRL(double value) {
+		String strValue = Double.toString(value);
+		
+		strValue = strValue.replace(".", ",");
+		strValue = strValue.substring(0, strValue.indexOf(",") + 2);
+		
+		return "R$ " + strValue;
+	}
 
 	public static final String zeroPadLeft(long value, int size) {
 		char[] chars = new char[size];
