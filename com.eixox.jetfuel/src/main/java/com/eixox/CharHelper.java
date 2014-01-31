@@ -4,11 +4,10 @@ public final class CharHelper {
 
 	public static final char removeAccent(char c) {
 		switch (c) {
-		case '·':
-		case '‡':
-		case '‚':
-		case '„':
-		case '‰':
+		case 'á':
+		case 'à':
+		case 'â':
+		case 'ã':
 			return 'a';
 		case 'È':
 		case 'Ë':

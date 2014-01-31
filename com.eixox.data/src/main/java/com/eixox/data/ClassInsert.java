@@ -1,5 +1,5 @@
 package com.eixox.data;
 
-public class Sorter {
+public class ClassInsert {
 
 }
