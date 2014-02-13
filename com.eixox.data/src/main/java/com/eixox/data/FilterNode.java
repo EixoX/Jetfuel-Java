@@ -52,7 +52,7 @@ public class FilterNode implements Filter {
 
 	// Description Here:
 	// _____________________________________________________
-	public final ClassStorage getStorage() {
+	public final ClassStorage<?> getStorage() {
 		return filter.getStorage();
 	}
 

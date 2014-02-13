@@ -1,37 +1,57 @@
 package com.eixox.data;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
-public abstract class ClassInsert {
+public class ClassInsert {
 
-	private final ClassStorage storage;
-	private final HashMap<Integer, Object> values;
+	private final ClassStorage<?> storage;
+	private final ArrayList<Integer> ordinals;
+	private final ArrayList<Object> values;
 
-	public ClassInsert(ClassStorage storage) {
+	// Description Here:
+	// _____________________________________________________
+	public ClassInsert(ClassStorage<?> storage) {
 		this.storage = storage;
-		this.values = new HashMap<Integer, Object>(storage.getColumnCount());
+		this.ordinals = new ArrayList<Integer>(storage.size());
+		this.values = new ArrayList<Object>(storage.size());
 	}
 
+	// Description Here:
+	// _____________________________________________________
 	public final ClassInsert add(int ordinal, Object value) {
-		this.values.put(ordinal, value);
+		this.ordinals.add(ordinal);
+		this.values.add(value);
 		return this;
 	}
 
+	// Description Here:
+	// _____________________________________________________
 	public final ClassInsert add(String name, Object value) {
-		this.values.put(storage.getOrdinal(name), value);
-		return this;
+		return add(this.storage.getOrdinalOrException(name), value);
 	}
 
-	protected abstract int execute(ClassStorage storage, HashMap<Integer, Object> values);
-
-	protected abstract Object executeScopeIdentity(ClassStorage storage, HashMap<Integer, Object> values);
-
-	public final int execute() {
-		return execute(this.storage, this.values);
+	// Description Here:
+	// _____________________________________________________
+	public final Object get(int ordinal) {
+		return this.values.get(ordinal);
 	}
 
+	// Description Here:
+	// _____________________________________________________
+	public final Object get(String name) {
+		return this.values.get(storage.getOrdinalOrException(name));
+	}
+
+	// Description Here:
+	// _____________________________________________________
+	public final long execute() {
+		return this.storage.insert(this.ordinals, this.values);
+	}
+
+	// Description Here:
+	// _____________________________________________________
 	public final Object executeScopeIdentity() {
-		return executeScopeIdentity(this.storage, this.values);
+		return this.storage.insertAndScopeIdentity(ordinals, values);
 	}
 
 }

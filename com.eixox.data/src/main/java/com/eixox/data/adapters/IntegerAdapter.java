@@ -8,36 +8,36 @@ import java.util.Locale;
 
 import com.eixox.data.ValueAdapter;
 
-public final class LongAdapter implements ValueAdapter<Long> {
+public final class IntegerAdapter implements ValueAdapter<Integer> {
 
-	public final Long convert(Object value) {
+	public final Integer convert(Object value) {
 		if (value == null)
 			return null;
-		else if (value instanceof Long)
-			return (Long) value;
-		else if (Long.TYPE.isInstance(value))
-			return (Long) value;
+		else if (value instanceof Integer)
+			return (Integer) value;
+		else if (Integer.TYPE.isInstance(value))
+			return (Integer) value;
 		else if (value instanceof Number)
-			return ((Number) value).longValue();
+			return ((Number) value).intValue();
 		else if (value instanceof String)
 			return parse((String) value);
 		else
-			throw new RuntimeException("Can't convert " + value + " to Long");
+			throw new RuntimeException("Can't convert " + value + " to Integer");
 	}
 
-	public final Long parse(String text) {
+	public final Integer parse(String text) {
 		if (text == null || text.isEmpty())
 			return null;
 		else
-			return Long.parseLong(text);
+			return Integer.parseInt(text);
 	}
 
-	public final Long parse(String text, Locale locale) {
+	public final Integer parse(String text, Locale locale) {
 		if (text == null || text.isEmpty())
 			return null;
 		else
 			try {
-				return DecimalFormat.getInstance(locale).parse(text).longValue();
+				return DecimalFormat.getInstance(locale).parse(text).intValue();
 			} catch (ParseException e) {
 				throw new RuntimeException(e);
 			}
@@ -55,9 +55,9 @@ public final class LongAdapter implements ValueAdapter<Long> {
 		return value == null ? "NULL" : value.toString();
 	}
 
-	public final Long readFrom(ResultSet rs, int ordinal) {
+	public final Integer readFrom(ResultSet rs, int ordinal) {
 		try {
-			return rs.getLong(ordinal);
+			return rs.getInt(ordinal);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

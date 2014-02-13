@@ -6,7 +6,7 @@ public interface Filter {
 
 	// Description Here:
 	// _____________________________________________________
-	public ClassStorage getStorage();
+	public ClassStorage<?> getStorage();
 
 	// Description Here:
 	// _____________________________________________________

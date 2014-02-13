@@ -3,30 +3,16 @@ package com.eixox.data;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class ClassSelect<T> implements Iterable<T> {
+public class ClassSelect<T> extends FilterWhere<ClassSelect<T>> implements Iterable<T> {
 
-	private final ClassStorage storage;
-	private FilterExpression filter;
 	private SortExpression sort;
 	private int pageSize;
 	private int pageOrdinal;
 
 	// Description Here:
 	// _____________________________________________________
-	public ClassSelect(ClassStorage storage) {
-		this.storage = storage;
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassStorage getStorage() {
-		return this.storage;
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final FilterExpression getFilter() {
-		return this.filter;
+	public ClassSelect(ClassStorage<T> storage) {
+		super(storage);
 	}
 
 	// Description Here:
@@ -49,135 +35,36 @@ public abstract class ClassSelect<T> implements Iterable<T> {
 
 	// Description Here:
 	// _____________________________________________________
-	private final ClassSelect<T> where(Filter filter) {
-		this.filter = new FilterExpression(filter);
-		return this;
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> where(int ordinal, FilterComparison comparison, Object value) {
-		return where(new FilterTerm(storage, ordinal, comparison, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> where(int ordinal, Object value) {
-		return where(new FilterTerm(storage, ordinal, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> where(String name, FilterComparison comparison, Object value) {
-		return where(new FilterTerm(storage, name, comparison, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> where(String name, Object value) {
-		return where(new FilterTerm(storage, name, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> and(Filter filter) {
-		if (this.filter == null)
-			this.filter = new FilterExpression(filter);
-		else
-			this.filter.and(filter);
-		return this;
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> and(int ordinal, FilterComparison comparison, Object value) {
-		return and(new FilterTerm(storage, ordinal, comparison, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> and(int ordinal, Object value) {
-		return and(new FilterTerm(storage, ordinal, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> and(String name, FilterComparison comparison, Object value) {
-		return and(new FilterTerm(storage, name, comparison, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> and(String name, Object value) {
-		return and(new FilterTerm(storage, name, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> or(Filter filter) {
-		if (this.filter == null)
-			this.filter = new FilterExpression(filter);
-		else
-			this.filter.or(filter);
-		return this;
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> or(int ordinal, FilterComparison comparison, Object value) {
-		return or(new FilterTerm(storage, ordinal, comparison, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> or(int ordinal, Object value) {
-		return or(new FilterTerm(storage, ordinal, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> or(String name, FilterComparison comparison, Object value) {
-		return or(new FilterTerm(storage, name, comparison, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public final ClassSelect<T> or(String name, Object value) {
-		return or(new FilterTerm(storage, name, value));
-	}
-
-	// Description Here:
-	// _____________________________________________________
 	public final ClassSelect<T> orderBy(int ordinal, SortDirection direction) {
-		this.sort = new SortExpression(storage, ordinal, direction);
+		this.sort = new SortExpression(this.getStorage(), ordinal, direction);
 		return this;
 	}
 
 	// Description Here:
 	// _____________________________________________________
 	public final ClassSelect<T> orderBy(int ordinal) {
-		this.sort = new SortExpression(storage, ordinal);
+		this.sort = new SortExpression(this.getStorage(), ordinal);
 		return this;
 	}
 
 	// Description Here:
 	// _____________________________________________________
 	public final ClassSelect<T> orderBy(String name, SortDirection direction) {
-		this.sort = new SortExpression(storage, name, direction);
+		this.sort = new SortExpression(this.getStorage(), name, direction);
 		return this;
 	}
 
 	// Description Here:
 	// _____________________________________________________
 	public final ClassSelect<T> orderBy(String name) {
-		this.sort = new SortExpression(storage, name);
+		this.sort = new SortExpression(this.getStorage(), name);
 		return this;
 	}
 
 	// Description Here:
 	// _____________________________________________________
 	public final ClassSelect<T> orderBy(SortDirection direction, String... names) {
-		this.sort = new SortExpression(storage, names[0], direction);
+		this.sort = new SortExpression(this.getStorage(), names[0], direction);
 		for (int i = 1; i < names.length; i++)
 			this.sort.thenBy(names[i], direction);
 		return this;
@@ -192,7 +79,7 @@ public abstract class ClassSelect<T> implements Iterable<T> {
 	// Description Here:
 	// _____________________________________________________
 	public final ClassSelect<T> orderBy(SortDirection direction, int... ordinals) {
-		this.sort = new SortExpression(storage, ordinals[0], direction);
+		this.sort = new SortExpression(this.getStorage(), ordinals[0], direction);
 		for (int i = 1; i < ordinals.length; i++)
 			this.sort.thenBy(ordinals[i], direction);
 		return this;
@@ -242,12 +129,9 @@ public abstract class ClassSelect<T> implements Iterable<T> {
 
 	// Description Here:
 	// _____________________________________________________
-	protected abstract List<T> toList(ClassStorage storage, FilterExpression filter, SortExpression sort, int pageSize, int pageOrdinal);
-
-	// Description Here:
-	// _____________________________________________________
+	@SuppressWarnings("unchecked")
 	public final List<T> toList() {
-		return toList(this.storage, this.filter, this.sort, this.pageSize, this.pageOrdinal);
+		return ((ClassStorage<T>) getStorage()).select(this.getFilter(), this.sort, this.pageSize, this.pageOrdinal);
 	}
 
 	// Description Here:
@@ -256,4 +140,51 @@ public abstract class ClassSelect<T> implements Iterable<T> {
 		return toList().iterator();
 	}
 
+	// Returns a single result query
+	// _____________________________________________________
+	@SuppressWarnings("unchecked")
+	public final T singleResult() {
+		return ((ClassStorage<T>) getStorage()).read(getFilter());
+	}
+
+	// Returns a count on the items
+	// _____________________________________________________
+	public final long count() {
+		return getStorage().selectCount(this.getFilter());
+	}
+
+	// Returns select exists command
+	// _____________________________________________________
+	public final boolean exists() {
+		return getStorage().selectExists(this.getFilter());
+	}
+
+	// Returns the value of a given column member.
+	// _____________________________________________________
+	public final Object getMemberValue(int ordinal) {
+		return getStorage().readMember(ordinal, this.getFilter());
+	}
+
+	// Returns the list of values of a given column member.
+	// _____________________________________________________
+	public final List<Object> onlyMember(int ordinal) {
+		return getStorage().selectMember(ordinal, getFilter(), sort, pageSize, pageOrdinal);
+	}
+
+	// Returns the value of a given column member.
+	// _____________________________________________________
+	public final Object getMemberValue(String name) {
+		return getMemberValue(this.getStorage().getOrdinalOrException(name));
+	}
+
+	// Returns the list of values of a given column member.
+	// _____________________________________________________
+	public final List<Object> onlyMember(String name) {
+		return onlyMember(this.getStorage().getOrdinalOrException(name));
+	}
+
+	@Override
+	protected final ClassSelect<T> getT() {
+		return this;
+	}
 }

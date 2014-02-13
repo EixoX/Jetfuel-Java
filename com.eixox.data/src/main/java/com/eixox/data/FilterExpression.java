@@ -21,25 +21,25 @@ public class FilterExpression implements Filter {
 
 	// Description Here:
 	// _____________________________________________________
-	public FilterExpression(ClassStorage storage, int ordinal, FilterComparison comparison, Object value) {
+	public FilterExpression(ClassStorage<?> storage, int ordinal, FilterComparison comparison, Object value) {
 		this(new FilterTerm(storage, ordinal, comparison, value));
 	}
 
 	// Description Here:
 	// _____________________________________________________
-	public FilterExpression(ClassStorage storage, int ordinal, Object value) {
+	public FilterExpression(ClassStorage<?> storage, int ordinal, Object value) {
 		this(new FilterTerm(storage, ordinal, value));
 	}
 
 	// Description Here:
 	// _____________________________________________________
-	public FilterExpression(ClassStorage storage, String name, FilterComparison comparison, Object value) {
+	public FilterExpression(ClassStorage<?> storage, String name, FilterComparison comparison, Object value) {
 		this(new FilterTerm(storage, name, comparison, value));
 	}
 
 	// Description Here:
 	// _____________________________________________________
-	public FilterExpression(ClassStorage storage, String name, Object value) {
+	public FilterExpression(ClassStorage<?> storage, String name, Object value) {
 		this(new FilterTerm(storage, name, value));
 	}
 
@@ -57,7 +57,7 @@ public class FilterExpression implements Filter {
 
 	// Description Here:
 	// _____________________________________________________
-	public final ClassStorage getStorage() {
+	public final ClassStorage<?> getStorage() {
 		return this.first.getStorage();
 	}
 

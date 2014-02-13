@@ -4,14 +4,14 @@ package com.eixox.data;
 // _____________________________________________________
 public class SortNode {
 
-	private final ClassStorage storage;
+	private final ClassStorage<?> storage;
 	private final int ordinal;
 	private final SortDirection direction;
 	private SortNode next;
 
 	// Description Here:
 	// _____________________________________________________
-	public SortNode(ClassStorage storage, int ordinal, SortDirection direction) {
+	public SortNode(ClassStorage<?> storage, int ordinal, SortDirection direction) {
 		this.storage = storage;
 		this.ordinal = ordinal;
 		this.direction = direction;
@@ -19,19 +19,19 @@ public class SortNode {
 
 	// Description Here:
 	// _____________________________________________________
-	public SortNode(ClassStorage storage, int ordinal) {
+	public SortNode(ClassStorage<?> storage, int ordinal) {
 		this(storage, ordinal, SortDirection.Ascending);
 	}
 
 	// Description Here:
 	// _____________________________________________________
-	public SortNode(ClassStorage storage, String name, SortDirection direction) {
+	public SortNode(ClassStorage<?> storage, String name, SortDirection direction) {
 		this(storage, storage.getOrdinal(name), direction);
 	}
 
 	// Description Here:
 	// _____________________________________________________
-	public SortNode(ClassStorage storage, String name) {
+	public SortNode(ClassStorage<?> storage, String name) {
 		this(storage, storage.getOrdinal(name));
 	}
 
@@ -49,7 +49,7 @@ public class SortNode {
 
 	// Description Here:
 	// _____________________________________________________
-	public final ClassStorage getStorage() {
+	public final ClassStorage<?> getStorage() {
 		return storage;
 	}
 

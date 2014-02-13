@@ -1,8 +1,10 @@
 package com.eixox.data;
 
 import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.util.Locale;
 
-public class ClassStorageColumn {
+public class ClassStorageColumn implements ValueAdapter<Object> {
 
 	private final Field field;
 	private final ColumnType columnType;
@@ -11,23 +13,20 @@ public class ClassStorageColumn {
 	private final boolean nullable;
 	private final int offset;
 	private final int position;
+	private final ValueAdapter<?> adapter;
 
 	// Description Here:
 	// _____________________________________________________
-	public ClassStorageColumn(Field field, ColumnType columnType, int length, String columnName, boolean nullable, int offset, int position) {
+	public ClassStorageColumn(Field field, Column column) {
 		this.field = field;
-		this.columnType = columnType;
-		this.length = length;
-		this.columnName = columnName == null || columnName.isEmpty() ? field.getName() : columnName;
-		this.nullable = nullable;
-		this.offset = offset;
-		this.position = length;
-	}
-
-	// Description Here:
-	// _____________________________________________________
-	public ClassStorageColumn(Field field) {
-		this(field, ColumnType.Normal, -1, null, true, -1, -1);
+		this.field.setAccessible(true);
+		this.columnType = column.type();
+		this.length = column.length();
+		this.columnName = column.name() == null || column.name().isEmpty() ? field.getName() : column.name();
+		this.nullable = column.nullable();
+		this.offset = column.offset();
+		this.position = column.length();
+		this.adapter = ValueAdapters.getAdapter(field.getType());
 	}
 
 	// Description Here:
@@ -78,4 +77,59 @@ public class ClassStorageColumn {
 		return this.field.getName();
 	}
 
+	// Description Here:
+	// _____________________________________________________
+	public final ValueAdapter<?> getAdapter() {
+		return this.adapter;
+	}
+
+	// Description Here:
+	// _____________________________________________________
+	public final Object getValue(Object entity) {
+		try {
+			return this.field.get(entity);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// Description Here:
+	// _____________________________________________________
+	public final void setValue(Object entity, Object value) {
+		try {
+			if (value != null && !this.field.getType().isInstance(value))
+				value = this.adapter.convert(value);
+			this.field.set(entity, value);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public final Object convert(Object value) {
+		return this.adapter.convert(value);
+	}
+
+	public final Object parse(String text) {
+		return this.adapter.parse(text);
+	}
+
+	public final Object parse(String text, Locale locale) {
+		return this.adapter.parse(text, locale);
+	}
+
+	public final String format(Object value) {
+		return this.adapter.format(value);
+	}
+
+	public final String format(Object value, Locale locale) {
+		return this.adapter.format(value, locale);
+	}
+
+	public final String formatSql(Object object) {
+		return this.adapter.formatSql(object);
+	}
+
+	public final Object readFrom(ResultSet rs, int ordinal) {
+		return this.adapter.readFrom(rs, ordinal);
+	}
 }

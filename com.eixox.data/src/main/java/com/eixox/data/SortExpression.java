@@ -9,25 +9,25 @@ public class SortExpression {
 
 	// Description Here:
 	// _____________________________________________________
-	public SortExpression(ClassStorage storage, int ordinal, SortDirection direction) {
+	public SortExpression(ClassStorage<?> storage, int ordinal, SortDirection direction) {
 		this.first = new SortNode(storage, ordinal, direction);
 	}
 
 	// Description Here:
 	// _____________________________________________________
-	public SortExpression(ClassStorage storage, int ordinal) {
+	public SortExpression(ClassStorage<?> storage, int ordinal) {
 		this.first = new SortNode(storage, ordinal);
 	}
 
 	// Description Here:
 	// _____________________________________________________
-	public SortExpression(ClassStorage storage, String name, SortDirection direction) {
+	public SortExpression(ClassStorage<?> storage, String name, SortDirection direction) {
 		this.first = new SortNode(storage, name, direction);
 	}
 
 	// Description Here:
 	// _____________________________________________________
-	public SortExpression(ClassStorage storage, String name) {
+	public SortExpression(ClassStorage<?> storage, String name) {
 		this.first = new SortNode(storage, name);
 	}
 
