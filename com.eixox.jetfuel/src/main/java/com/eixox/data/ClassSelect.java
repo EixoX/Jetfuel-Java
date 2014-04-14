@@ -9,12 +9,12 @@ import com.eixox.sorters.ClassSorterNode;
 
 public final class ClassSelect<T> extends ClassFilterExtension<ClassSelect<T>> implements Iterable<T> {
 
-	private int pageSize = 1000;
-	private int pageOrdinal = 0;
-	private ClassSorterNode sortFirst;
-	private ClassSorterNode sortLast;
-	private final ClassStorage<T> dataAspect;
-	private final ClassStorageEngine engine;
+	private int							pageSize	= 1000;
+	private int							pageOrdinal	= 0;
+	private ClassSorterNode				sortFirst;
+	private ClassSorterNode				sortLast;
+	private final ClassStorage<T>		dataAspect;
+	private final ClassStorageEngine	engine;
 
 	public ClassSelect(ClassStorage<T> aspect, ClassStorageEngine engine) {
 		super(aspect);
@@ -22,7 +22,6 @@ public final class ClassSelect<T> extends ClassFilterExtension<ClassSelect<T>> i
 		this.engine = engine;
 	}
 
-	
 	protected final ClassSelect<T> getThis() {
 		return this;
 	}
@@ -60,7 +59,8 @@ public final class ClassSelect<T> extends ClassFilterExtension<ClassSelect<T>> i
 			this.sortFirst = new ClassSorterNode(dataAspect, ordinal, direction);
 			this.sortLast = this.sortFirst;
 		} else {
-			this.sortLast = this.sortLast.setNext(ordinal, direction);
+			this.sortLast.setNext(new ClassSorterNode(this.dataAspect, ordinal, direction));
+			this.sortLast = this.sortLast.getNext();
 		}
 		return this;
 	}
@@ -83,7 +83,6 @@ public final class ClassSelect<T> extends ClassFilterExtension<ClassSelect<T>> i
 		return this.engine.select(this.dataAspect, getWhere(), this.sortFirst, this.pageSize, this.pageOrdinal);
 	}
 
-	
 	public final Iterator<T> iterator() {
 		return toList().iterator();
 	}

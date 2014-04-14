@@ -110,14 +110,14 @@ public class DbDialect {
 		ClassFilterNode next = node.getNext();
 		if (next != null) {
 			switch (node.getOperation()) {
-			case And:
-				cmd.append(" AND ");
-				break;
-			case Or:
-				cmd.append(" OR ");
-				break;
-			default:
-				throw new RuntimeException("Unknown filter op " + node.getOperation());
+				case And:
+					cmd.append(" AND ");
+					break;
+				case Or:
+					cmd.append(" OR ");
+					break;
+				default:
+					throw new RuntimeException("Unknown filter op " + node.getOperation());
 			}
 			appendFilterNode(cmd, aspect, next);
 		}
@@ -136,56 +136,56 @@ public class DbDialect {
 		cmd.append(formatName(aspect.getDataName(term.getOrdinal())));
 		Object value = term.getValue();
 		switch (term.getComparison()) {
-		case EqualTo:
-			if (value == null)
-				cmd.append(" IS NULL");
-			else {
-				cmd.append(" = ?");
+			case EqualTo:
+				if (value == null)
+					cmd.append(" IS NULL");
+				else {
+					cmd.append(" = ?");
+					cmd.addValue(value);
+				}
+				break;
+			case GreaterOrEqual:
+				cmd.append(" >= ?");
 				cmd.addValue(value);
-			}
-			break;
-		case GreaterOrEqual:
-			cmd.append(" >= ?");
-			cmd.addValue(value);
-			break;
-		case GreaterThan:
-			cmd.append(" > ?");
-			cmd.addValue(value);
-			break;
-		case InCollection:
-			cmd.append(" IN (?)");
-			cmd.addValue(value);
-			break;
-		case Like:
-			cmd.append(" LIKE ?");
-			cmd.addValue(value);
-			break;
-		case LowerOrEqual:
-			cmd.append(" <= ?");
-			cmd.addValue(value);
-			break;
-		case LowerThan:
-			cmd.append(" < ?");
-			cmd.addValue(value);
-			break;
-		case NotEqualTo:
-			if (value == null) {
-				cmd.append(" IS NOT NULL");
-			} else {
-				cmd.append(" != ?");
+				break;
+			case GreaterThan:
+				cmd.append(" > ?");
 				cmd.addValue(value);
-			}
-			break;
-		case NotInCollection:
-			cmd.append(" NOT IN (?)");
-			cmd.addValue(value);
-			break;
-		case NotLike:
-			cmd.append(" NOT LIKE ?");
-			cmd.addValue(value);
-			break;
-		default:
-			throw new RuntimeException("Unknwon filter comparison " + term.getComparison());
+				break;
+			case InCollection:
+				cmd.append(" IN (?)");
+				cmd.addValue(value);
+				break;
+			case Like:
+				cmd.append(" LIKE ?");
+				cmd.addValue(value);
+				break;
+			case LowerOrEqual:
+				cmd.append(" <= ?");
+				cmd.addValue(value);
+				break;
+			case LowerThan:
+				cmd.append(" < ?");
+				cmd.addValue(value);
+				break;
+			case NotEqualTo:
+				if (value == null) {
+					cmd.append(" IS NOT NULL");
+				} else {
+					cmd.append(" != ?");
+					cmd.addValue(value);
+				}
+				break;
+			case NotInCollection:
+				cmd.append(" NOT IN (?)");
+				cmd.addValue(value);
+				break;
+			case NotLike:
+				cmd.append(" NOT LIKE ?");
+				cmd.addValue(value);
+				break;
+			default:
+				throw new RuntimeException("Unknwon filter comparison " + term.getComparison());
 		}
 	}
 
@@ -195,13 +195,19 @@ public class DbDialect {
 			return;
 		cmd.append(" ORDER BY ");
 
-		ClassSorterNode current = sorter;
-		while (current != null) {
-			cmd.append(formatName(aspect.getDataName(current.getOrdinal())));
-			if (current.getDirection() == ClassSorterDirection.Descending) {
+		cmd.append(formatName(aspect.getDataName(sorter.getOrdinal())));
+		if (sorter.getDirection() == ClassSorterDirection.Descending) {
+			cmd.append(" DESC");
+		}
+
+		sorter = sorter.getNext();
+		while (sorter != null) {
+			cmd.append(", ");
+			cmd.append(formatName(aspect.getDataName(sorter.getOrdinal())));
+			if (sorter.getDirection() == ClassSorterDirection.Descending) {
 				cmd.append(" DESC");
 			}
-			current = sorter.getNext();
+			sorter = sorter.getNext();
 		}
 	}
 

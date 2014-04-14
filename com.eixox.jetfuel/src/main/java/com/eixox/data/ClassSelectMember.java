@@ -9,13 +9,13 @@ import com.eixox.sorters.ClassSorterNode;
 
 public final class ClassSelectMember extends ClassFilterExtension<ClassSelectMember> implements Iterable<Object> {
 
-	private final ClassStorage<?> dataAspect;
-	private final int ordinal;
-	private final ClassStorageEngine engine;
-	private ClassSorterNode sortFirst;
-	private ClassSorterNode sortLast;
-	private int pageSize = 1000;
-	private int pageOrdinal;
+	private final ClassStorage<?>		dataAspect;
+	private final int					ordinal;
+	private final ClassStorageEngine	engine;
+	private ClassSorterNode				sortFirst;
+	private ClassSorterNode				sortLast;
+	private int							pageSize	= 1000;
+	private int							pageOrdinal;
 
 	public ClassSelectMember(ClassStorage<?> aspect, int ordinal, ClassStorageEngine engine) {
 		super(aspect);
@@ -36,7 +36,6 @@ public final class ClassSelectMember extends ClassFilterExtension<ClassSelectMem
 		return this.dataAspect.getDataName(this.ordinal);
 	}
 
-	
 	protected final ClassSelectMember getThis() {
 		return this;
 	}
@@ -74,7 +73,8 @@ public final class ClassSelectMember extends ClassFilterExtension<ClassSelectMem
 			this.sortFirst = new ClassSorterNode(dataAspect, ordinal, direction);
 			this.sortLast = this.sortFirst;
 		} else {
-			this.sortLast = this.sortLast.setNext(ordinal, direction);
+			this.sortLast.setNext(new ClassSorterNode(this.dataAspect, ordinal, direction));
+			this.sortLast = this.sortLast.getNext();
 		}
 		return this;
 	}
@@ -98,7 +98,6 @@ public final class ClassSelectMember extends ClassFilterExtension<ClassSelectMem
 				this.pageOrdinal);
 	}
 
-	
 	public final Iterator<Object> iterator() {
 		return toList().iterator();
 	}

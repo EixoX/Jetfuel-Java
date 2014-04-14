@@ -29,8 +29,9 @@ public class UIAspectMember extends DecoratedMember {
 		this.group = group;
 		this.interceptors = InterceptorAspect.buildInterceptorList(member);
 		this.restrictions = RestrictionAspect.buildRestrictionList(member);
+		
 	}
-
+	
 	public final UIControlType getMemberType() {
 		return _MemberType;
 	}

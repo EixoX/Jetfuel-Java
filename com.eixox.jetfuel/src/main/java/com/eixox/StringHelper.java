@@ -160,6 +160,17 @@ public final class StringHelper {
 	}
 
 	// ____________________________________________________________________________
+	public static final String isNullOrEmptyAlternate(Object input, String alternate) {
+		if (input != null) {
+			if (input instanceof String && !((String) input).isEmpty())
+				alternate = (String) input;
+			else
+				alternate = input.toString();
+		}
+		return alternate;
+	}
+
+	// ____________________________________________________________________________
 	public static final String join(String separator, Iterable<?> values) {
 		if (values == null)
 			return null;
@@ -248,9 +259,8 @@ public final class StringHelper {
 		if (input == null || input.isEmpty())
 			return input;
 
-		return input.replaceAll("[áàâã]", "a").replaceAll("[ÁÀÂÃ]", "A").replaceAll("[èéê]", "e").replaceAll("[ÉÈÊ]", "E").replaceAll("[íìî]", "i")
-				.replaceAll("[ÍÌÎ]", "I").replaceAll("[òóôõ]", "o").replaceAll("[ÓÒÔÕ]", "O").replaceAll("[ùúû]", "u").replaceAll("[ÙÚÛ]", "U")
-				.replaceAll("[ç]", "c").replaceAll("[Ç]", "C").replaceAll("ñ", "n").replaceAll("Ñ", "N");
+		return input.replaceAll("[áàâã]", "a").replaceAll("[ÁÀÂÃ]", "A").replaceAll("[èéê]", "e").replaceAll("[ÉÈÊ]", "E").replaceAll("[íìî]", "i").replaceAll("[ÍÌÎ]", "I").replaceAll("[òóôõ]", "o").replaceAll("[ÓÒÔÕ]", "O")
+				.replaceAll("[ùúû]", "u").replaceAll("[ÙÚÛ]", "U").replaceAll("[ç]", "c").replaceAll("[Ç]", "C").replaceAll("ñ", "n").replaceAll("Ñ", "N");
 	}
 
 	// ____________________________________________________________________________
