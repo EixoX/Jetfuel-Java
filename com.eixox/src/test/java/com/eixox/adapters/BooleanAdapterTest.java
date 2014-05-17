@@ -1,7 +1,6 @@
 package com.eixox.adapters;
 
 import org.junit.Test;
-import com.eixox.adapters.BooleanAdapter;
 
 public class BooleanAdapterTest {
 	@Test

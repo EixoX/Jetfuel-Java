@@ -7,7 +7,7 @@ public final class Update extends Filtered<Update> {
 	private final Storage<?>				storage;
 	private final PairList<Integer, Object>	values;
 
-	protected Update(Storage<?> storage) {
+	public Update(Storage<?> storage) {
 		super(storage.getAspect());
 		this.storage = storage;
 		this.values = new PairList<Integer, Object>(storage.getAspect().getCount());

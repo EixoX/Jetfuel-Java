@@ -45,6 +45,10 @@ public final class HtmlBuilder {
 		return this;
 	}
 
+	public final HtmlBuilder appendContent(Object value) {
+		return appendContent(value == null ? "" : value.toString());
+	}
+
 	public final HtmlBuilder openTag(String tagName) {
 		if (this.tagOpen) {
 			builder.append(">\r\n");
@@ -70,11 +74,7 @@ public final class HtmlBuilder {
 	public final HtmlBuilder appendAttribute(String name, String value) {
 		builder.append(' ');
 		builder.append(name);
-		if (value == null || value.isEmpty()) {
-			builder.append("=\"");
-			builder.append(name);
-			builder.append("\"");
-		} else {
+		if (value != null && !value.isEmpty()) {
 			builder.append("=\"");
 			int l = value.length();
 			for (int i = 0; i < l; i++)
@@ -140,7 +140,8 @@ public final class HtmlBuilder {
 		map.put((char) 168, "&uml;"); // diaeresis
 		map.put((char) 169, "&copy;"); // copyright sign
 		map.put((char) 170, "&ordf;"); // feminine ordinal indicator
-		map.put((char) 171, "&laquo;"); // left-pointing double angle quotation mark
+		map.put((char) 171, "&laquo;"); // left-pointing double angle quotation
+										// mark
 		map.put((char) 172, "&not;"); // not sign
 		map.put((char) 173, "&shy;"); // soft hyphen
 		map.put((char) 174, "&reg;"); // registered sign
@@ -156,43 +157,51 @@ public final class HtmlBuilder {
 		map.put((char) 184, "&cedil;"); // cedilla
 		map.put((char) 185, "&sup1;"); // superscript one
 		map.put((char) 186, "&ordm;"); // masculine ordinal indicator
-		map.put((char) 187, "&raquo;"); // right-pointing double angle quotation mark
+		map.put((char) 187, "&raquo;"); // right-pointing double angle quotation
+										// mark
 		map.put((char) 188, "&frac14;"); // vulgar fraction one quarter
 		map.put((char) 189, "&frac12;"); // vulgar fraction one half
 		map.put((char) 190, "&frac34;"); // vulgar fraction three quarters
 		map.put((char) 191, "&iquest;"); // inverted question mark
 		map.put((char) 192, "&Agrave;"); // Latin capital letter a with grave
 		map.put((char) 193, "&Aacute;"); // Latin capital letter a with acute
-		map.put((char) 194, "&Acirc;"); // Latin capital letter a with circumflex
+		map.put((char) 194, "&Acirc;"); // Latin capital letter a with
+										// circumflex
 		map.put((char) 195, "&Atilde;"); // Latin capital letter a with tilde
 		map.put((char) 196, "&Auml;"); // Latin capital letter a with diaeresis
-		map.put((char) 197, "&Aring;"); // Latin capital letter a with ring above
+		map.put((char) 197, "&Aring;"); // Latin capital letter a with ring
+										// above
 		map.put((char) 198, "&AElig;"); // Latin capital letter ae
 		map.put((char) 199, "&Ccedil;"); // Latin capital letter c with cedilla
 		map.put((char) 200, "&Egrave;"); // Latin capital letter e with grave
 		map.put((char) 201, "&Eacute;"); // Latin capital letter e with acute
-		map.put((char) 202, "&Ecirc;"); // Latin capital letter e with circumflex
+		map.put((char) 202, "&Ecirc;"); // Latin capital letter e with
+										// circumflex
 		map.put((char) 203, "&Euml;"); // Latin capital letter e with diaeresis
 		map.put((char) 204, "&Igrave;"); // Latin capital letter i with grave
 		map.put((char) 205, "&Iacute;"); // Latin capital letter i with acute
-		map.put((char) 206, "&Icirc;"); // Latin capital letter i with circumflex
+		map.put((char) 206, "&Icirc;"); // Latin capital letter i with
+										// circumflex
 		map.put((char) 207, "&Iuml;"); // Latin capital letter i with diaeresis
 		map.put((char) 208, "&ETH;"); // Latin capital letter eth
 		map.put((char) 209, "&Ntilde;"); // Latin capital letter n with tilde
 		map.put((char) 210, "&Ograve;"); // Latin capital letter o with grave
 		map.put((char) 211, "&Oacute;"); // Latin capital letter o with acute
-		map.put((char) 212, "&Ocirc;"); // Latin capital letter o with circumflex
+		map.put((char) 212, "&Ocirc;"); // Latin capital letter o with
+										// circumflex
 		map.put((char) 213, "&Otilde;"); // Latin capital letter o with tilde
 		map.put((char) 214, "&Ouml;"); // Latin capital letter o with diaeresis
 		map.put((char) 215, "&times;"); // multiplication sign
 		map.put((char) 216, "&Oslash;"); // Latin capital letter o with stroke
 		map.put((char) 217, "&Ugrave;"); // Latin capital letter u with grave
 		map.put((char) 218, "&Uacute;"); // Latin capital letter u with acute
-		map.put((char) 219, "&Ucirc;"); // Latin capital letter u with circumflex
+		map.put((char) 219, "&Ucirc;"); // Latin capital letter u with
+										// circumflex
 		map.put((char) 220, "&Uuml;"); // Latin capital letter u with diaeresis
 		map.put((char) 221, "&Yacute;"); // Latin capital letter y with acute
 		map.put((char) 222, "&THORN;"); // Latin capital letter thorn
-		map.put((char) 223, "&szlig;"); // Latin small letter sharp sXCOMMAX German Eszett
+		map.put((char) 223, "&szlig;"); // Latin small letter sharp sXCOMMAX
+										// German Eszett
 		map.put((char) 224, "&agrave;"); // Latin small letter a with grave
 		map.put((char) 225, "&aacute;"); // Latin small letter a with acute
 		map.put((char) 226, "&acirc;"); // Latin small letter a with circumflex
@@ -307,13 +316,16 @@ public final class HtmlBuilder {
 		map.put((char) 8240, "&permil;"); // per mille sign
 		map.put((char) 8242, "&prime;"); // prime
 		map.put((char) 8243, "&Prime;"); // double prime
-		map.put((char) 8249, "&lsaquo;"); // single left-pointing angle quotation mark
-		map.put((char) 8250, "&rsaquo;"); // single right-pointing angle quotation mark
+		map.put((char) 8249, "&lsaquo;"); // single left-pointing angle
+											// quotation mark
+		map.put((char) 8250, "&rsaquo;"); // single right-pointing angle
+											// quotation mark
 		map.put((char) 8254, "&oline;"); // overline
 		map.put((char) 8260, "&frasl;"); // fraction slash
 		map.put((char) 8364, "&euro;"); // euro sign
 		map.put((char) 8465, "&image;"); // black-letter capital i
-		map.put((char) 8472, "&weierp;"); // script capital pXCOMMAX Weierstrass p
+		map.put((char) 8472, "&weierp;"); // script capital pXCOMMAX Weierstrass
+											// p
 		map.put((char) 8476, "&real;"); // black-letter capital r
 		map.put((char) 8482, "&trade;"); // trademark sign
 		map.put((char) 8501, "&alefsym;"); // alef symbol
@@ -322,7 +334,8 @@ public final class HtmlBuilder {
 		map.put((char) 8594, "&rarr;"); // rightwards arrow
 		map.put((char) 8595, "&darr;"); // downwards arrow
 		map.put((char) 8596, "&harr;"); // left right arrow
-		map.put((char) 8629, "&crarr;"); // downwards arrow with corner leftwards
+		map.put((char) 8629, "&crarr;"); // downwards arrow with corner
+											// leftwards
 		map.put((char) 8656, "&lArr;"); // leftwards double arrow
 		map.put((char) 8657, "&uArr;"); // upwards double arrow
 		map.put((char) 8658, "&rArr;"); // rightwards double arrow

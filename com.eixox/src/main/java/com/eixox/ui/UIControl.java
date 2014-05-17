@@ -20,4 +20,6 @@ public @interface UIControl {
 	Class<?> Source() default Object.class;
 
 	String Group() default "";
+	
+	String FormatString() default "%s";
 }

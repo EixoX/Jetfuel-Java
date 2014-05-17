@@ -2,6 +2,7 @@ package com.eixox.reflection;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 public final class AspectField implements AspectMember {
 
@@ -62,6 +63,10 @@ public final class AspectField implements AspectMember {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public final Type getGenericType() {
+		return this.field.getGenericType();
 	}
 
 }

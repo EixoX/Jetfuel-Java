@@ -13,8 +13,8 @@ public final class ShortAdapter extends ValueAdapter<Short> {
 
 	@Override
 	public final Short parse(Culture culture, String input) {
-		Number n = culture.parseNumber(input).shortValue();
-		return n == null ? null : n.shortValue();
+		Number n = culture.parseNumber(input);
+		return n == null ? 0 : n.shortValue();
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public final class ShortAdapter extends ValueAdapter<Short> {
 	}
 
 	@Override
-	public final Short convert(Object value) {
+	public final Short convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Short.class.isInstance(value) || Short.TYPE.isInstance(value))
@@ -49,7 +49,7 @@ public final class ShortAdapter extends ValueAdapter<Short> {
 		else if (Number.class.isInstance(value))
 			return ((Number) value).shortValue();
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return 0;
 	}

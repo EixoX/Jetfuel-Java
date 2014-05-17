@@ -2,12 +2,28 @@ package com.eixox.data;
 
 public final class FilterExpression implements Filter {
 
-	private final FilterNode	first;
-	private FilterNode			last;
+	private final FilterNode first;
+	private FilterNode last;
 
 	public FilterExpression(Filter filter) {
 		this.first = new FilterNode(filter);
 		this.last = this.first;
+	}
+
+	public FilterExpression(DataAspect<?> aspect, int ordinal, FilterComparison comparison, Object value) {
+		this(new FilterTerm(aspect, ordinal, comparison, value));
+	}
+
+	public FilterExpression(DataAspect<?> aspect, int ordinal, Object value) {
+		this(new FilterTerm(aspect, ordinal, value));
+	}
+
+	public FilterExpression(DataAspect<?> aspect, String name, FilterComparison comparison, Object value) {
+		this(new FilterTerm(aspect, name, comparison, value));
+	}
+
+	public FilterExpression(DataAspect<?> aspect, String name, Object value) {
+		this(new FilterTerm(aspect, name, value));
 	}
 
 	public final FilterExpression and(Filter filter) {
@@ -60,7 +76,7 @@ public final class FilterExpression implements Filter {
 		return this.first;
 	}
 
-	public final DataAspect getAspect() {
+	public final DataAspect<?> getAspect() {
 		return this.first.getAspect();
 	}
 

@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.eixox.adapters.BooleanAdapter;
 import com.eixox.data.Storage;
 
 public class TestBuilderHelper {

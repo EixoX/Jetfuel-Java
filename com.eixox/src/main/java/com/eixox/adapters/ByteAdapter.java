@@ -13,8 +13,8 @@ public final class ByteAdapter extends ValueAdapter<Byte> {
 
 	@Override
 	public final Byte parse(Culture culture, String input) {
-		Number n = culture.parseNumber(input).byteValue();
-		return n == null ? null : n.byteValue();
+		Number n = culture.parseNumber(input);
+		return n == null ? 0 : n.byteValue();
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public final class ByteAdapter extends ValueAdapter<Byte> {
 	}
 
 	@Override
-	public final Byte convert(Object value) {
+	public final Byte convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Byte.class.isInstance(value) || Byte.TYPE.isInstance(value))
@@ -49,7 +49,7 @@ public final class ByteAdapter extends ValueAdapter<Byte> {
 		else if (Number.class.isInstance(value))
 			return ((Number) value).byteValue();
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return 0;
 	}

@@ -30,27 +30,6 @@ public class UIAspect extends AbstractAspect<UIAspectMember> {
 		}
 	}
 
-	public void present(Object instance, boolean validate, UIControlPresenter presenter) {
-
-		for (UIAspectMember member : this) {
-			UIControlPresentation presentation = member.toPresentation(instance, validate);
-			presenter.present(presentation);
-		}
-	}
-
-	public void present(Object instance, String group, boolean validate, UIControlPresenter presenter) {
-
-		for (UIAspectMember member : this) {
-
-			if (group.equalsIgnoreCase(member.getGroup())) {
-
-				UIControlPresentation presentation = member.toPresentation(instance, validate);
-				presenter.present(presentation);
-			}
-		}
-
-	}
-
 	private static final HashMap<Class<?>, UIAspect> _DefaultInstances = new HashMap<Class<?>, UIAspect>();
 
 	public static synchronized final UIAspect getDefaultInstance(Class<?> claz) {

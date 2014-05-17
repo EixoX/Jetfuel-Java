@@ -3,23 +3,28 @@ package com.eixox.ui;
 public class UIControlOption {
 
 	private final Object key;
-	private final String value;
+	private final String name;
 
-	public UIControlOption(Object key, String value) {
+	public UIControlOption(Object key, String name) {
 		this.key = key;
-		this.value = value;
+		this.name = name;
 	}
 
-	public UIControlOption(Object key, Object value) {
-		this(key, value == null ? "" : value.toString());
+	public UIControlOption(Object key, Object name) {
+		this(key, name == null ? key.toString() : name.toString());
 	}
 
 	public final Object getKey() {
 		return key;
 	}
 
-	public final String getValue() {
-		return value;
+	public final String getName() {
+		return name;
+	}
+
+	@Override
+	public String toString() {
+		return this.key == null ? this.name : this.key.toString() + "=" + this.name;
 	}
 
 }

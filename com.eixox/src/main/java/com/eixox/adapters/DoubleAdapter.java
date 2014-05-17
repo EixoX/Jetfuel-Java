@@ -13,8 +13,8 @@ public final class DoubleAdapter extends ValueAdapter<Double> {
 
 	@Override
 	public final Double parse(Culture culture, String input) {
-		Number n = culture.parseNumber(input).doubleValue();
-		return n == null ? null : n.doubleValue();
+		Number n = culture.parseNumber(input);
+		return n == null ? 0.0 : n.doubleValue();
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public final class DoubleAdapter extends ValueAdapter<Double> {
 	}
 
 	@Override
-	public final Double convert(Object value) {
+	public final Double convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Double.class.isInstance(value) || Double.TYPE.isInstance(value))
@@ -49,7 +49,7 @@ public final class DoubleAdapter extends ValueAdapter<Double> {
 		else if (Number.class.isInstance(value))
 			return ((Number) value).doubleValue();
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return 0.0;
 	}

@@ -4,17 +4,15 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.Iterator;
 
-import com.eixox.data.DataAspect;
-
 public final class ResultSetToClassIterator<T> implements Iterable<T>, Iterator<T> {
 
-	private final ResultSet		rs;
-	private final int			columnCount;
-	private final int[]			ordinals;
-	private final DataAspect	aspect;
-	private boolean				next;
+	private final ResultSet			rs;
+	private final int				columnCount;
+	private final int[]				ordinals;
+	private final DatabaseAspect	aspect;
+	private boolean					next;
 
-	public ResultSetToClassIterator(ResultSet rs, DataAspect aspect) {
+	public ResultSetToClassIterator(ResultSet rs, DatabaseAspect aspect) {
 		try {
 			this.rs = rs;
 			this.aspect = aspect;
@@ -47,7 +45,8 @@ public final class ResultSetToClassIterator<T> implements Iterable<T>, Iterator<
 			{
 				if (ordinals[i] >= 0) {
 					Object value = rs.getObject(i + 1);
-					aspect.get(ordinals[i]).setValue(instance, value);
+					if (value != null)
+						aspect.get(ordinals[i]).setDataValue(instance, value);
 				}
 			}
 			this.next = rs.next();

@@ -14,7 +14,7 @@ public final class CharacterAdapter extends ValueAdapter<Character> {
 
 	@Override
 	public final Character parse(Culture culture, String input) {
-		return input == null || input.isEmpty() ? null : input.charAt(0);
+		return input == null || input.isEmpty() ? (char)0 : input.charAt(0);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public final class CharacterAdapter extends ValueAdapter<Character> {
 	}
 
 	@Override
-	public final Character convert(Object value) {
+	public final Character convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Character.class.isInstance(value) || Character.TYPE.isInstance(value))
@@ -54,7 +54,7 @@ public final class CharacterAdapter extends ValueAdapter<Character> {
 		else if (Number.class.isInstance(value))
 			return (char) ((Number) value).intValue();
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return 0;
 	}

@@ -13,8 +13,8 @@ public final class LongAdapter extends ValueAdapter<Long> {
 
 	@Override
 	public final Long parse(Culture culture, String input) {
-		Number n = culture.parseNumber(input).longValue();
-		return n == null ? null : n.longValue();
+		Number n = culture.parseNumber(input);
+		return n == null ? 0L : n.longValue();
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public final class LongAdapter extends ValueAdapter<Long> {
 	}
 
 	@Override
-	public final Long convert(Object value) {
+	public final Long convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Long.class.isInstance(value) || Long.TYPE.isInstance(value))
@@ -50,7 +50,7 @@ public final class LongAdapter extends ValueAdapter<Long> {
 		else if (Number.class.isInstance(value))
 			return ((Number) value).longValue();
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return 0L;
 	}

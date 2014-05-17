@@ -50,13 +50,13 @@ public final class EnumAdapter<T extends Enum> extends ValueAdapter<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public final T convert(Object value) {
+	public final T convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Enum.class.isInstance(value))
 			return (T) value;
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return null;
 	}

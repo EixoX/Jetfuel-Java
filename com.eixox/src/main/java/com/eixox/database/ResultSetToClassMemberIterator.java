@@ -3,14 +3,12 @@ package com.eixox.database;
 import java.sql.ResultSet;
 import java.util.Iterator;
 
-import com.eixox.data.DataAspect;
-
 public final class ResultSetToClassMemberIterator implements Iterable<Object>, Iterator<Object> {
 
 	private final ResultSet	rs;
 	private boolean			next;
 
-	public ResultSetToClassMemberIterator(ResultSet rs, DataAspect aspect) {
+	public ResultSetToClassMemberIterator(ResultSet rs, DatabaseAspect aspect) {
 		try {
 			this.rs = rs;
 			this.next = rs.next();

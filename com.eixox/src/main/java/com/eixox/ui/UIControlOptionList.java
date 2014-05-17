@@ -9,8 +9,8 @@ public class UIControlOptionList extends LinkedList<UIControlOption> {
 	 */
 	private static final long serialVersionUID = 1290607055719577538L;
 
-	public final UIControlOption add(Object key, String value) {
-		UIControlOption opt = new UIControlOption(key, value);
+	public final UIControlOption add(Object key, String name) {
+		UIControlOption opt = new UIControlOption(key, name);
 		super.add(opt);
 		return opt;
 	}
@@ -23,25 +23,25 @@ public class UIControlOptionList extends LinkedList<UIControlOption> {
 		return null;
 	}
 
-	public final String getValue(Object key) {
+	public final String getName(Object key) {
 		UIControlOption opt = get(key);
-		return opt == null ? null : opt.getValue();
+		return opt == null ? null : opt.getName();
 	}
 
-	public static final UIControlOptionList parse(String[] keyValues, char splitter) {
+	public static final UIControlOptionList parse(String[] keynames, char splitter) {
 		UIControlOptionList list = new UIControlOptionList();
 		String key;
-		String value;
-		for (int i = 0; i < keyValues.length; i++) {
-			int ipos = keyValues[i].indexOf(splitter);
+		String name;
+		for (int i = 0; i < keynames.length; i++) {
+			int ipos = keynames[i].indexOf(splitter);
 			if (ipos > 0) {
-				key = keyValues[i].substring(0, ipos);
-				value = keyValues[i].substring(ipos + 1);
+				key = keynames[i].substring(0, ipos);
+				name = keynames[i].substring(ipos + 1);
 			} else {
-				key = keyValues[i];
-				value = keyValues[i];
+				key = keynames[i];
+				name = keynames[i];
 			}
-			list.add(new UIControlOption(key, value));
+			list.add(new UIControlOption(key, name));
 		}
 		return list;
 	}

@@ -1,5 +1,6 @@
 package com.eixox.data;
 
+
 public final class FilterNode implements Filter {
 
 	private final Filter	filter;
@@ -30,7 +31,7 @@ public final class FilterNode implements Filter {
 		return filter;
 	}
 
-	public final DataAspect getAspect() {
+	public final DataAspect<?> getAspect() {
 		return this.filter.getAspect();
 	}
 

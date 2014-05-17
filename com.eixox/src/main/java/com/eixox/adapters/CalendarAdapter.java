@@ -15,7 +15,7 @@ public final class CalendarAdapter extends ValueAdapter<Calendar> {
 
 	@Override
 	public final Calendar parse(Culture culture, String input) {
-		Date dt = culture.parseDateTime(input);
+		Date dt = culture.parseDate(input);
 		if (dt == null)
 			return null;
 		else
@@ -58,7 +58,7 @@ public final class CalendarAdapter extends ValueAdapter<Calendar> {
 	}
 
 	@Override
-	public final Calendar convert(Object value) {
+	public final Calendar convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Calendar.class.isInstance(value))
@@ -70,7 +70,7 @@ public final class CalendarAdapter extends ValueAdapter<Calendar> {
 			return cal;
 		}
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return ZERO;
 	}

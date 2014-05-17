@@ -44,7 +44,7 @@ public final class StringAdapter extends ValueAdapter<String> {
 	}
 
 	@Override
-	public final String convert(Object value) {
+	public final String convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (String.class.isInstance(value))

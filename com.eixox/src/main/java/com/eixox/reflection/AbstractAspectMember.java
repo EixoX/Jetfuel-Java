@@ -1,6 +1,7 @@
 package com.eixox.reflection;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 public class AbstractAspectMember implements AspectMember {
 
@@ -46,11 +47,23 @@ public class AbstractAspectMember implements AspectMember {
 		return this.member.getDataType();
 	}
 
-	public Object getValue(Object instance) {
+	public final Object getValue(Object instance) {
 		return this.member.getValue(instance);
 	}
 
-	public void setValue(Object instance, Object value) {
+	public final void setValue(Object instance, Object value) {
 		this.member.setValue(instance, value);
+	}
+
+	public final Type getGenericType() {
+		return this.member.getGenericType();
+	}
+
+	public final String getValueToString(Object instance) {
+		Object value = this.member.getValue(instance);
+		if (value == null)
+			return "";
+		else
+			return value.toString();
 	}
 }

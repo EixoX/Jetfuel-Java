@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public final class SelectResult<E> extends ArrayList<E> {
 
-	private static final long	serialVersionUID	= 6025264851251173015L;
-	private final Select<E>		originalSelect;
+	private static final long serialVersionUID = 6025264851251173015L;
+	private final Select<E> originalSelect;
 
 	public SelectResult(Select<E> originalSelect) {
 		this.originalSelect = originalSelect;

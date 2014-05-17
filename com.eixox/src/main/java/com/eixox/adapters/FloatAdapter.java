@@ -13,8 +13,8 @@ public final class FloatAdapter extends ValueAdapter<Float> {
 
 	@Override
 	public final Float parse(Culture culture, String input) {
-		Number n = culture.parseNumber(input).floatValue();
-		return n == null ? null : n.floatValue();
+		Number n = culture.parseNumber(input);
+		return n == null ? 0F : n.floatValue();
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public final class FloatAdapter extends ValueAdapter<Float> {
 	}
 
 	@Override
-	public final Float convert(Object value) {
+	public final Float convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Float.class.isInstance(value) || Float.TYPE.isInstance(value))
@@ -49,7 +49,7 @@ public final class FloatAdapter extends ValueAdapter<Float> {
 		else if (Number.class.isInstance(value))
 			return ((Number) value).floatValue();
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return 0.0F;
 	}

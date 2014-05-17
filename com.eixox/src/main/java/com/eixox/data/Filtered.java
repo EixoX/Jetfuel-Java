@@ -2,16 +2,16 @@ package com.eixox.data;
 
 public abstract class Filtered<T> {
 
-	private final DataAspect	aspect;
+	private final DataAspect<?>	aspect;
 	private FilterExpression	filter;
 
-	protected Filtered(DataAspect aspect) {
+	protected Filtered(DataAspect<?> aspect) {
 		this.aspect = aspect;
 	}
 
 	protected abstract T getThis();
 
-	public final DataAspect getAspect() {
+	public final DataAspect<?> getAspect() {
 		return this.aspect;
 	}
 

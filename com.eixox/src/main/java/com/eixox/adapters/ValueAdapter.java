@@ -8,7 +8,7 @@ import com.eixox.globalization.Cultures;
 
 public abstract class ValueAdapter<T> {
 
-	private final Class<T>	dataType;
+	private final Class<T> dataType;
 
 	protected ValueAdapter(Class<T> dataType) {
 		this.dataType = dataType;
@@ -55,6 +55,15 @@ public abstract class ValueAdapter<T> {
 
 	public abstract boolean IsNullOrEmpty(Object item);
 
-	public abstract T convert(Object value);
+	public final T convert(Object value) {
+		return convert(value, Cultures.EN_US);
+	}
 
+	public abstract T convert(Object value, Culture culture);
+
+	public final String formatSql(Object input, boolean nullable) {
+		StringBuilder builder = new StringBuilder();
+		appendSql(builder, input, nullable);
+		return builder.toString();
+	}
 }

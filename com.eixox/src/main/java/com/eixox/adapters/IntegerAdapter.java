@@ -13,8 +13,8 @@ public final class IntegerAdapter extends ValueAdapter<Integer> {
 
 	@Override
 	public final Integer parse(Culture culture, String input) {
-		Number n = culture.parseNumber(input).intValue();
-		return n == null ? null : n.intValue();
+		Number n = culture.parseNumber(input);
+		return n == null ? 0 : n.intValue();
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public final class IntegerAdapter extends ValueAdapter<Integer> {
 	}
 
 	@Override
-	public final Integer convert(Object value) {
+	public final Integer convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Integer.class.isInstance(value) || Integer.TYPE.isInstance(value))
@@ -49,7 +49,7 @@ public final class IntegerAdapter extends ValueAdapter<Integer> {
 		else if (Number.class.isInstance(value))
 			return ((Number) value).intValue();
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return 0;
 	}

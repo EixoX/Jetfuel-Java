@@ -41,13 +41,13 @@ public class NumberAdapter extends ValueAdapter<Number> {
 	}
 
 	@Override
-	public final Number convert(Object value) {
+	public final Number convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Number.class.isInstance(value))
 			return ((Number) value);
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return 0.0;
 	}

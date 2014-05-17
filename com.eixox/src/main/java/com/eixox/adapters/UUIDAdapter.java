@@ -48,7 +48,7 @@ public final class UUIDAdapter extends ValueAdapter<UUID> {
 	}
 
 	@Override
-	public final UUID convert(Object value) {
+	public final UUID convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (UUID.class.isInstance(value))

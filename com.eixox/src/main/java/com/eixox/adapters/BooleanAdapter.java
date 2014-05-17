@@ -46,7 +46,7 @@ public final class BooleanAdapter extends ValueAdapter<Boolean> {
 	}
 
 	@Override
-	public final Boolean convert(Object value) {
+	public final Boolean convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Boolean.class.isInstance(value) || Boolean.TYPE.isInstance(value))
@@ -54,7 +54,7 @@ public final class BooleanAdapter extends ValueAdapter<Boolean> {
 		else if (Number.class.isInstance(value))
 			return ((Number) value).intValue() > 0;
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return false;
 	}

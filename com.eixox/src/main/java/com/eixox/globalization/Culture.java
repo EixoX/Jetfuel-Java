@@ -7,36 +7,46 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Culture {
+public abstract class Culture {
 
-	private final NumberFormat	numberFormatter;
-	private final NumberFormat	currencyFormatter;
-	private final NumberFormat	integerFormatter;
-	private final NumberFormat	percentFormatter;
-	private final String		longDateFormat;
-	private final DateFormat	longDateFormatter;
-	private final String		shortDateFormat;
-	private final DateFormat	shortDateFormatter;
-	private final Locale		locale;
-	private final String		rfc822Format;
-	private final DateFormat	rfc822Formatter;
+	private static final DateFormat rfc822Formatter = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss Z", Locale.US);
 
-	public Culture() {
-		this(Locale.US, "MMM, dd yyyy", "yyyy-MM-dd");
-	}
+	private final NumberFormat numberFormatter;
+	private final NumberFormat currencyFormatter;
+	private final NumberFormat integerFormatter;
+	private final NumberFormat percentFormatter;
+	private final DateFormat longDateFormatter;
+	private final DateFormat shortDateFormatter;
+	private final DateFormat dateTimeFormatter;
+	private final DateFormat timeFormatter;
+	private final Locale locale;
 
-	protected Culture(Locale locale, String longDateFormat, String shortDateFormat) {
+	public abstract String getLongDateFormat();
+
+	public abstract String getShortDateFormat();
+
+	public abstract String getDateTimeFormat();
+
+	public abstract String getTimeFormat();
+
+	public abstract char getDateSeparator();
+
+	public abstract char getTimeSeparator();
+
+	public Culture(Locale locale) {
 		this.locale = locale;
 		this.numberFormatter = DecimalFormat.getInstance(locale);
 		this.currencyFormatter = DecimalFormat.getCurrencyInstance(locale);
 		this.integerFormatter = DecimalFormat.getIntegerInstance(locale);
 		this.percentFormatter = DecimalFormat.getPercentInstance(locale);
-		this.longDateFormat = longDateFormat;
-		this.longDateFormatter = new SimpleDateFormat(longDateFormat);
-		this.shortDateFormat = shortDateFormat;
-		this.shortDateFormatter = new SimpleDateFormat(shortDateFormat);
-		this.rfc822Format = "E, d MMM yyyy HH:mm:ss Z";
-		this.rfc822Formatter = new SimpleDateFormat(rfc822Format, Locale.US);
+		this.longDateFormatter = new SimpleDateFormat(getLongDateFormat(), locale);
+		this.shortDateFormatter = new SimpleDateFormat(getShortDateFormat(), locale);
+		this.dateTimeFormatter = new SimpleDateFormat(getDateTimeFormat(), locale);
+		this.timeFormatter = new SimpleDateFormat(getTimeFormat(), locale);
+	}
+
+	public final Locale getLocale() {
+		return this.locale;
 	}
 
 	public final Number parseNumber(String input) {
@@ -105,26 +115,42 @@ public class Culture {
 			}
 	}
 
-	public final Date parseDateTime(String input) {
+	public final Date parseDateRfc822(String input) {
 		if (input == null || input.isEmpty())
 			return null;
 		try {
-			return this.rfc822Formatter.parse(input);
+			return rfc822Formatter.parse(input);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public final String getLongDateFormat() {
-		return longDateFormat;
+	public final Date parseDateTime(String input) {
+		if (input == null || input.isEmpty())
+			return null;
+		try {
+			return this.dateTimeFormatter.parse(input);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public final String getShortDateFormat() {
-		return shortDateFormat;
-	}
-
-	public final Locale getLocale() {
-		return locale;
+	public final Date parseDate(String input) {
+		if (input == null || input.isEmpty())
+			return null;
+		try {
+			if (input.indexOf(getDateSeparator()) > 0) {
+				if (input.indexOf(getTimeSeparator()) > 0)
+					return this.dateTimeFormatter.parse(input);
+				else
+					return this.shortDateFormatter.parse(input);
+			} else if (input.indexOf(getTimeSeparator()) > 0) {
+				return this.timeFormatter.parse(input);
+			} else
+				return this.longDateFormatter.parse(input);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public final String formatNumber(long input) {
@@ -175,18 +201,18 @@ public class Culture {
 		return input == null ? "" : this.percentFormatter.format(input);
 	}
 
-	public final String formatDateTime(Date input) {
+	public final String formatRfc822Date(Date input) {
 		if (input == null)
 			return "";
 		else
-			return this.rfc822Formatter.format(input);
+			return rfc822Formatter.format(input);
 	}
 
-	public final String formatDateTime(Object input) {
+	public final String formatRcf822Date(Object input) {
 		if (input == null)
 			return "";
 		else
-			return this.rfc822Formatter.format(input);
+			return rfc822Formatter.format(input);
 	}
 
 	public final String formatLongDate(Date input) {
@@ -215,5 +241,19 @@ public class Culture {
 			return "";
 		else
 			return this.shortDateFormatter.format(input);
+	}
+
+	public final String formatDateTime(Date input) {
+		if (input == null)
+			return "";
+		else
+			return this.dateTimeFormatter.format(input);
+	}
+
+	public final String formatDateTime(Object input) {
+		if (input == null)
+			return "";
+		else
+			return this.dateTimeFormatter.format(input);
 	}
 }

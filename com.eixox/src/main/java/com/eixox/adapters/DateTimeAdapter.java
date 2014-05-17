@@ -17,7 +17,7 @@ public final class DateTimeAdapter extends ValueAdapter<Date> {
 
 	@Override
 	public final Date parse(Culture culture, String input) {
-		return culture.parseDateTime(input);
+		return culture.parseDate(input);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public final class DateTimeAdapter extends ValueAdapter<Date> {
 	}
 
 	@Override
-	public final Date convert(Object value) {
+	public final Date convert(Object value, Culture culture) {
 		if (value == null)
 			return null;
 		else if (Date.class.isInstance(value))
@@ -58,7 +58,7 @@ public final class DateTimeAdapter extends ValueAdapter<Date> {
 			return dt;
 		}
 		else if (String.class.isInstance(value))
-			return parse((String) value);
+			return parse(culture, (String) value);
 		else
 			return ZERO;
 	}
