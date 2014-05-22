@@ -29,7 +29,7 @@ public class CpfOrCnpjRestriction implements Restriction {
 	}
 
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Cpf ou Cnpj inválido";
+		return validate(input) ? null : "Cpf ou Cnpj invalido";
 	}
 
 	public void assertValid(Object input) throws RestrictionException {

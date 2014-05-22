@@ -40,6 +40,17 @@ public class RestrictionAspect extends AbstractAspect<RestrictionAspectMember> {
 		return true;
 	}
 
+	public final RestrictionProblems getRestrictionProblems(Object instance) {
+		RestrictionProblems rp = new RestrictionProblems();
+		for (RestrictionAspectMember member : this)
+		{
+			String msg = member.getRestrictionMessageFor(instance);
+			if (msg != null && !msg.isEmpty())
+				rp.put(member.getName(), msg);
+		}
+		return rp;
+	}
+
 	public static RestrictionList buildRestrictionList(AspectMember member) {
 		RestrictionList restrictions = new RestrictionList();
 		for (Annotation an : member.getAnnotations()) {

@@ -6,7 +6,6 @@ public class RestrictionList extends LinkedList<Restriction> implements Restrict
 
 	private static final long serialVersionUID = -4146631378228528782L;
 
-	
 	public boolean validate(Object input) {
 		if (size() > 0)
 			for (Restriction r : this)
@@ -16,20 +15,15 @@ public class RestrictionList extends LinkedList<Restriction> implements Restrict
 		return true;
 	}
 
-	
 	public String getRestrictionMessageFor(Object input) {
-		if (size() > 0)
-			for (Restriction r : this) {
-				String msg = r.getRestrictionMessageFor(input);
-				if (msg != null)
-					return msg;
-			}
-
+		for (Restriction r : this) {
+			String msg = r.getRestrictionMessageFor(input);
+			if (msg != null)
+				return msg;
+		}
 		return null;
-
 	}
 
-	
 	public void assertValid(Object input) throws RestrictionException {
 		String msg = getRestrictionMessageFor(input);
 		if (msg != null)

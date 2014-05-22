@@ -10,7 +10,9 @@ public class CnpjRestriction implements Restriction {
 	}
 
 	public static boolean isValid(long value) {
-		if (value == 11111111111111L ||
+		if (
+				value < 1000000 ||
+				value == 11111111111111L ||
                 value == 22222222222222L ||
                 value == 33333333333333L ||
                 value == 44444444444444L ||
@@ -66,7 +68,7 @@ public class CnpjRestriction implements Restriction {
 	}
 
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Cnpj inválido";
+		return validate(input) ? null : "Cnpj invï¿½lido";
 	}
 
 	public void assertValid(Object input) throws RestrictionException {

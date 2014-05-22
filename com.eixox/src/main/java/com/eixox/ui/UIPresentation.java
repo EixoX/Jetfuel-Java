@@ -1,7 +1,6 @@
 package com.eixox.ui;
 
-import java.util.Map;
-
+import com.eixox.NameValueCollection;
 import com.eixox.globalization.Culture;
 import com.eixox.restrictions.RestrictionProblems;
 
@@ -10,6 +9,10 @@ public class UIPresentation<T> {
 	private final UIAspect aspect;
 	private final UIPresentationMember[] controls;
 	private final RestrictionProblems problems;
+
+	public UIPresentation(Class<?> claz) {
+		this(UIAspect.getDefaultInstance(claz));
+	}
 
 	public UIPresentation(UIAspect aspect) {
 		this.aspect = aspect;
@@ -60,10 +63,10 @@ public class UIPresentation<T> {
 			return ordinal;
 	}
 
-	public final synchronized boolean parseAndValidate(Map<String, String> map, Culture culture, Object destination) {
+	public final synchronized boolean parseAndValidate(NameValueCollection<Object> map, Culture culture, Object destination) {
 		this.problems.clear();
 		for (int i = 0; i < this.controls.length; i++) {
-			this.controls[i].value = map.get(this.controls[i].name);
+			this.controls[i].value = (String) map.get(this.controls[i].name);
 			UIAspectMember member = this.aspect.get(i);
 			member.parse(this.controls[i].value, destination, culture);
 			String msg = member.getRestrictionMessageFor(destination);

@@ -12,21 +12,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import com.eixox.NameValueCollection;
 import com.eixox.Pair;
-import com.eixox.PairList;
 import com.eixox.Streams;
 import com.eixox.Viewee;
 
 public class ViewHandler implements Viewee {
 
-	private final HttpServletRequest	request;
-	private final HttpServletResponse	response;
-	private String						errorMessage;
-	private String						successMessage;
-	private String						warningMessage;
-	private Exception					lastException;
-	private PairList<String, Object>	parameters;
-	private static final Charset		UTF8	= Charset.forName("UTF-8");
+	private final HttpServletRequest request;
+	private final HttpServletResponse response;
+	private NameValueCollection<Object> parameters;
+	private static final Charset UTF8 = Charset.forName("UTF-8");
 
 	protected ViewHandler(HttpServletRequest request, HttpServletResponse response) {
 		this.request = request;
@@ -37,28 +33,32 @@ public class ViewHandler implements Viewee {
 		return (request != null && request.getContentType() != null && request.getContentType().toLowerCase().contains("multipart/form-data"));
 	}
 
-	public final synchronized PairList<String, Object> getParameters() throws IOException, IllegalStateException, ServletException {
-		if (this.parameters == null) {
-			this.parameters = new PairList<String, Object>();
-			if (this.isMultipart()) {
-				for (Part part : request.getParts()) {
-					String contentType = part.getContentType();
-					if (contentType == null || contentType.isEmpty()) {
-						String paramText = part.getSize() > 0 ? Streams.readText(part.getInputStream(), UTF8) : null;
-						this.parameters.add(part.getName(), paramText);
-					} else {
-						this.parameters.add(part.getName(), part);
+	public final synchronized NameValueCollection<Object> getParameters() {
+		try {
+			if (this.parameters == null) {
+				this.parameters = new NameValueCollection<Object>();
+				if (this.isMultipart()) {
+					for (Part part : request.getParts()) {
+						String contentType = part.getContentType();
+						if (contentType == null || contentType.isEmpty()) {
+							String paramText = part.getSize() > 0 ? Streams.readText(part.getInputStream(), UTF8) : null;
+							this.parameters.add(part.getName(), paramText);
+						} else {
+							this.parameters.add(part.getName(), part);
+						}
+					}
+				} else {
+					Enumeration<String> parameterNames = request.getParameterNames();
+					while (parameterNames.hasMoreElements()) {
+						String nextElement = parameterNames.nextElement();
+						this.parameters.add(nextElement, request.getParameter(nextElement));
 					}
 				}
-			} else {
-				Enumeration<String> parameterNames = request.getParameterNames();
-				while (parameterNames.hasMoreElements()) {
-					String nextElement = parameterNames.nextElement();
-					this.parameters.add(nextElement, request.getParameter(nextElement));
-				}
 			}
+			return this.parameters;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-		return this.parameters;
 	}
 
 	public final Object getParameter(String name) throws IllegalStateException, IOException, ServletException {
@@ -125,35 +125,35 @@ public class ViewHandler implements Viewee {
 	}
 
 	public final String getErrorMessage() {
-		return errorMessage;
+		return (String) request.getAttribute("ErrorMessage");
 	}
 
 	public final void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+		request.setAttribute("ErrorMessage", errorMessage);
 	}
 
 	public final String getSuccessMessage() {
-		return successMessage;
+		return (String) request.getAttribute("SuccessMessage");
 	}
 
 	public final void setSuccessMessage(String successMessage) {
-		this.successMessage = successMessage;
+		request.setAttribute("SuccessMessage", successMessage);
 	}
 
 	public final String getWarningMessage() {
-		return warningMessage;
+		return (String) request.getAttribute("WarningMessage");
 	}
 
 	public final void setWarningMessage(String warningMessage) {
-		this.warningMessage = warningMessage;
+		request.setAttribute("WarningMessage", warningMessage);
 	}
 
 	public final Exception getLastException() {
-		return lastException;
+		return (Exception) request.getAttribute("LastException");
 	}
 
 	public final void setLastException(Exception lastException) {
-		this.lastException = lastException;
+		request.setAttribute("LastException", lastException);
 	}
 
 	public final HttpServletRequest getRequest() {
@@ -174,28 +174,31 @@ public class ViewHandler implements Viewee {
 	}
 
 	public void onException(Exception e) {
-		this.errorMessage = e.toString();
-		this.lastException = e;
+		setErrorMessage(e.getLocalizedMessage());
+		setLastException(e);
 
 	}
 
 	public final boolean hasErrorMessage() {
-		return this.errorMessage != null && !this.errorMessage.isEmpty();
+		String errorMessage = this.getErrorMessage();
+		return errorMessage != null && !errorMessage.isEmpty();
 	}
 
 	public final boolean hasSuccessMessage() {
-		return this.successMessage != null && !this.successMessage.isEmpty();
+		String successMessage = this.getSuccessMessage();
+		return successMessage != null && !successMessage.isEmpty();
 	}
 
 	public final boolean hasWarningMessage() {
-		return this.warningMessage != null && !this.warningMessage.isEmpty();
+		String warningMessage = this.getWarningMessage();
+		return warningMessage != null && !warningMessage.isEmpty();
 	}
 
 	public final ViewHandlerState getState() {
 		final ViewHandlerState vhs = new ViewHandlerState();
-		vhs.setErrorMessage(this.errorMessage);
-		vhs.setSuccessMessage(this.successMessage);
-		vhs.setWarningMessage(this.warningMessage);
+		vhs.setErrorMessage(getErrorMessage());
+		vhs.setSuccessMessage(getSuccessMessage());
+		vhs.setWarningMessage(getWarningMessage());
 		return vhs;
 	}
 }

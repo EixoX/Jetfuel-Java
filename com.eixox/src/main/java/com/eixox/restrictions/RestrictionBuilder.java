@@ -42,7 +42,12 @@ public class RestrictionBuilder {
 		if (annotation instanceof Required)
 			return new RequiredRestriction();
 
-		return null;
+		try {
+			return (Restriction) Class.forName(annotation.annotationType().getCanonicalName() + "Restriction").getConstructor(annotation.annotationType()).newInstance(annotation);
+		} catch (Exception e)
+		{
+			return null;
+		}
 
 	}
 
