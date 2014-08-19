@@ -68,7 +68,7 @@ public class CnpjRestriction implements Restriction {
 	}
 
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Cnpj inv�lido";
+		return validate(input) ? null : "Cnpj invalido";
 	}
 
 	public void assertValid(Object input) throws RestrictionException {

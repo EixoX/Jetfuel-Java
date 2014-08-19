@@ -5,8 +5,6 @@ import java.security.MessageDigest;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
-
 public class Cryptography {
 
 	public static byte[] aesEncrypt(byte[] key, byte[] content) {
@@ -23,7 +21,7 @@ public class Cryptography {
 	public static String aesEncrypt(byte[] key, String content) {
 		byte[] contentBytes = content.getBytes();
 		byte[] output = aesEncrypt(key, contentBytes);
-		return Base64.encodeBase64String(output);
+		return Base64.encode(output);
 	}
 
 	public static byte[] aesDecrypt(byte[] key, byte[] content) {
@@ -38,7 +36,7 @@ public class Cryptography {
 	}
 
 	public static String aesDecrypt(byte[] key, String content) {
-		byte[] contentBytes = Base64.decodeBase64(content);
+		byte[] contentBytes = Base64.decode(content);
 		byte[] output = aesDecrypt(key, contentBytes);
 		return new String(output);
 	}
@@ -48,7 +46,7 @@ public class Cryptography {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(input.getBytes());
 			byte[] bytes = md.digest();
-			return Base64.encodeBase64String(bytes);
+			return Base64.encode(bytes);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
@@ -59,7 +57,18 @@ public class Cryptography {
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
 			md.update(input.getBytes());
 			byte[] bytes = md.digest();
-			return Base64.encodeBase64String(bytes);
+			return Base64.encode(bytes);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public static String sha1Hash(String input) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
+			md.update(input.getBytes());
+			byte[] bytes = md.digest();
+			return Base64.encode(bytes);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}

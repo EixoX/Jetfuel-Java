@@ -23,6 +23,9 @@ public class InterceptorBuilder {
 
 		if (annotation instanceof WhitespaceReplace)
 			return WhitespaceReplaceInterceptor.Instance;
+		
+		if(annotation instanceof Capitalize)
+			return CapitalizeInterceptor.Instance;
 
 		return null;
 	}

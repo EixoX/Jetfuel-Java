@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -23,19 +24,6 @@ public final class FloatAdapter extends ValueAdapter<Float> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "0.0");
-		else
-			builder.append((Float) input);
-	}
-
-	@Override
-	public final Float readSql(ResultSet rs, int ordinal) throws SQLException {
-		return rs.getFloat(ordinal);
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null || ((Float) item) == 0F;
 	}
@@ -43,7 +31,7 @@ public final class FloatAdapter extends ValueAdapter<Float> {
 	@Override
 	public final Float convert(Object value, Culture culture) {
 		if (value == null)
-			return null;
+			return 0F;
 		else if (Float.class.isInstance(value) || Float.TYPE.isInstance(value))
 			return (Float) value;
 		else if (Number.class.isInstance(value))
@@ -52,6 +40,21 @@ public final class FloatAdapter extends ValueAdapter<Float> {
 			return parse(culture, (String) value);
 		else
 			return 0.0F;
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.FLOAT;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, Float value) throws SQLException {
+		ps.setFloat(parameterIndex, value);
+	}
+
+	@Override
+	public Float readValue(ResultSet rs, int ordinal) throws SQLException {
+		return rs.getFloat(ordinal);
 	}
 
 }

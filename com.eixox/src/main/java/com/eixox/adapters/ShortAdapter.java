@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -23,19 +24,6 @@ public final class ShortAdapter extends ValueAdapter<Short> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "0");
-		else
-			builder.append((Short) input);
-	}
-
-	@Override
-	public final Short readSql(ResultSet rs, int ordinal) throws SQLException {
-		return rs.getShort(ordinal);
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null || ((Short) item) == 0;
 	}
@@ -43,7 +31,7 @@ public final class ShortAdapter extends ValueAdapter<Short> {
 	@Override
 	public final Short convert(Object value, Culture culture) {
 		if (value == null)
-			return null;
+			return 0;
 		else if (Short.class.isInstance(value) || Short.TYPE.isInstance(value))
 			return (Short) value;
 		else if (Number.class.isInstance(value))
@@ -52,5 +40,20 @@ public final class ShortAdapter extends ValueAdapter<Short> {
 			return parse(culture, (String) value);
 		else
 			return 0;
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.SMALLINT;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, Short value) throws SQLException {
+		ps.setShort(parameterIndex, value);
+	}
+
+	@Override
+	public Short readValue(ResultSet rs, int ordinal) throws SQLException {
+		return rs.getShort(ordinal);
 	}
 }

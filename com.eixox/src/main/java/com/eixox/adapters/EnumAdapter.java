@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -28,22 +29,6 @@ public final class EnumAdapter<T extends Enum> extends ValueAdapter<T> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "''");
-		else {
-			builder.append("'");
-			builder.append(input.toString().replace("'", "''"));
-			builder.append("'");
-		}
-	}
-
-	@Override
-	public final T readSql(ResultSet rs, int ordinal) throws SQLException {
-		return parse(Cultures.EN_US, rs.getString(ordinal));
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null;
 	}
@@ -59,6 +44,21 @@ public final class EnumAdapter<T extends Enum> extends ValueAdapter<T> {
 			return parse(culture, (String) value);
 		else
 			return null;
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.VARCHAR;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, T value) throws SQLException {
+		ps.setString(parameterIndex, value == null ? null : value.toString());
+	}
+
+	@Override
+	public T readValue(ResultSet rs, int ordinal) throws SQLException {
+		return parse(Cultures.EN_US, rs.getString(ordinal));
 	}
 
 }

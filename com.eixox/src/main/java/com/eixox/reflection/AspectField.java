@@ -2,6 +2,7 @@ package com.eixox.reflection;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 public final class AspectField implements AspectMember {
@@ -67,6 +68,10 @@ public final class AspectField implements AspectMember {
 
 	public final Type getGenericType() {
 		return this.field.getGenericType();
+	}
+
+	public final boolean isReadOnly() {
+		return Modifier.isFinal(this.field.getModifiers());
 	}
 
 }

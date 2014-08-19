@@ -12,19 +12,11 @@ public class UIAspect extends AbstractAspect<UIAspectMember> {
 		super(claz);
 	}
 
-	private final UIControlOptionList getOptions(AspectMember member) {
-		UIControlOptions options = member.getAnnotation(UIControlOptions.class);
-		if (options != null)
-			return UIControlOptionList.parse(options.values(), ':');
-		else
-			return null;
-	}
-
 	@Override
 	protected final UIAspectMember decorate(AspectMember member) {
 		UIControl ui = member.getAnnotation(UIControl.class);
 		if (ui != null) {
-			return new UIAspectMember(member, ui.Type(), ui.Label(), ui.Hint(), ui.Placeholder(), getOptions(member), ui.Group());
+			return new UIAspectMember(member, ui);
 		} else {
 			return null;
 		}

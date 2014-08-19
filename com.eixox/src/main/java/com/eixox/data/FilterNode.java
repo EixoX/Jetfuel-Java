@@ -1,41 +1,20 @@
 package com.eixox.data;
 
+public class FilterNode implements Filter {
 
-public final class FilterNode implements Filter {
-
-	private final Filter	filter;
-	private FilterOperation	operation;
-	private FilterNode		next;
+	public final Filter filter;
+	public FilterOperation operation;
+	public FilterNode next;
 
 	public FilterNode(Filter filter) {
 		this.filter = filter;
 	}
 
-	public final FilterOperation getOperation() {
-		return operation;
+	public final ColumnSchema getColumnSchema() {
+		return filter.getColumnSchema();
 	}
 
-	public final void setOperation(FilterOperation operation) {
-		this.operation = operation;
-	}
-
-	public final FilterNode getNext() {
-		return next;
-	}
-
-	public final void setNext(FilterNode next) {
-		this.next = next;
-	}
-
-	public final Filter getFilter() {
-		return filter;
-	}
-
-	public final DataAspect<?> getAspect() {
-		return this.filter.getAspect();
-	}
-
-	public FilterType getFilterType() {
+	public final FilterType getFilterType() {
 		return FilterType.NODE;
 	}
 

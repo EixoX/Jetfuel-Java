@@ -2,6 +2,8 @@ package com.eixox.ui;
 
 import com.eixox.adapters.ValueAdapter;
 import com.eixox.adapters.ValueAdapters;
+import com.eixox.formatters.ValueFormatter;
+import com.eixox.formatters.ValueFormatters;
 import com.eixox.globalization.Culture;
 import com.eixox.interceptors.InterceptorAspect;
 import com.eixox.interceptors.InterceptorList;
@@ -12,47 +14,55 @@ import com.eixox.restrictions.RestrictionList;
 
 public class UIAspectMember extends AbstractAspectMember {
 
-	private final UIControlType _MemberType;
-	private final String _Label;
-	private final String _Hint;
-	private final String _Placeholder;
-	private final UIControlOptionList _Options;
+	private final UIControlType memberType;
+	private final String label;
+	private final String hint;
+	private final String placeholder;
+	private final UIControlOptionList options;
 	private final InterceptorList interceptors;
 	private final RestrictionList restrictions;
 	private final String group;
 	private final ValueAdapter<?> adapter;
+	private final boolean insertEmptyOption;
+	private final ValueFormatter<?> formatter;
 
-	public UIAspectMember(AspectMember member, UIControlType memberType, String label, String hint, String placeHolder, UIControlOptionList options, String group) {
+	private static UIControlOptionList getOptions(Class<?> claz) {
+		return null;
+	}
+
+	public UIAspectMember(AspectMember member, UIControl annotation) {
 		super(member);
-		this._MemberType = memberType;
-		this._Label = label == null || label.isEmpty() ? member.getName() : label;
-		this._Hint = hint;
-		this._Placeholder = placeHolder;
-		this._Options = options;
-		this.group = group;
+		this.memberType = annotation.type();
+		this.label = annotation.label() == null || annotation.label().isEmpty() ? member.getName() : annotation.label();
+		this.hint = annotation.hint();
+		this.placeholder = annotation.placeholder();
+		this.options = getOptions(annotation.source());
+		this.group = annotation.group();
 		this.interceptors = InterceptorAspect.buildInterceptorList(member);
 		this.restrictions = RestrictionAspect.buildRestrictionList(member);
 		this.adapter = ValueAdapters.getAdapter(member.getDataType());
+		this.insertEmptyOption = annotation.insertEmptyOption();
+		this.formatter = ValueFormatters.getFormatter(annotation.formatter(), annotation.formatString());
 	}
 
 	public final UIControlType getMemberType() {
-		return _MemberType;
+		return memberType;
 	}
 
 	public final String getLabel() {
-		return _Label;
+		return label;
 	}
 
 	public final String getHint() {
-		return _Hint;
+		return hint;
 	}
 
 	public final String getPlaceholder() {
-		return _Placeholder;
+		return placeholder;
 	}
 
 	public final UIControlOptionList getOptions() {
-		return _Options;
+		return options;
 	}
 
 	public final InterceptorList getInterceptors() {
@@ -80,6 +90,18 @@ public class UIAspectMember extends AbstractAspectMember {
 		value = this.adapter == null ? value : this.adapter.convert(value);
 		super.setValue(destination, value);
 		return value;
+	}
+
+	public final String read(Object entity, Culture culture) {
+		Object value = super.getValue(entity);
+		if (formatter == null)
+			return value == null ? "" : value.toString();
+		else
+			return formatter.formatObject(value, culture);
+	}
+
+	public final boolean getInsertEmptyOption() {
+		return this.insertEmptyOption;
 	}
 
 	/**

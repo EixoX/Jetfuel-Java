@@ -208,4 +208,16 @@ public final class Convert {
 		} else
 			throw new RuntimeException("Can't convert to Date the :" + value.toString());
 	}
+
+	public static final boolean isNullOrEmpty(Object instance) {
+		if (instance == null)
+			return true;
+		else if (instance instanceof String)
+			return ((String) instance).isEmpty();
+		else if (instance instanceof Number)
+			return ((Number) instance).doubleValue() == 0.0;
+		else
+			return false;
+
+	}
 }

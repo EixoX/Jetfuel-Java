@@ -9,23 +9,29 @@ public class UIControlOptionList extends LinkedList<UIControlOption> {
 	 */
 	private static final long serialVersionUID = 1290607055719577538L;
 
-	public final UIControlOption add(Object key, String name) {
-		UIControlOption opt = new UIControlOption(key, name);
+	public final UIControlOption prepend(Object key, String label) {
+		UIControlOption opt = new UIControlOption(key, label);
+		super.addFirst(opt);
+		return opt;
+	}
+
+	public final UIControlOption add(Object key, String label) {
+		UIControlOption opt = new UIControlOption(key, label);
 		super.add(opt);
 		return opt;
 	}
 
 	public final UIControlOption get(Object key) {
 		for (UIControlOption opt : this)
-			if (key.equals(opt.getKey()))
+			if (key.equals(opt.key))
 				return opt;
 
 		return null;
 	}
 
-	public final String getName(Object key) {
+	public final String getLabel(Object key) {
 		UIControlOption opt = get(key);
-		return opt == null ? null : opt.getName();
+		return opt == null ? null : opt.label;
 	}
 
 	public static final UIControlOptionList parse(String[] keynames, char splitter) {

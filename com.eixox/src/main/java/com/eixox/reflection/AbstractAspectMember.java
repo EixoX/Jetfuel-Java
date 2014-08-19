@@ -66,4 +66,8 @@ public class AbstractAspectMember implements AspectMember {
 		else
 			return value.toString();
 	}
+
+	public final boolean isReadOnly() {
+		return this.member.isReadOnly();
+	}
 }

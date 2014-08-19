@@ -7,25 +7,27 @@ public class HtmlAttributeList extends LinkedList<HtmlAttribute> {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= -8444457371605331450L;
+	private static final long serialVersionUID = -7995888532599917942L;
 
-	public Object get(String name) {
-		if (name != null && !name.isEmpty())
-			for (HtmlAttribute att : this)
-				if (name.equalsIgnoreCase(att.getName()))
-					return att.getValue();
+	public synchronized final HtmlAttributeList add(String name, String value) {
+		super.add(new HtmlAttribute(name, value));
+		return this;
+	}
+
+	public synchronized final String get(String name) {
+		for (HtmlAttribute att : this)
+			if (name.equalsIgnoreCase(att.name))
+				return att.value;
 		return null;
 	}
 
-	public void set(String name, Object value) {
-		if (name != null && !name.isEmpty()) {
-			for (HtmlAttribute att : this)
-				if (name.equalsIgnoreCase(att.getName()))
-				{
-					att.setValue(value);
-					return;
-				}
-			super.add(new HtmlAttribute(name, value));
-		}
+	public synchronized final HtmlAttributeList set(String name, String value) {
+		for (HtmlAttribute att : this)
+			if (name.equalsIgnoreCase(att.name)) {
+				att.value = value;
+				return this;
+			}
+		return add(name, value);
 	}
+
 }

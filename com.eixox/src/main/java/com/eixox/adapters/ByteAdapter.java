@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -23,19 +24,6 @@ public final class ByteAdapter extends ValueAdapter<Byte> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "0");
-		else
-			builder.append((Byte) input);
-	}
-
-	@Override
-	public final Byte readSql(ResultSet rs, int ordinal) throws SQLException {
-		return rs.getByte(ordinal);
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null || ((Byte) item) == 0;
 	}
@@ -43,7 +31,7 @@ public final class ByteAdapter extends ValueAdapter<Byte> {
 	@Override
 	public final Byte convert(Object value, Culture culture) {
 		if (value == null)
-			return null;
+			return 0;
 		else if (Byte.class.isInstance(value) || Byte.TYPE.isInstance(value))
 			return (Byte) value;
 		else if (Number.class.isInstance(value))
@@ -52,6 +40,21 @@ public final class ByteAdapter extends ValueAdapter<Byte> {
 			return parse(culture, (String) value);
 		else
 			return 0;
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.TINYINT;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, Byte value) throws SQLException {
+		ps.setByte(parameterIndex, value);
+	}
+
+	@Override
+	public Byte readValue(ResultSet rs, int ordinal) throws SQLException {
+		return rs.getByte(ordinal);
 	}
 
 }

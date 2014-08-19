@@ -18,4 +18,9 @@ public class StringFormatter<T> implements ValueFormatter<T> {
 		return String.format(culture.getLocale(), formatString, value);
 	}
 
+	@SuppressWarnings("unchecked")
+	public String formatObject(Object value, Culture culture) {
+		return format((T) value, culture);
+	}
+
 }

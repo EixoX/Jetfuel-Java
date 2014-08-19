@@ -3,9 +3,6 @@ package com.eixox.database;
 import java.util.HashMap;
 import java.util.Properties;
 
-import com.eixox.database.DatabaseStorage;
-import com.eixox.database.MySqlDialect;
-
 public class MySqlStorage<T> extends DatabaseStorage<T> {
 
 	private static final HashMap<Class<?>, MySqlStorage<?>> instances = new HashMap<Class<?>, MySqlStorage<?>>();
@@ -17,7 +14,7 @@ public class MySqlStorage<T> extends DatabaseStorage<T> {
 	}
 
 	private MySqlStorage(Class<T> claz) {
-		super(claz, "jdbc:mysql://localhost:3306/test", buildProperties(), new MySqlDialect());
+		super(new MySqlDatabase("jdbc:mysql://localhost:3306/test", buildProperties()), claz);
 	}
 
 	@SuppressWarnings("unchecked")

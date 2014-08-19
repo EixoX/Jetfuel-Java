@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -27,22 +28,6 @@ public final class UUIDAdapter extends ValueAdapter<UUID> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "''");
-		else {
-			builder.append("'");
-			builder.append((UUID) input);
-			builder.append("'");
-		}
-	}
-
-	@Override
-	public final UUID readSql(ResultSet rs, int ordinal) throws SQLException {
-		return parse(Cultures.EN_US, rs.getString(ordinal));
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null;
 	}
@@ -55,6 +40,21 @@ public final class UUIDAdapter extends ValueAdapter<UUID> {
 			return (UUID) value;
 		else
 			return UUID.fromString(value.toString());
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.VARCHAR;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, UUID value) throws SQLException {
+		ps.setString(parameterIndex, value == null ? null : value.toString());
+	}
+
+	@Override
+	public UUID readValue(ResultSet rs, int ordinal) throws SQLException {
+		return parse(Cultures.EN_US, rs.getString(ordinal));
 	}
 
 }

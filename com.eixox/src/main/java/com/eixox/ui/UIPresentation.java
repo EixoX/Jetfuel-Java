@@ -4,23 +4,28 @@ import com.eixox.NameValueCollection;
 import com.eixox.globalization.Culture;
 import com.eixox.restrictions.RestrictionProblems;
 
-public class UIPresentation<T> {
+public class UIPresentation {
 
 	private final UIAspect aspect;
-	private final UIPresentationMember[] controls;
+	private final UIControlPresentation[] controls;
 	private final RestrictionProblems problems;
 
+	public UIPresentation(Object entity, Culture culture) {
+		this(UIAspect.getDefaultInstance(entity.getClass()));
+		read(entity, culture);
+	}
+	
 	public UIPresentation(Class<?> claz) {
 		this(UIAspect.getDefaultInstance(claz));
 	}
 
 	public UIPresentation(UIAspect aspect) {
 		this.aspect = aspect;
-		this.controls = new UIPresentationMember[aspect.getCount()];
+		this.controls = new UIControlPresentation[aspect.getCount()];
 		this.problems = new RestrictionProblems();
 		for (int i = 0; i < this.controls.length; i++) {
 			UIAspectMember member = aspect.get(i);
-			this.controls[i] = new UIPresentationMember();
+			this.controls[i] = new UIControlPresentation();
 			this.controls[i].controlType = member.getMemberType();
 			this.controls[i].hint = member.getHint();
 			this.controls[i].id = member.getName();
@@ -28,19 +33,27 @@ public class UIPresentation<T> {
 			this.controls[i].name = member.getName();
 			this.controls[i].options = member.getOptions();
 			this.controls[i].placeholder = member.getPlaceholder();
-			this.controls[i].state = UIControlState.Normal;
+			this.controls[i].state = UIControlState.NORMAL;
+		}
+	}
+	
+	public final void read(Object entity, Culture culture){
+		for(int i=0; i < this.controls.length; i++)
+		{
+			UIAspectMember member = this.aspect.get(i);
+			this.controls[i].value = member.read(entity, culture);
 		}
 	}
 
-	public final UIPresentationMember[] getControls() {
+	public final UIControlPresentation[] getControls() {
 		return this.controls;
 	}
 
-	public final UIPresentationMember get(int ordinal) {
+	public final UIControlPresentation get(int ordinal) {
 		return this.controls[ordinal];
 	}
 
-	public final UIPresentationMember get(String name) {
+	public final UIControlPresentation get(String name) {
 		return this.controls[getOrdinalOrException(name)];
 	}
 
@@ -73,12 +86,20 @@ public class UIPresentation<T> {
 			if (msg != null && !msg.isEmpty()) {
 				this.problems.put(member.getName(), msg);
 				this.controls[i].message = msg;
-				this.controls[i].state = UIControlState.Error;
+				this.controls[i].state = UIControlState.ERROR;
 			} else {
-				this.controls[i].state = UIControlState.Success;
+				this.controls[i].state = UIControlState.SUCCESS;
 			}
 		}
 		return this.problems.size() == 0;
+	}
+
+	public final synchronized void parse(NameValueCollection<Object> map, Culture culture, Object destination) {
+		for (int i = 0; i < this.controls.length; i++) {
+			this.controls[i].value = (String) map.get(this.controls[i].name);
+			UIAspectMember member = this.aspect.get(i);
+			member.parse(this.controls[i].value, destination, culture);
+		}
 	}
 
 	public final RestrictionProblems getProblems() {
@@ -90,7 +111,7 @@ public class UIPresentation<T> {
 		int ordinal = getOrdinal(name);
 		if (ordinal >= 0) {
 			this.controls[ordinal].message = message;
-			this.controls[ordinal].state = UIControlState.Error;
+			this.controls[ordinal].state = UIControlState.ERROR;
 		}
 	}
 

@@ -35,7 +35,7 @@ public abstract class DatabaseStorageTest {
 
 	@Test
 	public void selectListTest() {
-		List<TestEntity1> list = createStorage(TestEntity1.class).select().getResult();
+		List<TestEntity1> list = createStorage(TestEntity1.class).select().toList();
 		Assert.assertTrue(list.size() > 0);
 	}
 
@@ -47,7 +47,7 @@ public abstract class DatabaseStorageTest {
 
 	@Test
 	public void selectCountTest() {
-		long count = createStorage(TestEntity1.class).countWhere(null);
+		long count = createStorage(TestEntity1.class).count();
 		Assert.assertTrue(count > 0);
 	}
 
@@ -70,7 +70,7 @@ public abstract class DatabaseStorageTest {
 		if (entity != null) {
 			entity.cpf = 321312123L;
 			entity.dateUpdated = new Date();
-			Assert.assertTrue(storage.update(entity));
+			Assert.assertTrue(storage.update(entity) > 0);
 		}
 	}
 
@@ -79,14 +79,14 @@ public abstract class DatabaseStorageTest {
 		DatabaseStorage<TestEntity1> storage = createStorage(TestEntity1.class);
 		TestEntity1 entity = storage.select().where("cpf", 123123123L).singleResult();
 		if (entity != null) {
-			Assert.assertTrue(storage.delete(entity));
+			Assert.assertTrue(storage.delete(entity) > 0);
 		}
 	}
 
 	@Test
 	public void selectByProcedureTest() {
 		DatabaseStorage<TestEntity1> storage = createStorage(TestEntity1.class);
-		List<TestEntity1> selectRaw = storage.getEngine().executeQuery(storage.getDatabaseAspect(), "CALL TestEntity1_read_byEmail(?)", "rodrigo.portela@gmail.com");
+		List<TestEntity1> selectRaw = storage.executeQuery("CALL TestEntity1_read_byEmail(?)", "rodrigo.portela@gmail.com");
 		TestEntity1 entity = selectRaw.size() > 0 ? selectRaw.get(0) : null;
 		Assert.assertNotNull(entity);
 

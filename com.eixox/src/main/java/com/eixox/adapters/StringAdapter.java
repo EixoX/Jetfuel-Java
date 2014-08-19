@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -22,23 +23,6 @@ public final class StringAdapter extends ValueAdapter<String> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "''");
-		else
-		{
-			builder.append("'");
-			builder.append(((String) input).replace("'", "''"));
-			builder.append("'");
-		}
-	}
-
-	@Override
-	public final String readSql(ResultSet rs, int ordinal) throws SQLException {
-		return rs.getString(ordinal);
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null || ((String) item).isEmpty();
 	}
@@ -51,6 +35,21 @@ public final class StringAdapter extends ValueAdapter<String> {
 			return (String) value;
 		else
 			return value.toString();
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.VARCHAR;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, String value) throws SQLException {
+		ps.setString(parameterIndex, value);
+	}
+
+	@Override
+	public String readValue(ResultSet rs, int ordinal) throws SQLException {
+		return rs.getString(ordinal);
 	}
 
 }

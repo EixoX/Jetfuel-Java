@@ -6,15 +6,10 @@ import java.util.Locale;
 
 public final class Strings {
 	// ____________________________________________________________________________
-	public static final String concat(String... strings) {
-		int length = 0;
-		for (int i = 0; i < strings.length; i++)
-			length += strings[i].length();
-
-		StringBuilder builder = new StringBuilder(length);
-		for (int i = 0; i < strings.length; i++)
-			builder.append(strings[i]);
-
+	public static final String concat(Object... values) {
+		StringBuilder builder = new StringBuilder(50);
+		for (int i = 0; i < values.length; i++)
+			builder.append(values[i]);
 		return builder.toString();
 	}
 
@@ -245,8 +240,9 @@ public final class Strings {
 		if (input == null || input.isEmpty())
 			return input;
 
-		return input.replaceAll("[áàâã]", "a").replaceAll("[ÁÀÂÃ]", "A").replaceAll("[èéê]", "e").replaceAll("[ÉÈÊ]", "E").replaceAll("[íìî]", "i").replaceAll("[ÍÌÎ]", "I").replaceAll("[òóôõ]", "o").replaceAll("[ÓÒÔÕ]", "O")
-				.replaceAll("[ùúû]", "u").replaceAll("[ÙÚÛ]", "U").replaceAll("[ç]", "c").replaceAll("[Ç]", "C").replaceAll("ñ", "n").replaceAll("Ñ", "N");
+		return input.replaceAll("[Ã¡Ã Ã¢Ã£]", "a").replaceAll("[Ã�Ã€Ã‚Ãƒ]", "A").replaceAll("[Ã¨Ã©Ãª]", "e").replaceAll("[Ã‰ÃˆÃŠ]", "E").replaceAll("[Ã­Ã¬Ã®]", "i").replaceAll("[Ã�ÃŒÃŽ]", "I").replaceAll("[Ã²Ã³Ã´Ãµ]", "o")
+				.replaceAll("[Ã“Ã’Ã”Ã•]", "O")
+				.replaceAll("[Ã¹ÃºÃ»]", "u").replaceAll("[Ã™ÃšÃ›]", "U").replaceAll("[Ã§]", "c").replaceAll("[Ã‡]", "C").replaceAll("Ã±", "n").replaceAll("Ã‘", "N");
 	}
 
 	// ____________________________________________________________________________

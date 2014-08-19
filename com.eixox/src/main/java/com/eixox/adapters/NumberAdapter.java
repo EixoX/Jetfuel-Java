@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -22,20 +23,6 @@ public class NumberAdapter extends ValueAdapter<Number> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "0.0");
-		else
-			builder.append(((Number) input).doubleValue());
-
-	}
-
-	@Override
-	public final Number readSql(ResultSet rs, int ordinal) throws SQLException {
-		return (Number) rs.getObject(ordinal);
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null || ((Number) item).intValue() == 0;
 	}
@@ -43,12 +30,27 @@ public class NumberAdapter extends ValueAdapter<Number> {
 	@Override
 	public final Number convert(Object value, Culture culture) {
 		if (value == null)
-			return null;
+			return 0.0;
 		else if (Number.class.isInstance(value))
 			return ((Number) value);
 		else if (String.class.isInstance(value))
 			return parse(culture, (String) value);
 		else
 			return 0.0;
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.DOUBLE;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, Number value) throws SQLException {
+		ps.setDouble(parameterIndex, value == null ? null : value.doubleValue());
+	}
+
+	@Override
+	public Number readValue(ResultSet rs, int ordinal) throws SQLException {
+		return (Number) rs.getObject(ordinal);
 	}
 }

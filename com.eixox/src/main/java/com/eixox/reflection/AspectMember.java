@@ -13,4 +13,6 @@ public interface AspectMember extends AnnotatedElement, Member {
 	public void setValue(Object instance, Object value);
 
 	public Type getGenericType();
+	
+	public boolean isReadOnly();
 }

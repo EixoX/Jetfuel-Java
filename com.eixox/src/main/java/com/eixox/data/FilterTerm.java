@@ -1,45 +1,33 @@
 package com.eixox.data;
 
-public final class FilterTerm implements Filter {
+public class FilterTerm implements Filter {
 
-	private final DataAspect<?> aspect;
-	private final int ordinal;
-	private final FilterComparison comparison;
-	private final Object value;
+	public final ColumnSchema columnSchema;
+	public final int ordinal;
+	public final FilterComparison comparison;
+	public final Object value;
 
-	public FilterTerm(DataAspect<?> aspect, int ordinal, FilterComparison comparison, Object value) {
-		this.aspect = aspect;
+	public FilterTerm(ColumnSchema columnSchema, int ordinal, FilterComparison comparison, Object value) {
+		this.columnSchema = columnSchema;
 		this.ordinal = ordinal;
 		this.comparison = comparison;
 		this.value = value;
 	}
 
-	public FilterTerm(DataAspect<?> aspect, int ordinal, Object value) {
-		this(aspect, ordinal, FilterComparison.EQUAL_TO, value);
+	public FilterTerm(ColumnSchema columnSchema, int ordinal, Object value) {
+		this(columnSchema, ordinal, FilterComparison.EQUAL_TO, value);
 	}
 
-	public FilterTerm(DataAspect<?> aspect, String name, FilterComparison comparison, Object value) {
-		this(aspect, aspect.getOrdinalOrException(name), comparison, value);
+	public FilterTerm(ColumnSchema columnSchema, String name, FilterComparison comparison, Object value) {
+		this(columnSchema, columnSchema.getOrdinalOrException(name), comparison, value);
 	}
 
-	public FilterTerm(DataAspect<?> aspect, String name, Object value) {
-		this(aspect, aspect.getOrdinalOrException(name), value);
+	public FilterTerm(ColumnSchema columnSchema, String name, Object value) {
+		this(columnSchema, columnSchema.getOrdinalOrException(name), value);
 	}
 
-	public final DataAspect<?> getAspect() {
-		return aspect;
-	}
-
-	public final int getOrdinal() {
-		return ordinal;
-	}
-
-	public final FilterComparison getComparison() {
-		return comparison;
-	}
-
-	public final Object getValue() {
-		return value;
+	public final ColumnSchema getColumnSchema() {
+		return columnSchema;
 	}
 
 	public final FilterType getFilterType() {

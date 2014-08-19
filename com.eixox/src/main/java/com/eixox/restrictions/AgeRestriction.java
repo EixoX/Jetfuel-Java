@@ -41,7 +41,7 @@ public class AgeRestriction implements Restriction {
 	}
 
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Idade inv√°lida";
+		return validate(input) ? null : "Idade inv·lida";
 
 	}
 

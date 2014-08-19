@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -20,6 +21,18 @@ public abstract class ValueAdapter<T> {
 
 	public abstract T parse(Culture culture, String input);
 
+	public abstract int getSqlTypeId();
+
+	public abstract void setParameterValue(PreparedStatement ps, int parameterIndex, T value) throws SQLException;
+
+	public abstract T readValue(ResultSet rs, int ordinal) throws SQLException;
+
+	public abstract String format(Culture culture, T input);
+
+	public abstract boolean IsNullOrEmpty(Object item);
+
+	public abstract T convert(Object value, Culture culture);
+
 	public final T parse(String input) {
 		return parse(Cultures.EN_US, input);
 	}
@@ -28,42 +41,18 @@ public abstract class ValueAdapter<T> {
 		return parse(Cultures.EN_US, input);
 	}
 
-	public abstract String format(Culture culture, T input);
-
 	public final String format(T input) {
 		return format(Cultures.EN_US, input);
 	}
-
-	public abstract void appendSql(StringBuilder builder, Object input, boolean nullable);
-
-	public abstract T readSql(ResultSet rs, int ordinal) throws SQLException;
-
-	public final void appendSqlIterable(StringBuilder builder, Iterable<?> iterable) {
-		builder.append("(");
-		if (iterable != null) {
-			boolean prependComma = false;
-			for (Object o : iterable) {
-				if (prependComma)
-					builder.append(", ");
-				else
-					prependComma = true;
-				appendSql(builder, o, true);
-			}
-		}
-		builder.append(")");
-	}
-
-	public abstract boolean IsNullOrEmpty(Object item);
 
 	public final T convert(Object value) {
 		return convert(value, Cultures.EN_US);
 	}
 
-	public abstract T convert(Object value, Culture culture);
+	@SuppressWarnings("unchecked")
+	public final void setParameter(PreparedStatement ps, int parameterIndex, Object value) throws SQLException {
+		setParameterValue(ps, parameterIndex, (T) value);
 
-	public final String formatSql(Object input, boolean nullable) {
-		StringBuilder builder = new StringBuilder();
-		appendSql(builder, input, nullable);
-		return builder.toString();
 	}
+
 }

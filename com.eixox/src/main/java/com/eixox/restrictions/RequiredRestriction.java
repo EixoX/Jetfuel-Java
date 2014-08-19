@@ -25,7 +25,7 @@ public class RequiredRestriction implements Restriction {
 	}
 
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "ObrigatÃ³rio";
+		return validate(input) ? null : "Obrigatório";
 	}
 
 	public void assertValid(Object input) throws RestrictionException {

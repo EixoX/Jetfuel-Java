@@ -15,7 +15,7 @@ public class PgSqlStorage<T> extends DatabaseStorage<T> {
 	}
 
 	private PgSqlStorage(Class<T> claz) {
-		super(claz, "jdbc:postgresql://localhost/test", buildProperties(), new PgSqlDialect());
+		super(new PostgresDatabase("jdbc:postgresql://localhost/test", buildProperties()), claz);
 	}
 
 	@SuppressWarnings("unchecked")

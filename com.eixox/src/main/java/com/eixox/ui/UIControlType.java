@@ -2,17 +2,16 @@ package com.eixox.ui;
 
 public enum UIControlType {
 
-	Hidden,
-	SingleLine,
-	Password,
-	Textarea,
-	Html,
-	DatePicker,
-	DropDown,
-	RadioButton,
-	RadioGroup,
-	Checkbox,
-	CheckboxGroup,
-	FileUpload
+	HIDDEN,
+	SINGLE_LINE,
+	PASSWORD,
+	MULTI_LINE,
+	HTML,
+	DATE_PICKER,
+	DROPDOWN,
+	RADIO_GROUP,
+	CHECKBOX,
+	CHECKBOX_GROUP,
+	FILE_UPLOAD
 	
 }

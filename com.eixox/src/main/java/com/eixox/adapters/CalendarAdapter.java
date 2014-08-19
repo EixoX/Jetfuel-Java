@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -32,27 +33,6 @@ public final class CalendarAdapter extends ValueAdapter<Calendar> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append("NULL");
-		else
-			ValueAdapters.DATE_TIME.appendSql(builder, ((Calendar) input).getTime(), nullable);
-	}
-
-	@Override
-	public final Calendar readSql(ResultSet rs, int ordinal) throws SQLException {
-		java.sql.Date date = rs.getDate(ordinal);
-		if (date == null)
-			return null;
-		else
-		{
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(date);
-			return cal;
-		}
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null || ZERO.equals(item);
 	}
@@ -75,10 +55,33 @@ public final class CalendarAdapter extends ValueAdapter<Calendar> {
 			return ZERO;
 	}
 
-	public static final Calendar	ZERO;
+	public static final Calendar ZERO;
 	static {
 		ZERO = Calendar.getInstance();
 		ZERO.setTimeInMillis(0);
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.TIMESTAMP;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, Calendar value) throws SQLException {
+		ps.setDate(parameterIndex, new java.sql.Date(value.getTimeInMillis()));
+	}
+
+	@Override
+	public Calendar readValue(ResultSet rs, int ordinal) throws SQLException {
+		java.sql.Date date = rs.getDate(ordinal);
+		if (date == null)
+			return null;
+		else
+		{
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(date.getTime());
+			return cal;
+		}
 	}
 
 }

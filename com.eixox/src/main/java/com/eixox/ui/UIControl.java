@@ -9,17 +9,21 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface UIControl {
 
-	UIControlType Type();
+	UIControlType type();
 
-	String Label() default "";
+	String label() default "";
 
-	String Hint() default "";
+	String hint() default "";
 
-	String Placeholder() default "";
+	String placeholder() default "";
 
-	Class<?> Source() default Object.class;
+	Class<?> source() default Object.class;
 
-	String Group() default "";
+	String group() default "";
 	
-	String FormatString() default "%s";
+	String formatString() default "";
+	
+	boolean insertEmptyOption() default false;
+	
+	Class<?> formatter() default Object.class;
 }

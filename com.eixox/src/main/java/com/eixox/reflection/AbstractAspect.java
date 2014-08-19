@@ -12,17 +12,30 @@ public abstract class AbstractAspect<G extends AbstractAspectMember> implements 
 	private final Class<?> dataType;
 	private final ArrayList<G> members;
 
-	protected AbstractAspect(Class<?> dataType) {
-		this.dataType = dataType;
-		final Method[] methods = dataType.getMethods();
-		final Field[] fields = dataType.getDeclaredFields();
-		this.members = new ArrayList<G>(methods.length + fields.length);
+	protected boolean decoratesFields() {
+		return true;
+	}
+
+	protected boolean decoratesProperties() {
+		return true;
+	}
+
+	protected boolean decoratesParent() {
+		return false;
+	}
+
+	private final void decorateFields(Class<?> claz) {
+		final Field[] fields = claz.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			final AspectMember fieldMember = new AspectField(fields[i]);
 			final G child = decorate(fieldMember);
 			if (child != null)
 				members.add(child);
 		}
+	}
+
+	private final void decorateProperties(Class<?> claz) {
+		final Method[] methods = claz.getMethods();
 		for (int i = 0; i < methods.length; i++) {
 			if (methods[i].getParameterTypes().length == 0 && methods[i].getName().startsWith("get")) {
 				final String name = methods[i].getName().substring(3, methods[i].getName().length());
@@ -37,7 +50,20 @@ public abstract class AbstractAspect<G extends AbstractAspectMember> implements 
 					members.add(child);
 			}
 		}
+	}
 
+	protected AbstractAspect(Class<?> dataType) {
+		this.dataType = dataType;
+		this.members = new ArrayList<G>();
+
+		Class<?> loadFrom = dataType;
+		do {
+			if (decoratesFields())
+				decorateFields(loadFrom);
+			if (decoratesProperties())
+				decorateProperties(loadFrom);
+			loadFrom = loadFrom.getSuperclass();
+		} while (decoratesParent() && loadFrom != null && loadFrom != Object.class);
 	}
 
 	protected abstract G decorate(AspectMember member);

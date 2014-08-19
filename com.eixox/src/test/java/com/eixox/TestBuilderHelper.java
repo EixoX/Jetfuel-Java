@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.eixox.data.Storage;
+import com.eixox.data.entities.EntityStorage;
 
 public class TestBuilderHelper {
 
@@ -13,7 +13,7 @@ public class TestBuilderHelper {
 	public void testBuildClass() {
 
 		StringBuilder builder = new StringBuilder();
-		Class<?> claz = Storage.class;
+		Class<?> claz = EntityStorage.class;
 
 		builder.append("package com.eixox; \r\n");
 		builder.append("import org.junit.Test; \r\n");

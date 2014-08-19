@@ -71,4 +71,8 @@ public final class AspectProperty implements AspectMember {
 	public final Type getGenericType() {
 		return this.getter.getGenericReturnType();
 	}
+
+	public final boolean isReadOnly() {
+		return this.setter != null;
+	}
 }

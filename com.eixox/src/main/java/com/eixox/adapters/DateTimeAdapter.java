@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -25,20 +26,7 @@ public final class DateTimeAdapter extends ValueAdapter<Date> {
 		return input == null ? "" : culture.formatDateTime(input);
 	}
 
-	public static final DateFormat	SqlDateFormatter	= new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss.S''", Locale.US);
-
-	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append("NULL");
-		else
-			builder.append(SqlDateFormatter.format((Date) input));
-	}
-
-	@Override
-	public final Date readSql(ResultSet rs, int ordinal) throws SQLException {
-		return rs.getDate(ordinal);
-	}
+	public static final DateFormat SqlDateFormatter = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss.S''", Locale.US);
 
 	@Override
 	public final boolean IsNullOrEmpty(Object item) {
@@ -63,10 +51,25 @@ public final class DateTimeAdapter extends ValueAdapter<Date> {
 			return ZERO;
 	}
 
-	public static final Date	ZERO;
+	public static final Date ZERO;
 	static {
 		ZERO = new Date();
 		ZERO.setTime(0);
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.TIMESTAMP;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, Date value) throws SQLException {
+		ps.setDate(parameterIndex, new java.sql.Date(value.getTime()));
+	}
+
+	@Override
+	public Date readValue(ResultSet rs, int ordinal) throws SQLException {
+		return rs.getDate(ordinal);
 	}
 
 }

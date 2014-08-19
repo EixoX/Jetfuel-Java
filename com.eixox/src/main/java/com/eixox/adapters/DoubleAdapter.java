@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -23,19 +24,6 @@ public final class DoubleAdapter extends ValueAdapter<Double> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "0.0");
-		else
-			builder.append((Double) input);
-	}
-
-	@Override
-	public final Double readSql(ResultSet rs, int ordinal) throws SQLException {
-		return rs.getDouble(ordinal);
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null || ((Double) item) == 0.0;
 	}
@@ -43,7 +31,7 @@ public final class DoubleAdapter extends ValueAdapter<Double> {
 	@Override
 	public final Double convert(Object value, Culture culture) {
 		if (value == null)
-			return null;
+			return 0.0;
 		else if (Double.class.isInstance(value) || Double.TYPE.isInstance(value))
 			return (Double) value;
 		else if (Number.class.isInstance(value))
@@ -52,6 +40,21 @@ public final class DoubleAdapter extends ValueAdapter<Double> {
 			return parse(culture, (String) value);
 		else
 			return 0.0;
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.DOUBLE;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, Double value) throws SQLException {
+		ps.setDouble(parameterIndex, value);
+	}
+
+	@Override
+	public Double readValue(ResultSet rs, int ordinal) throws SQLException {
+		return rs.getDouble(ordinal);
 	}
 
 }

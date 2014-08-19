@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -28,19 +29,6 @@ public final class BooleanAdapter extends ValueAdapter<Boolean> {
 	}
 
 	@Override
-	public final void appendSql(StringBuilder builder, Object input, boolean nullable) {
-		if (input == null)
-			builder.append(nullable ? "NULL" : "0");
-		else
-			builder.append(((Boolean) input) ? "1" : "0");
-	}
-
-	@Override
-	public final Boolean readSql(ResultSet rs, int ordinal) throws SQLException {
-		return rs.getBoolean(ordinal);
-	}
-
-	@Override
 	public final boolean IsNullOrEmpty(Object item) {
 		return item == null;
 	}
@@ -48,7 +36,7 @@ public final class BooleanAdapter extends ValueAdapter<Boolean> {
 	@Override
 	public final Boolean convert(Object value, Culture culture) {
 		if (value == null)
-			return null;
+			return false;
 		else if (Boolean.class.isInstance(value) || Boolean.TYPE.isInstance(value))
 			return (Boolean) value;
 		else if (Number.class.isInstance(value))
@@ -57,6 +45,21 @@ public final class BooleanAdapter extends ValueAdapter<Boolean> {
 			return parse(culture, (String) value);
 		else
 			return false;
+	}
+
+	@Override
+	public int getSqlTypeId() {
+		return java.sql.Types.BOOLEAN;
+	}
+
+	@Override
+	public void setParameterValue(PreparedStatement ps, int parameterIndex, Boolean value) throws SQLException {
+		ps.setBoolean(parameterIndex, value);
+	}
+
+	@Override
+	public Boolean readValue(ResultSet rs, int ordinal) throws SQLException {
+		return rs.getBoolean(ordinal);
 	}
 
 }

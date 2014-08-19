@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface DatabaseTable {
-	public String dataName() default "";
+	public String tableName() default "";
 }

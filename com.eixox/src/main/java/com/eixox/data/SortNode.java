@@ -1,45 +1,20 @@
 package com.eixox.data;
 
+public class SortNode {
 
-public final class SortNode {
+	public final ColumnSchema columnSchema;
+	public final int ordinal;
+	public final SortDirection direction;
+	public SortNode next;
 
-	private final DataAspect<?>	aspect;
-	private final int			ordinal;
-	private final SortDirection	direction;
-	private SortNode			next;
-
-	public SortNode(DataAspect<?> aspect, int ordinal, SortDirection direction) {
-		this.aspect = aspect;
+	public SortNode(ColumnSchema columnSchema, int ordinal, SortDirection direction) {
+		this.columnSchema = columnSchema;
 		this.ordinal = ordinal;
 		this.direction = direction;
 	}
 
-	public SortNode(DataAspect<?> aspect, String name, SortDirection direction) {
-		this(aspect, aspect.getOrdinalOrException(name), direction);
-	}
-
-	public final SortNode getNext() {
-		return next;
-	}
-
-	public final void setNext(SortNode next) {
-		this.next = next;
-	}
-
-	public final DataAspect<?> getAspect() {
-		return aspect;
-	}
-
-	public final int getOrdinal() {
-		return ordinal;
-	}
-
-	public final SortDirection getDirection() {
-		return direction;
-	}
-
-	public final String getColumnName() {
-		return this.aspect.getColumnName(this.ordinal);
+	public SortNode(ColumnSchema columnSchema, String name, SortDirection direction) {
+		this(columnSchema, columnSchema.getOrdinalOrException(name), direction);
 	}
 
 }

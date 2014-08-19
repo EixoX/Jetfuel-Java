@@ -15,6 +15,7 @@ import javax.servlet.http.Part;
 import com.eixox.NameValueCollection;
 import com.eixox.Pair;
 import com.eixox.Streams;
+import com.eixox.UsecaseResult;
 import com.eixox.Viewee;
 
 public class ViewHandler implements Viewee {
@@ -63,8 +64,8 @@ public class ViewHandler implements Viewee {
 
 	public final Object getParameter(String name) throws IllegalStateException, IOException, ServletException {
 		for (Pair<String, Object> pair : this.getParameters())
-			if (name.equalsIgnoreCase(pair.getKey()))
-				return pair.getValue();
+			if (name.equalsIgnoreCase(pair.key))
+				return pair.value;
 
 		return null;
 	}
@@ -146,6 +147,29 @@ public class ViewHandler implements Viewee {
 
 	public final void setWarningMessage(String warningMessage) {
 		request.setAttribute("WarningMessage", warningMessage);
+	}
+
+	public final void setResult(UsecaseResult result) {
+		if (result != null) {
+			request.setAttribute("UsecaseResult", result);
+			switch (result.resultType) {
+				case EXCEPTION:
+					request.setAttribute("LastException", result.exception);
+					setErrorMessage(result.message);
+					break;
+				case HAS_WARNINGS:
+					setWarningMessage(result.message);
+					break;
+				case SUCESS:
+					setSuccessMessage(result.message);
+					break;
+				default:
+					if (result.message == null || result.message.isEmpty())
+						result.message = "Ops. Não foi possível executar a operação";
+					setErrorMessage(result.message);
+					break;
+			}
+		}
 	}
 
 	public final Exception getLastException() {
