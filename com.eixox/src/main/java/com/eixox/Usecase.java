@@ -1,7 +1,9 @@
 package com.eixox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -120,6 +122,17 @@ public abstract class Usecase {
 		else
 			throw new RuntimeException(name + " was not found on " + getClass().getName());
 	}
+	
+	public final Map<String, UIControlPresentation> buildUIMap(Culture culture) {
+		Map<String, UIControlPresentation> uiMap = new HashMap<String, UIControlPresentation>();
+		for (UsecaseProperty prop : this.properties) {
+			UsecaseAspectMember member = this.aspect.get(prop.name);
+			if (member.isControl())
+				uiMap.put(prop.name, member.buildUIPresentation(prop, culture));
+		}
+		
+		return uiMap;
+	}
 
 	public final List<UIControlPresentation> buildUIPresentation(Culture culture) {
 		ArrayList<UIControlPresentation> presentation = new ArrayList<UIControlPresentation>(this.properties.length);
@@ -144,6 +157,7 @@ public abstract class Usecase {
 				executeFlow(result);
 			}
 			else {
+				result.message = "Os campos estão inválidos";
 				result.resultType = UsecaseResultType.VALIDATION_FAILED;
 			}
 		} catch (Exception ex) {

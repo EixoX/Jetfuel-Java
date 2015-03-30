@@ -59,7 +59,7 @@ public class CpfRestriction implements Restriction {
 	}
 
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "CPF inv·lido";
+		return validate(input) ? null : "CPF inv√°lido";
 	}
 
 	public void assertValid(Object input) throws RestrictionException {

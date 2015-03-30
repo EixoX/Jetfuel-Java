@@ -25,7 +25,7 @@ public class EmailRestriction implements Restriction {
 
 	
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Endereço de e-mail inválido";
+		return validate(input) ? null : "EndereÃ§o de e-mail invÃ¡lido";
 	}
 
 	

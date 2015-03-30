@@ -12,7 +12,7 @@ public final class Bootstrap3Presenter {
 	}
 
 	private static final void openWrapper(HtmlBuilder builder, UIControlPresentation presentation) {
-		String wrapperClass = "form-group";
+		String wrapperClass = "";
 		switch (presentation.state) {
 			case ERROR:
 				wrapperClass += " has-error";

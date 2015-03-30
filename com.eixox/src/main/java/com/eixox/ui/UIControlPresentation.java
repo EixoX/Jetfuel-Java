@@ -1,5 +1,7 @@
 package com.eixox.ui;
 
+import com.eixox.web.Bootstrap3Presenter;
+
 public class UIControlPresentation {
 
 	public String label;
@@ -12,5 +14,10 @@ public class UIControlPresentation {
 	public UIControlState state;
 	public String id;
 	public String name;
+	
+	@Override
+	public String toString() {
+		return Bootstrap3Presenter.present(this);
+	}
 
 }
