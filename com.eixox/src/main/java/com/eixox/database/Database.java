@@ -265,7 +265,6 @@ public class Database {
 				}
 
 				appendName(cmd.text, aspect.getColumnName(i));
-				cmd.text.append("=?");
 				cmd.parameters.add(values[i]);
 			}
 
