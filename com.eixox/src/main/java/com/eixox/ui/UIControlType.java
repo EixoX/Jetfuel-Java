@@ -12,6 +12,7 @@ public enum UIControlType {
 	RADIO_GROUP,
 	CHECKBOX,
 	CHECKBOX_GROUP,
-	FILE_UPLOAD
+	FILE_UPLOAD,
+	INTEGER
 	
 }
