@@ -28,6 +28,7 @@ public class UsecaseAspectMember extends AbstractAspectMember {
 	private final InterceptorList interceptors;
 	private final RestrictionList restrictions;
 	private final String group;
+	private final String cssClass;
 	private final ValueAdapter<?> adapter;
 	private final ValueFormatter<?> formatter;
 	private final String formatString;
@@ -69,6 +70,7 @@ public class UsecaseAspectMember extends AbstractAspectMember {
 			this.group = annotation.group();
 			this.formatter = ValueFormatters.getFormatter(annotation.formatter());
 			this.formatString = annotation.formatString();
+			this.cssClass = annotation.cssClass();
 		} else {
 			this.controlType = UIControlType.HIDDEN;
 			this.label = member.getName();
@@ -78,6 +80,7 @@ public class UsecaseAspectMember extends AbstractAspectMember {
 			this.group = null;
 			this.formatter = null;
 			this.formatString = null;
+			this.cssClass = null;
 		}
 
 		this.interceptors = InterceptorAspect.buildInterceptorList(member);
@@ -143,6 +146,8 @@ public class UsecaseAspectMember extends AbstractAspectMember {
 		presentation.options = this.options;
 		presentation.placeholder = this.placeholder;
 		presentation.state = source.state;
+		presentation.cssClass = this.cssClass;
+		
 		if (source.value == null)
 			presentation.value = "";
 		else if (this.formatter != null)

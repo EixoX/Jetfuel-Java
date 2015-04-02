@@ -34,6 +34,7 @@ public class UIPresentation {
 			this.controls[i].options = member.getOptions();
 			this.controls[i].placeholder = member.getPlaceholder();
 			this.controls[i].state = UIControlState.NORMAL;
+			this.controls[i].cssClass = member.getCssClass();
 		}
 	}
 	

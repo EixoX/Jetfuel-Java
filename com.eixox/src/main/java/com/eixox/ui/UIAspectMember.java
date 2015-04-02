@@ -18,6 +18,7 @@ public class UIAspectMember extends AbstractAspectMember {
 	private final String label;
 	private final String hint;
 	private final String placeholder;
+	private final String cssClass;
 	private final UIControlOptionList options;
 	private final InterceptorList interceptors;
 	private final RestrictionList restrictions;
@@ -38,6 +39,7 @@ public class UIAspectMember extends AbstractAspectMember {
 		this.placeholder = annotation.placeholder();
 		this.options = getOptions(annotation.source());
 		this.group = annotation.group();
+		this.cssClass = annotation.cssClass();
 		this.interceptors = InterceptorAspect.buildInterceptorList(member);
 		this.restrictions = RestrictionAspect.buildRestrictionList(member);
 		this.adapter = ValueAdapters.getAdapter(member.getDataType());
@@ -45,6 +47,10 @@ public class UIAspectMember extends AbstractAspectMember {
 		this.formatter = ValueFormatters.getFormatter(annotation.formatter(), annotation.formatString());
 	}
 
+	public final String getCssClass() {
+		return cssClass;
+	}
+	
 	public final UIControlType getMemberType() {
 		return memberType;
 	}

@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.eixox.globalization.Culture;
+import com.eixox.interceptors.InterceptorAspect;
 import com.eixox.ui.UIControlPresentation;
 import com.eixox.ui.UIControlState;
 
@@ -152,7 +153,7 @@ public abstract class Usecase {
 		UsecaseResult result = new UsecaseResult();
 		result.properties = this.properties;
 		try {
-
+			InterceptorAspect.getInstance(getClass()).apply(this);
 			if (validate()) {
 				executeFlow(result);
 			}

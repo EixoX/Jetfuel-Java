@@ -23,6 +23,8 @@ public @interface UIControl {
 	
 	String formatString() default "";
 	
+	String cssClass() default "";
+	
 	boolean insertEmptyOption() default false;
 	
 	Class<?> formatter() default Object.class;

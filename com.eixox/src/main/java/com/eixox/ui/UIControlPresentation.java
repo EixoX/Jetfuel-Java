@@ -14,6 +14,7 @@ public class UIControlPresentation {
 	public UIControlState state;
 	public String id;
 	public String name;
+	public String cssClass;
 	
 	@Override
 	public String toString() {

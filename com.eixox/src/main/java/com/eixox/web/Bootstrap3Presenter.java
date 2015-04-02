@@ -52,6 +52,7 @@ public final class Bootstrap3Presenter {
 
 	public static void present(HtmlBuilder builder,
 			UIControlPresentation presentation) {
+		String defaultCss = "form-control  " + presentation.cssClass;
 		switch (presentation.controlType) {
 		case CHECKBOX:
 			break;
@@ -59,10 +60,11 @@ public final class Bootstrap3Presenter {
 			break;
 		case DATE_PICKER:
 			openWrapper(builder, presentation);
-			builder.openTag("input").appendAttribute("type", "date")
+			builder.openTag("input")
+					.appendAttribute("type", "date")
 					.appendAttribute("id", presentation.id)
 					.appendAttribute("name", presentation.name)
-					.appendAttribute("class", "form-control")
+					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
 					.appendAttribute("value", presentation.value)
 					.closeTag("input");
@@ -75,7 +77,7 @@ public final class Bootstrap3Presenter {
 			builder.openTag("input").appendAttribute("type", "file")
 					.appendAttribute("id", presentation.id)
 					.appendAttribute("name", presentation.name)
-					.appendAttribute("class", "form-control")
+					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
 					.appendAttribute("value", presentation.value)
 					.closeTag("input");
@@ -85,7 +87,7 @@ public final class Bootstrap3Presenter {
 			builder.openTag("input").appendAttribute("type", "hidden")
 					.appendAttribute("id", presentation.id)
 					.appendAttribute("name", presentation.name)
-					.appendAttribute("class", "form-control")
+					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
 					.appendAttribute("value", presentation.value)
 					.closeTag("input");
@@ -96,7 +98,7 @@ public final class Bootstrap3Presenter {
 					.appendAttribute("cols", "40")
 					.appendAttribute("id", presentation.id)
 					.appendAttribute("name", presentation.name)
-					.appendAttribute("class", "form-control html-builder")
+					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
 					.appendContent(presentation.value).closeTag("textarea");
 			closeWrapper(builder, presentation);
@@ -106,7 +108,7 @@ public final class Bootstrap3Presenter {
 			builder.openTag("input").appendAttribute("type", "password")
 					.appendAttribute("id", presentation.id)
 					.appendAttribute("name", presentation.name)
-					.appendAttribute("class", "form-control")
+					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
 					.appendAttribute("value", presentation.value)
 					.closeTag("input");
@@ -119,7 +121,7 @@ public final class Bootstrap3Presenter {
 			builder.openTag("input").appendAttribute("type", "text")
 					.appendAttribute("id", presentation.id)
 					.appendAttribute("name", presentation.name)
-					.appendAttribute("class", "form-control")
+					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
 					.appendAttribute("value", presentation.value)
 					.closeTag("input");
@@ -131,7 +133,7 @@ public final class Bootstrap3Presenter {
 					.appendAttribute("cols", "40")
 					.appendAttribute("id", presentation.id)
 					.appendAttribute("name", presentation.name)
-					.appendAttribute("class", "form-control")
+					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
 					.appendContent(presentation.value).closeTag("textarea");
 			closeWrapper(builder, presentation);
@@ -141,7 +143,7 @@ public final class Bootstrap3Presenter {
 			builder.openTag("input").appendAttribute("type", "number")
 					.appendAttribute("id", presentation.id)
 					.appendAttribute("name", presentation.name)
-					.appendAttribute("class", "form-control")
+					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
 					.appendAttribute("value", presentation.value)
 					.closeTag("input");
