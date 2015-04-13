@@ -38,6 +38,13 @@ public abstract class Usecase {
 		return properties;
 	}
 
+	public final UsecaseProperty getProperty(String name) {
+		for (int i = 0; i < properties.length; i++)
+			if (name.equalsIgnoreCase(properties[i].name))
+				return properties[i];
+		return null;
+	}
+
 	public final void refreshProperties(Culture culture) {
 		for (int i = 0; i < this.properties.length; i++) {
 			UsecaseAspectMember member = aspect.get(i);
@@ -68,6 +75,12 @@ public abstract class Usecase {
 			UsecaseAspectMember member = this.aspect.get(i);
 			member.parse(property, this, culture);
 		}
+	}
+
+	public void invalidate(String name, String message) {
+		UsecaseProperty prop = getProperty(name);
+		prop.message = message;
+		prop.state = UIControlState.ERROR;
 	}
 
 	public boolean validate() {
@@ -123,7 +136,7 @@ public abstract class Usecase {
 		else
 			throw new RuntimeException(name + " was not found on " + getClass().getName());
 	}
-	
+
 	public final Map<String, UIControlPresentation> buildUIMap(Culture culture) {
 		Map<String, UIControlPresentation> uiMap = new HashMap<String, UIControlPresentation>();
 		for (UsecaseProperty prop : this.properties) {
@@ -131,7 +144,7 @@ public abstract class Usecase {
 			if (member.isControl())
 				uiMap.put(prop.name, member.buildUIPresentation(prop, culture));
 		}
-		
+
 		return uiMap;
 	}
 
