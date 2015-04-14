@@ -33,6 +33,15 @@ public class UIControlOptionList extends LinkedList<UIControlOption> {
 		UIControlOption opt = get(key);
 		return opt == null ? null : opt.label;
 	}
+	
+	public static final UIControlOptionList parse(String[] keynames) {
+		UIControlOptionList list = new UIControlOptionList();
+		for (int i = 0; i < keynames.length; i++) {
+			list.add(new UIControlOption(keynames[i], keynames[i]));
+		}
+		
+		return list;
+	}
 
 	public static final UIControlOptionList parse(String[] keynames, char splitter) {
 		UIControlOptionList list = new UIControlOptionList();

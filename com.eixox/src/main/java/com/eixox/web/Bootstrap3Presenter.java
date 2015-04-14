@@ -12,8 +12,7 @@ public final class Bootstrap3Presenter {
 	private Bootstrap3Presenter() {
 	}
 
-	private static final void openWrapper(HtmlBuilder builder,
-			UIControlPresentation presentation) {
+	private static final void openWrapper(HtmlBuilder builder, UIControlPresentation presentation) {
 		String wrapperClass = "";
 		switch (presentation.state) {
 		case ERROR:
@@ -28,20 +27,28 @@ public final class Bootstrap3Presenter {
 		default:
 			break;
 		}
-		builder.openTag("div").appendAttribute("class", wrapperClass)
-				.openTag("label").appendAttribute("for", presentation.id)
-				.appendAttribute("class", "control-label")
-				.appendContent(presentation.label).closeTag("label");
+		builder.openTag("div")
+			   .appendAttribute("class", wrapperClass)
+			   .openTag("label")
+			   .appendAttribute("for", presentation.id)
+			   .appendAttribute("class", "control-label")
+			   .appendContent(presentation.label)
+			   .closeTag("label");
 	}
 
-	private static final void closeWrapper(HtmlBuilder builder,
-			UIControlPresentation presentation) {
+	private static final void closeWrapper(HtmlBuilder builder, UIControlPresentation presentation) {
 		if (presentation.hint != null && !presentation.hint.isEmpty())
-			builder.openTag("p").appendAttribute("class", "help-block")
-					.appendContent(presentation.hint).closeTag("p");
+			builder.openTag("p")
+				   .appendAttribute("class", "help-block")
+				   .appendContent(presentation.hint)
+				   .closeTag("p");
+		
 		if (presentation.message != null && !presentation.message.isEmpty())
-			builder.openTag("p").appendAttribute("class", "help-block")
-					.appendContent(presentation.message).closeTag("p");
+			builder.openTag("p")
+				   .appendAttribute("class", "help-block")
+				   .appendContent(presentation.message)
+				   .closeTag("p");
+		
 		builder.closeTag("div");
 	}
 
@@ -55,6 +62,25 @@ public final class Bootstrap3Presenter {
 		String defaultCss = "form-control  " + presentation.cssClass;
 		switch (presentation.controlType) {
 		case CHECKBOX:
+			String aux = presentation.label;
+			presentation.label = "";
+			
+			openWrapper(builder, presentation);
+			builder.openTag("div")
+				  .appendAttribute("class", "checkbox " + presentation.cssClass)
+				  .openTag("label")
+				  .openTag("input")
+				  .appendAttribute("type", "checkbox")
+				  .appendAttribute("name", presentation.name);
+			
+			if (Boolean.parseBoolean(presentation.value)) {
+				builder.appendAttribute("checked", "");
+			}
+			
+		    builder.appendContent(aux)
+				   .closeTag("label")
+				   .closeTag("div");
+			closeWrapper(builder, presentation);
 			break;
 		case CHECKBOX_GROUP:
 			break;
@@ -73,7 +99,7 @@ public final class Bootstrap3Presenter {
 		case DROPDOWN:
 			openWrapper(builder, presentation);
 			builder.openTag("select")
-					.appendAttribute("id", presentation.id)
+					.appendAttribute("id", presentation.name)
 					.appendAttribute("name", presentation.name)
 					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
@@ -81,8 +107,12 @@ public final class Bootstrap3Presenter {
 			
 			for (UIControlOption option : presentation.options) {
 				builder.openTag("option")
-					   .appendAttribute("value", option.key)
-					   .appendContent(option.label)
+					   .appendAttribute("value", option.key);
+				
+				if (option.key.toString().equalsIgnoreCase(presentation.value))
+					builder.appendAttribute("selected", "selected");
+
+				builder.appendContent(option.label)
 					   .closeTag("option");
 			}
 			
@@ -132,11 +162,32 @@ public final class Bootstrap3Presenter {
 			closeWrapper(builder, presentation);
 			break;
 		case RADIO_GROUP:
+			openWrapper(builder, presentation);
+			
+			for (UIControlOption option : presentation.options) {
+				builder.openTag("div")
+					   .appendAttribute("class", "radio " + presentation.cssClass)
+					   .openTag("label")
+					   .openTag("input")
+					   .appendAttribute("type", "radio")
+					   .appendAttribute("name", presentation.name)
+					   .appendAttribute("value", option.key);
+				
+				if (presentation.value.equalsIgnoreCase(option.key.toString())) {
+					builder.appendAttribute("checked", "checked");
+				}
+				
+				builder.appendContent(option.label)
+					   .closeTag("label")
+					   .closeTag("div");
+			}
+			
+			closeWrapper(builder, presentation);
 			break;
 		case SINGLE_LINE:
 			openWrapper(builder, presentation);
 			builder.openTag("input").appendAttribute("type", "text")
-					.appendAttribute("id", presentation.id)
+					.appendAttribute("id", presentation.name)
 					.appendAttribute("name", presentation.name)
 					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)
@@ -148,7 +199,7 @@ public final class Bootstrap3Presenter {
 			openWrapper(builder, presentation);
 			builder.openTag("textarea").appendAttribute("rows", "10")
 					.appendAttribute("cols", "40")
-					.appendAttribute("id", presentation.id)
+					.appendAttribute("id", presentation.name)
 					.appendAttribute("name", presentation.name)
 					.appendAttribute("class", defaultCss)
 					.appendAttribute("placeholder", presentation.placeholder)

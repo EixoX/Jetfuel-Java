@@ -16,6 +16,8 @@ public final class BooleanAdapter extends ValueAdapter<Boolean> {
 	public final Boolean parse(Culture culture, String input) {
 		if (input == null || input.isEmpty())
 			return null;
+		else if (input.equalsIgnoreCase("on"))
+			return true;
 		else
 			return Boolean.parseBoolean(input);
 	}

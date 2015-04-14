@@ -65,6 +65,8 @@ public abstract class Usecase {
 		for (int i = 0; i < this.properties.length; i++) {
 			UsecaseProperty property = this.properties[i];
 			property.value = request.getParameter(property.name);
+			
+			String a = "";
 		}
 		parse(culture);
 	}
