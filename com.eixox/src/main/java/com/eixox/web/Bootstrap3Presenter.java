@@ -3,8 +3,9 @@ package com.eixox.web;
 import java.util.List;
 
 import com.eixox.html.HtmlBuilder;
-import com.eixox.ui.UIPresentation;
+import com.eixox.ui.UIControlOption;
 import com.eixox.ui.UIControlPresentation;
+import com.eixox.ui.UIPresentation;
 
 public final class Bootstrap3Presenter {
 
@@ -50,8 +51,7 @@ public final class Bootstrap3Presenter {
 		return builder.toString();
 	}
 
-	public static void present(HtmlBuilder builder,
-			UIControlPresentation presentation) {
+	public static void present(HtmlBuilder builder, UIControlPresentation presentation) {
 		String defaultCss = "form-control  " + presentation.cssClass;
 		switch (presentation.controlType) {
 		case CHECKBOX:
@@ -71,6 +71,23 @@ public final class Bootstrap3Presenter {
 			closeWrapper(builder, presentation);
 			break;
 		case DROPDOWN:
+			openWrapper(builder, presentation);
+			builder.openTag("select")
+					.appendAttribute("id", presentation.id)
+					.appendAttribute("name", presentation.name)
+					.appendAttribute("class", defaultCss)
+					.appendAttribute("placeholder", presentation.placeholder)
+					.appendAttribute("value", presentation.value);
+			
+			for (UIControlOption option : presentation.options) {
+				builder.openTag("option")
+					   .appendAttribute("value", option.key)
+					   .appendContent(option.label)
+					   .closeTag("option");
+			}
+			
+			builder.closeTag("select");	
+			closeWrapper(builder, presentation);
 			break;
 		case FILE_UPLOAD:
 			openWrapper(builder, presentation);
