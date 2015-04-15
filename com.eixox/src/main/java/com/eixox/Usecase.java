@@ -65,8 +65,6 @@ public abstract class Usecase {
 		for (int i = 0; i < this.properties.length; i++) {
 			UsecaseProperty property = this.properties[i];
 			property.value = request.getParameter(property.name);
-			
-			String a = "";
 		}
 		parse(culture);
 	}
@@ -162,7 +160,7 @@ public abstract class Usecase {
 		return presentation;
 	}
 
-	protected abstract void executeFlow(UsecaseResult result);
+	protected abstract void executeFlow(UsecaseResult result) throws Exception;
 
 	public synchronized final UsecaseResult execute() {
 		UsecaseResult result = new UsecaseResult();

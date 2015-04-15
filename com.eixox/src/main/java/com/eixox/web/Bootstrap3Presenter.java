@@ -28,10 +28,10 @@ public final class Bootstrap3Presenter {
 			break;
 		}
 		builder.openTag("div")
-			   .appendAttribute("class", wrapperClass)
+			   .appendAttribute("class", wrapperClass + " div-" + presentation.name)
 			   .openTag("label")
 			   .appendAttribute("for", presentation.id)
-			   .appendAttribute("class", "control-label")
+			   .appendAttribute("class", "control-label label-" + presentation.name)
 			   .appendContent(presentation.label)
 			   .closeTag("label");
 	}
@@ -166,7 +166,7 @@ public final class Bootstrap3Presenter {
 			
 			for (UIControlOption option : presentation.options) {
 				builder.openTag("div")
-					   .appendAttribute("class", "radio " + presentation.cssClass)
+					   .appendAttribute("class", "radio ")
 					   .openTag("label")
 					   .openTag("input")
 					   .appendAttribute("type", "radio")
