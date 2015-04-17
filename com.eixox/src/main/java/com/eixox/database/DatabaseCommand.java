@@ -91,7 +91,6 @@ public class DatabaseCommand {
 						mappings[i] = aspect.getColumnOrdinal(metadata.getColumnName(i + 1));
 
 					do {
-
 						T entity = (T) aspect.newInstance();
 						for (int i = 0; i < imax; i++)
 							if (mappings[i] >= 0)
@@ -102,10 +101,8 @@ public class DatabaseCommand {
 							}
 
 						list.add(entity);
-
 					} while (rs.next());
 				}
-
 			} finally {
 				rs.close();
 			}

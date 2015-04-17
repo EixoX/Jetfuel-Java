@@ -93,7 +93,7 @@ public abstract class EntityStorage<T> {
 		final EntityInsert insert = insert();
 		insert.set(entity);
 
-		if (aspect.identityOrdinal > 0) {
+		if (aspect.identityOrdinal < 0) {
 			return insert.execute();
 		}
 		else {

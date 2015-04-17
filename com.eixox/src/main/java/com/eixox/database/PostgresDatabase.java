@@ -2,6 +2,8 @@ package com.eixox.database;
 
 import java.util.Properties;
 
+import com.eixox.data.entities.EntityAspect;
+
 public class PostgresDatabase extends Database {
 
 	public PostgresDatabase(String url) {
@@ -30,5 +32,10 @@ public class PostgresDatabase extends Database {
 			builder.append(" LIMIT ");
 			builder.append(pageSize);
 		}
+	}
+	
+	@Override
+	protected void appendScopeIdentity(DatabaseCommand cmd, EntityAspect aspect) {
+
 	}
 }
