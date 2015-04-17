@@ -28,7 +28,8 @@ public class Formats {
 	}
 
 	public static final String cep(int value) {
-		return Strings.concat(zeroPadLeft(value / 1000, 5), "-", zeroPadLeft(value % 1000, 3));
+		return Strings.concat(zeroPadLeft(value / 1000, 5), "-",
+				zeroPadLeft(value % 1000, 3));
 	}
 
 	public static final String cpfOrCnpj(long value) {
@@ -36,11 +37,17 @@ public class Formats {
 	}
 
 	public static final String cpf(long value) {
-		return Strings.concat(zeroPadLeft(((value / 100000000) % 1000), 3), ".", zeroPadLeft(((value / 100000) % 1000), 3), ".", zeroPadLeft(((value / 100) % 1000), 3), "-", zeroPadLeft((value % 100), 2));
+		return Strings.concat(zeroPadLeft(((value / 100000000) % 1000), 3),
+				".", zeroPadLeft(((value / 100000) % 1000), 3), ".",
+				zeroPadLeft(((value / 100) % 1000), 3), "-",
+				zeroPadLeft((value % 100), 2));
 	}
 
 	public static final String cnpj(long value) {
-		return Strings.concat(zeroPadLeft(((value / 1000000000000L) % 100), 2), ".", zeroPadLeft(((value / 1000000000) % 1000), 3), ".", zeroPadLeft(((value / 1000000) % 1000), 3), "/", zeroPadLeft(((value / 100) % 10000), 4), "-",
+		return Strings.concat(zeroPadLeft(((value / 1000000000000L) % 100), 2),
+				".", zeroPadLeft(((value / 1000000000) % 1000), 3), ".",
+				zeroPadLeft(((value / 1000000) % 1000), 3), "/",
+				zeroPadLeft(((value / 100) % 10000), 4), "-",
 				zeroPadLeft((value % 100), 2));
 	}
 
