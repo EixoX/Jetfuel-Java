@@ -1,4 +1,4 @@
-package com.eixox.data.csv;
+package com.eixox.formatters;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,8 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
-public @interface CsvColumn {
+public @interface FormatDate {
 
-	public String columnName() default "";
-	public boolean ignoreParseErrors() default false;
+	public String format();
 }

@@ -1,5 +1,7 @@
 package com.eixox.restrictions;
 
+import com.eixox.interceptors.DigitsOnlyInterceptor;
+
 public class CpfRestriction implements Restriction {
 
 	public CpfRestriction() {
@@ -7,6 +9,27 @@ public class CpfRestriction implements Restriction {
 
 	public CpfRestriction(Cpf cpf) {
 		// just complying to a constructor pattern.
+	}
+
+	public static boolean isValidObject(Object value) {
+		try {
+			if (value == null)
+				return true;
+			else if (value instanceof String) {
+				String is = (String) value;
+				if (is.isEmpty())
+					return true;
+				else {
+					is = (String) DigitsOnlyInterceptor.Instance.intercept(value);
+					return isValid(Long.parseLong(is));
+				}
+			} else if (value instanceof Number)
+				return isValid(((Number) value).longValue());
+			else
+				return false;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public static boolean isValid(long value) {
@@ -44,18 +67,7 @@ public class CpfRestriction implements Restriction {
 	}
 
 	public boolean validate(Object input) {
-		if (input == null)
-			return true;
-		else if (input instanceof String) {
-			String is = (String) input;
-			if (is.isEmpty())
-				return true;
-			else
-				return isValid(Long.parseLong(is));
-		} else if (input instanceof Number)
-			return isValid(((Number) input).longValue());
-		else
-			return false;
+		return isValidObject(input);
 	}
 
 	public String getRestrictionMessageFor(Object input) {
@@ -68,4 +80,5 @@ public class CpfRestriction implements Restriction {
 			throw new RestrictionException(msg);
 
 	}
+
 }

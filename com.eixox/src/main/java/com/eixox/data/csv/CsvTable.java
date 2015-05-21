@@ -6,9 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.METHOD })
-public @interface CsvColumn {
+@Target({ ElementType.TYPE })
+public @interface CsvTable {
 
-	public String columnName() default "";
-	public boolean ignoreParseErrors() default false;
+	public String name() default "";
 }

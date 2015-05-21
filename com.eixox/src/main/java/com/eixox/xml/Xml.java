@@ -1,4 +1,4 @@
-package com.eixox.data.csv;
+package com.eixox.xml;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.METHOD })
-public @interface CsvColumn {
+@Target({ ElementType.FIELD, ElementType.TYPE })
+public @interface Xml {
 
-	public String columnName() default "";
-	public boolean ignoreParseErrors() default false;
+	public XmlType type() default XmlType.ELEMENT;
+	public String name() default "";
 }

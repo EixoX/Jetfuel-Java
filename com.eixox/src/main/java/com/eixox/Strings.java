@@ -353,4 +353,12 @@ public final class Strings {
 		return input.substring(0, maxlength) + "...";
 
 	}
+
+	// ____________________________________________________________________________
+	public static final String left(String input, int size) {
+		if (input == null || input.isEmpty() || input.length() < size)
+			return input;
+		else
+			return input.substring(0, size);
+	}
 }

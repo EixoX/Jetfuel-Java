@@ -81,4 +81,9 @@ public class Formats {
 		return sdf.format(date);
 	}
 
+	public static String hex(byte[] digest) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
