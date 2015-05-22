@@ -7,7 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
-public @interface StringFormat {
+public @interface TextFormat {
 
-	public String format();
+	public Class<? extends ValueFormatter<?>> type();
+	public String format() default "";
 }

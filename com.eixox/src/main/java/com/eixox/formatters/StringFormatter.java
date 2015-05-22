@@ -10,12 +10,15 @@ public class StringFormatter<T> implements ValueFormatter<T> {
 		this.formatString = formatString;
 	}
 
-	public StringFormatter(StringFormat attribute) {
-		this(attribute.format());
+	public StringFormatter() {
+		this.formatString = "%s";
 	}
 
 	public String format(T value, Culture culture) {
-		return String.format(culture.getLocale(), formatString, value);
+		if (value == null)
+			return "";
+		else
+			return String.format(culture.getLocale(), formatString, value);
 	}
 
 	@SuppressWarnings("unchecked")

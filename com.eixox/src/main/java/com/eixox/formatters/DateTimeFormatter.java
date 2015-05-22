@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class DateTimeFormatter {
+import com.eixox.globalization.Culture;
+
+public class DateTimeFormatter implements ValueFormatter<Date> {
 
 	private static final SimpleDateFormat FORMAT_YMD = new SimpleDateFormat("yyyy-MM-dd");
 	private static SimpleDateFormat PTBR_DATE = new SimpleDateFormat("dd/MM/yyyy");
@@ -37,6 +39,30 @@ public class DateTimeFormatter {
 			return "";
 		else
 			return PTBR_DATE_TIME.format(date);
+	}
+
+	public final SimpleDateFormat dateFormat;
+
+	public DateTimeFormatter() {
+		this.dateFormat = new SimpleDateFormat();
+	}
+
+	public DateTimeFormatter(String formatString) {
+		this.dateFormat = new SimpleDateFormat(formatString);
+	}
+
+	public String format(Date value, Culture culture) {
+		if (value == null)
+			return "";
+		else
+			return this.dateFormat.format(value);
+	}
+
+	public String formatObject(Object value, Culture culture) {
+		if (value == null)
+			return "";
+		else
+			return this.dateFormat.format(value);
 	}
 
 }
