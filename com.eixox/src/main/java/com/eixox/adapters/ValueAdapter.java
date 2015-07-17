@@ -45,6 +45,11 @@ public abstract class ValueAdapter<T> {
 		return format(Cultures.EN_US, input);
 	}
 
+	@SuppressWarnings("unchecked")
+	public final String formatObject(Object input) {
+		return format((T) input);
+	}
+
 	public final T convert(Object value) {
 		return convert(value, Cultures.EN_US);
 	}

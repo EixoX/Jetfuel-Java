@@ -2,6 +2,7 @@ package com.eixox.reflection;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 
 public class AbstractAspectMember implements AspectMember {
 
@@ -70,4 +71,26 @@ public class AbstractAspectMember implements AspectMember {
 	public final boolean isReadOnly() {
 		return this.member.isReadOnly();
 	}
+
+	public final boolean isArray() {
+		return getDataType().isArray();
+	}
+
+	public final boolean isList() {
+		return List.class.isAssignableFrom(getDataType());
+	}
+
+	public final boolean isPrimitive() {
+		return getDataType().isPrimitive();
+	}
+
+	public final boolean isEnum() {
+		return getDataType().isEnum();
+	}
+
+	public final boolean isString() {
+		return String.class.isAssignableFrom(getDataType());
+	}
+	
+	
 }

@@ -4,21 +4,22 @@ import java.util.HashMap;
 
 public final class ValueAdapters {
 
-	public static final BooleanAdapter						BOOLEAN		= new BooleanAdapter();
-	public static final ByteAdapter							BYTE		= new ByteAdapter();
-	public static final CalendarAdapter						CALENDAR	= new CalendarAdapter();
-	public static final CharacterAdapter					CHARACTER	= new CharacterAdapter();
-	public static final DateTimeAdapter						DATE_TIME	= new DateTimeAdapter();
-	public static final DoubleAdapter						DOUBLE		= new DoubleAdapter();
-	public static final FloatAdapter						FLOAT		= new FloatAdapter();
-	public static final IntegerAdapter						INTEGER		= new IntegerAdapter();
-	public static final LongAdapter							LONG		= new LongAdapter();
-	public static final NumberAdapter						NUMBER		= new NumberAdapter();
-	public static final ShortAdapter						SHORT		= new ShortAdapter();
-	public static final StringAdapter						STRING		= new StringAdapter();
-	public static final UUIDAdapter							UUID		= new UUIDAdapter();
+	public static final BooleanAdapter BOOLEAN = new BooleanAdapter();
+	public static final ByteAdapter BYTE = new ByteAdapter();
+	public static final CalendarAdapter CALENDAR = new CalendarAdapter();
+	public static final CharacterAdapter CHARACTER = new CharacterAdapter();
+	public static final DateTimeAdapter DATE_TIME = new DateTimeAdapter();
+	public static final DoubleAdapter DOUBLE = new DoubleAdapter();
+	public static final FloatAdapter FLOAT = new FloatAdapter();
+	public static final IntegerAdapter INTEGER = new IntegerAdapter();
+	public static final LongAdapter LONG = new LongAdapter();
+	public static final NumberAdapter NUMBER = new NumberAdapter();
+	public static final ShortAdapter SHORT = new ShortAdapter();
+	public static final StringAdapter STRING = new StringAdapter();
+	public static final UUIDAdapter UUID = new UUIDAdapter();
+	public static final TimestampAdapter TIMESTAMP = new TimestampAdapter();
 
-	private static final HashMap<Class<?>, ValueAdapter<?>>	adapters;
+	private static final HashMap<Class<?>, ValueAdapter<?>> adapters;
 	static {
 		adapters = new HashMap<Class<?>, ValueAdapter<?>>();
 
@@ -45,6 +46,7 @@ public final class ValueAdapters {
 		adapters.put(STRING.getDataType(), STRING);
 		adapters.put(UUID.getDataType(), UUID);
 
+		adapters.put(TIMESTAMP.getDataType(), TIMESTAMP);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -15,4 +15,5 @@ public interface AspectMember extends AnnotatedElement, Member {
 	public Type getGenericType();
 	
 	public boolean isReadOnly();
+	
 }

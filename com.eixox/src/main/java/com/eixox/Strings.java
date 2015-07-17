@@ -92,6 +92,8 @@ public final class Strings {
 
 		return -1;
 	}
+	
+	
 
 	// ____________________________________________________________________________
 	public static final int indexOfWhitespace(String content) {

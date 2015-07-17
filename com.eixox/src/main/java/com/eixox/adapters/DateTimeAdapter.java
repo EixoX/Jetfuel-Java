@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -72,4 +73,16 @@ public final class DateTimeAdapter extends ValueAdapter<Date> {
 		return rs.getDate(ordinal);
 	}
 
+	public static final SimpleDateFormat DATETIME_PTBR = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+	public static final Date parsePtBrDateTime(String input) {
+		try {
+			if (input == null || input.isEmpty())
+				return null;
+			else
+				return DATETIME_PTBR.parse(input);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

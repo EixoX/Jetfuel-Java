@@ -75,4 +75,5 @@ public final class AspectProperty implements AspectMember {
 	public final boolean isReadOnly() {
 		return this.setter != null;
 	}
+
 }
