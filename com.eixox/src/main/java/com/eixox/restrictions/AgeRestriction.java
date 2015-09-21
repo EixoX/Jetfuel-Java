@@ -41,8 +41,7 @@ public class AgeRestriction implements Restriction {
 	}
 
 	public String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Idade inválida";
-
+		return validate(input) ? null : "VocÃª tem que ter entre " + Integer.toString(this._Min) + " e " + Integer.toString(this._Max) + " anos.";
 	}
 
 	public void assertValid(Object input) throws RestrictionException {

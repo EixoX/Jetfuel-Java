@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface CsvColumn {
 
-	public String columnName() default "";
+	public String name() default "";
+
 	public boolean ignoreParseErrors() default false;
 }

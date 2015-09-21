@@ -1,33 +1,80 @@
 package com.eixox.data.entities;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.eixox.data.DataSelect;
 import com.eixox.data.SortDirection;
+import com.eixox.data.SortExpression;
+import com.eixox.data.SortNode;
+import com.eixox.data.Storage;
 
-public abstract class EntitySelect<T> extends EntityFilterBase<EntitySelect<T>> implements Iterable<T> {
+public class EntitySelect<T> extends EntityFilterBase<EntitySelect<T>>implements Iterable<T> {
 
-	private EntitySortNode sortFirst;
-	private EntitySortNode sortLast;
+	public final Storage storage;
+	public SortExpression sort;
 
 	public int pageSize;
 	public int pageOrdinal;
 
-	public EntitySelect(EntityAspect aspect) {
+	public EntitySelect(EntityAspect aspect, Storage storage) {
 		super(aspect);
+		this.storage = storage;
 	}
 
-	public abstract Object readMember(int ordinal);
+	public final Object readMember(int ordinal) {
+		DataSelect select = this.storage.select(this.aspect.tableName);
+		select.pageSize = this.pageSize;
+		select.pageOrdinal = this.pageOrdinal;
+		select.sort = this.sort;
+		select.filter = this.filter;
+		return select.getFirstMember(aspect.getColumnName(ordinal));
+	}
 
-	public abstract T singleResult();
+	public final T singleResult() {
+		DataSelect select = this.storage.select(this.aspect.tableName);
+		select.pageSize = 1;
+		select.pageOrdinal = 0;
+		select.sort = this.sort;
+		select.filter = this.filter;
+		return select.getEntity(this.aspect);
+	}
 
-	public abstract long count();
+	public final long count() {
+		DataSelect select = this.storage.select(this.aspect.tableName);
+		select.filter = this.filter;
+		return select.count();
+	}
 
-	public abstract boolean exists();
+	public final boolean exists() {
+		DataSelect select = this.storage.select(this.aspect.tableName);
+		select.filter = this.filter;
+		return select.exists();
+	}
 
-	public abstract EntitySelectResult<T> toResult();
+	public final EntitySelectResult<T> toResult() {
+		DataSelect select = this.storage.select(this.aspect.tableName);
+		select.pageSize = this.pageSize;
+		select.pageOrdinal = this.pageOrdinal;
+		select.sort = this.sort;
+		select.filter = this.filter;
+		EntitySelectResult<T> result = new EntitySelectResult<T>(select.count(), this.pageSize, this.pageOrdinal);
+		select.transform(this.aspect, result.items);
+		return result;
+	}
 
-	public abstract List<T> toList();
+	public final List<T> toList() {
+		DataSelect select = this.storage.select(this.aspect.tableName);
+		select.pageSize = this.pageSize;
+		select.pageOrdinal = this.pageOrdinal;
+		select.sort = this.sort;
+		select.filter = this.filter;
+		List<T> list = this.pageSize > 0 ? new ArrayList<T>(this.pageSize) : new ArrayList<T>();
+		select.transform(this.aspect, list);
+		return list;
+
+	}
 
 	public final Iterator<T> iterator() {
 		return toList().listIterator();
@@ -48,88 +95,47 @@ public abstract class EntitySelect<T> extends EntityFilterBase<EntitySelect<T>> 
 		return this;
 	}
 
-	public final EntitySortNode getSort() {
-		return this.sortFirst;
-	}
-
-	public final EntitySelect<T> orderBy(SortDirection direction, int... ordinal) {
-		this.sortFirst = new EntitySortNode(aspect, ordinal[0], direction);
-		this.sortLast = this.sortFirst;
-		for (int i = 1; i < ordinal.length; i++) {
-			this.sortLast.next = new EntitySortNode(aspect, ordinal[i], direction);
-			this.sortLast = this.sortLast.next;
+	public final EntitySelect<T> orderBy(SortDirection direction, int... ordinals) {
+		this.sort = new SortExpression(direction, aspect.getColumnName(ordinals[0]));
+		for (int i = 1; i < ordinals.length; i++) {
+			this.sort.last.next = new SortNode(aspect.getColumnName(ordinals[i]), direction);
+			this.sort.last = this.sort.last.next;
 		}
 		return this;
 	}
 
 	public final EntitySelect<T> orderBy(SortDirection direction, String... names) {
-		this.sortFirst = new EntitySortNode(aspect, names[0], direction);
-		this.sortLast = this.sortFirst;
-		for (int i = 1; i < names.length; i++) {
-			this.sortLast.next = new EntitySortNode(aspect, names[i], direction);
-			this.sortLast = this.sortLast.next;
-		}
-		return this;
-	}
-
-	public final EntitySelect<T> orderBy(int... ordinal) {
-		return orderBy(SortDirection.ASCENDING, ordinal);
+		int[] ordinals = new int[names.length];
+		for (int i = 0; i < names.length; i++)
+			ordinals[i] = aspect.getOrdinalOrException(names[i]);
+		return orderBy(direction, ordinals);
 	}
 
 	public final EntitySelect<T> orderBy(String... names) {
 		return orderBy(SortDirection.ASCENDING, names);
 	}
 
-	public final EntitySelect<T> orderBy(String name, SortDirection direction) {
-		return orderBy(direction, name);
-	}
-
-	public final EntitySelect<T> orderBy(int ordinal, SortDirection direction) {
-		return orderBy(direction, ordinal);
-	}
-
-	public final EntitySelect<T> thenBy(SortDirection direction, int... ordinal) {
-		int first = 0;
-		if (this.sortFirst == null) {
-			this.sortFirst = new EntitySortNode(aspect, ordinal[0], direction);
-			this.sortLast = this.sortFirst;
-			first = 1;
+	public final EntitySelect<T> thenBy(SortDirection direction, int... ordinals) {
+		if (this.sort == null)
+			return orderBy(direction, ordinals);
+		else {
+			for (int i = 0; i < ordinals.length; i++) {
+				this.sort.last.next = new SortNode(aspect.getColumnName(ordinals[i]), direction);
+				this.sort.last = this.sort.last.next;
+			}
+			return this;
 		}
-		for (int i = first; i < ordinal.length; i++) {
-			this.sortLast.next = new EntitySortNode(aspect, ordinal[i], direction);
-			this.sortLast = this.sortLast.next;
-		}
-		return this;
 	}
 
 	public final EntitySelect<T> thenBy(SortDirection direction, String... names) {
-		int first = 0;
-		if (this.sortFirst == null) {
-			this.sortFirst = new EntitySortNode(aspect, names[0], direction);
-			this.sortLast = this.sortFirst;
-			first = 1;
-		}
-		for (int i = first; i < names.length; i++) {
-			this.sortLast.next = new EntitySortNode(aspect, names[i], direction);
-			this.sortLast = this.sortLast.next;
-		}
-		return this;
-	}
-
-	public final EntitySelect<T> thenBy(int... ordinal) {
-		return thenBy(SortDirection.ASCENDING, ordinal);
+		int[] ordinals = new int[names.length];
+		for (int i = 0; i < names.length; i++)
+			ordinals[i] = aspect.getOrdinalOrException(names[i]);
+		return thenBy(direction, ordinals);
 	}
 
 	public final EntitySelect<T> thenBy(String... names) {
 		return thenBy(SortDirection.ASCENDING, names);
-	}
-
-	public final EntitySelect<T> thenBy(String name, SortDirection direction) {
-		return thenBy(direction, name);
-	}
-
-	public final EntitySelect<T> thenBy(int ordinal, SortDirection direction) {
-		return thenBy(direction, ordinal);
 	}
 
 }

@@ -81,9 +81,13 @@ public class Formats {
 		return sdf.format(date);
 	}
 
-	public static String hex(byte[] digest) {
-		// TODO Auto-generated method stub
-		return null;
+	public static final String hex(byte[] digest) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < digest.length; ++i) {
+			sb.append(Integer.toHexString((digest[i]
+					& 0xFF) | 0x100).substring(1, 3));
+		}
+		return sb.toString();
 	}
 
 }

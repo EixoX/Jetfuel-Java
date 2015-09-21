@@ -1,5 +1,6 @@
 package com.eixox;
 
+import com.eixox.ui.UIPresentation;
 
 public class UsecaseResult {
 
@@ -7,5 +8,13 @@ public class UsecaseResult {
 	public UsecaseResultType resultType;
 	public Object result;
 	public Exception exception;
-	public UsecaseProperty[] properties;
+	public UIPresentation presentation;
+
+	public static final UsecaseResult success(Object result) {
+		UsecaseResult res = new UsecaseResult();
+		res.result = result;
+		res.resultType = UsecaseResultType.SUCESS;
+		res.message = "OK";
+		return res;
+	}
 }

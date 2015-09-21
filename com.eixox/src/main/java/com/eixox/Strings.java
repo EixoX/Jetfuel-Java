@@ -1,5 +1,6 @@
 package com.eixox;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Locale;
@@ -92,8 +93,6 @@ public final class Strings {
 
 		return -1;
 	}
-	
-	
 
 	// ____________________________________________________________________________
 	public static final int indexOfWhitespace(String content) {
@@ -278,6 +277,27 @@ public final class Strings {
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
 			}
+	}
+
+	// _____________________________________________________________________________________________
+	public static final String urlEncode(Pair<String, String>... postData) throws IOException {
+		if (postData == null || postData.length == 0)
+			return "";
+		else {
+			StringBuilder builder = new StringBuilder(255);
+			builder.append(postData[0].key);
+			builder.append('=');
+			builder.append(postData[0].value == null ? "" : urlEncode(postData[0].value.toString()));
+			for (int i = 1; i < postData.length; i++) {
+				builder.append('&');
+				builder.append(postData[i].key);
+				builder.append('=');
+				if (postData[i].value != null && !postData[i].value.isEmpty())
+					builder.append(urlEncode(postData[i].value));
+			}
+			return builder.toString();
+		}
+
 	}
 
 	// ____________________________________________________________________________

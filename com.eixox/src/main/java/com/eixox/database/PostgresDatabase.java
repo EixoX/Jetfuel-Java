@@ -2,40 +2,26 @@ package com.eixox.database;
 
 import java.util.Properties;
 
-import com.eixox.data.entities.EntityAspect;
-
 public class PostgresDatabase extends Database {
 
+	public final PostgresDialect dialect = new PostgresDialect();
+
 	public PostgresDatabase(String url) {
-		super("org.postgresql.Driver", url);
+		super(url);
 	}
 
 	public PostgresDatabase(String url, Properties properties) {
-		super("org.postgresql.Driver", url, properties);
+		super(url, properties);
 	}
 
 	@Override
-	protected void appendName(StringBuilder builder, String dataName) {
-		builder.append('"');
-		builder.append(dataName);
-		builder.append('"');
+	public final String getDriverClassName() {
+		return "org.postgresql.Driver";
 	}
 
 	@Override
-	protected void appendPage(StringBuilder builder, int pageSize, int pageOrdinal) {
-		if (pageOrdinal > 0) {
-			builder.append(" LIMIT ");
-			builder.append(pageSize);
-			builder.append(" OFFSET ");
-			builder.append(pageSize * pageOrdinal);
-		} else if (pageSize > 0) {
-			builder.append(" LIMIT ");
-			builder.append(pageSize);
-		}
+	protected DatabaseDialect createDialect() {
+		return new PostgresDialect();
 	}
-	
-	@Override
-	protected void appendScopeIdentity(DatabaseCommand cmd, EntityAspect aspect) {
 
-	}
 }

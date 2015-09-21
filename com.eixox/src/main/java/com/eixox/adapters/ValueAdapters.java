@@ -47,6 +47,7 @@ public final class ValueAdapters {
 		adapters.put(UUID.getDataType(), UUID);
 
 		adapters.put(TIMESTAMP.getDataType(), TIMESTAMP);
+		adapters.put(java.sql.Date.class, new SqlDateAdapter());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

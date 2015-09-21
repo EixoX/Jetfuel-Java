@@ -28,6 +28,13 @@ public abstract class CreditCardGenerator {
 
 	public abstract int getDigitCount();
 
+	public final String[] generate(int count) {
+		String[] s = new String[count];
+		for (int i = 0; i < count; i++)
+			s[i] = generate();
+		return s;
+	}
+
 	public final String generate() {
 		int digitCount = getDigitCount();
 

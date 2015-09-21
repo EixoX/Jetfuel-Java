@@ -1,5 +1,6 @@
 package com.eixox;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -124,5 +125,10 @@ public final class Dates {
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 		return cal.getTime();
+	}
+
+	// ______________________________________________________________________
+	public static final Timestamp timestampNow() {
+		return new Timestamp(new Date().getTime());
 	}
 }

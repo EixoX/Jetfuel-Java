@@ -1,120 +1,124 @@
 package com.eixox.ui;
 
-import com.eixox.adapters.ValueAdapter;
-import com.eixox.adapters.ValueAdapters;
-import com.eixox.formatters.ValueFormatter;
-import com.eixox.formatters.ValueFormatters;
-import com.eixox.globalization.Culture;
-import com.eixox.interceptors.InterceptorAspect;
-import com.eixox.interceptors.InterceptorList;
+import com.eixox.html.AppendCss;
 import com.eixox.reflection.AbstractAspectMember;
 import com.eixox.reflection.AspectMember;
-import com.eixox.restrictions.RestrictionAspect;
-import com.eixox.restrictions.RestrictionList;
+import com.eixox.restrictions.Length;
+import com.eixox.restrictions.MaxLength;
+import com.eixox.restrictions.Required;
 
 public class UIAspectMember extends AbstractAspectMember {
 
-	private final UIControlType memberType;
-	private final String label;
-	private final String hint;
-	private final String placeholder;
-	private final String cssClass;
-	private final UIControlOptionList options;
-	private final InterceptorList interceptors;
-	private final RestrictionList restrictions;
-	private final String group;
-	private final ValueAdapter<?> adapter;
-	private final boolean insertEmptyOption;
-	private final ValueFormatter<?> formatter;
+	public final ControlType controlType;
+	public final String label;
+	public final String hint;
+	public final String placeholder;
+	public final boolean required;
+	public final int maxlength;
+	public final String appendCss;
+	public final OptionList options;
 
-	private static UIControlOptionList getOptions(Class<?> claz) {
-		return null;
+	public static final ControlType getControlType(AspectMember member) {
+		Control ctrl = member.getAnnotation(Control.class);
+		return ctrl == null ? ControlType.NONE : ctrl.value();
 	}
 
-	public UIAspectMember(AspectMember member, UIControl annotation) {
+	public static final String getLabel(AspectMember member) {
+		Label lbl = member.getAnnotation(Label.class);
+		return lbl == null ? null : lbl.value();
+	}
+
+	public static final String getHint(AspectMember member) {
+		Hint hnt = member.getAnnotation(Hint.class);
+		return hnt == null ? null : hnt.value();
+	}
+
+	public static final String getPlaceHolder(AspectMember member) {
+		Placeholder plh = member.getAnnotation(Placeholder.class);
+		return plh == null ? null : plh.value();
+	}
+
+	public static final boolean getRequired(AspectMember member) {
+		Required req = member.getAnnotation(Required.class);
+		return req != null;
+	}
+
+	public static final int getMaxlength(AspectMember member) {
+		MaxLength ml = member.getAnnotation(MaxLength.class);
+		if (ml != null)
+			return ml.value();
+		else {
+			Length lh = member.getAnnotation(Length.class);
+			return lh == null ? 0 : lh.max();
+		}
+	}
+
+	public static final String getAppendCss(AspectMember member) {
+		AppendCss ac = member.getAnnotation(AppendCss.class);
+		return ac == null ? null : ac.value();
+	}
+
+	public static final OptionList getOptionList(AspectMember member) {
+		Options opsAnn = member.getAnnotation(Options.class);
+		if (opsAnn == null)
+			return null;
+		else {
+			Class<?> opsCls = opsAnn.value();
+			if (!OptionSource.class.isAssignableFrom(opsCls))
+				throw new RuntimeException("Options must implement com.eixox.ui.OptionSource");
+			else {
+				try {
+					OptionList list = ((OptionSource) opsCls.newInstance()).getOptions();
+					DefaultOption df = member.getAnnotation(DefaultOption.class);
+					if (df != null)
+						list.add(0, new Option(df.key(), df.value()));
+					return list;
+
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+
+			}
+		}
+
+	}
+
+	public UIAspectMember(AspectMember member) {
 		super(member);
-		this.memberType = annotation.type();
-		this.label = annotation.label() == null || annotation.label().isEmpty() ? member.getName() : annotation.label();
-		this.hint = annotation.hint();
-		this.placeholder = annotation.placeholder();
-		this.options = getOptions(annotation.source());
-		this.group = annotation.group();
-		this.cssClass = annotation.cssClass();
-		this.interceptors = InterceptorAspect.buildInterceptorList(member);
-		this.restrictions = RestrictionAspect.buildRestrictionList(member);
-		this.adapter = ValueAdapters.getAdapter(member.getDataType());
-		this.insertEmptyOption = annotation.insertEmptyOption();
-		this.formatter = ValueFormatters.getFormatter(annotation.formatter(), annotation.formatString());
+		this.controlType = getControlType(member);
+		if (this.controlType != ControlType.NONE) {
+			this.label = getLabel(member);
+			this.hint = getHint(member);
+			this.placeholder = getPlaceHolder(member);
+			this.required = getRequired(member);
+			this.maxlength = getMaxlength(member);
+			this.appendCss = getAppendCss(member);
+			this.options = getOptionList(member);
+		} else {
+			this.label = null;
+			this.hint = null;
+			this.placeholder = null;
+			this.required = false;
+			this.maxlength = 0;
+			this.appendCss = null;
+			this.options = null;
+		}
 	}
 
-	public final String getCssClass() {
-		return cssClass;
-	}
-	
-	public final UIControlType getMemberType() {
-		return memberType;
-	}
-
-	public final String getLabel() {
-		return label;
-	}
-
-	public final String getHint() {
-		return hint;
-	}
-
-	public final String getPlaceholder() {
-		return placeholder;
-	}
-
-	public final UIControlOptionList getOptions() {
-		return options;
-	}
-
-	public final InterceptorList getInterceptors() {
-		return interceptors;
-	}
-
-	public final RestrictionList getRestrictions() {
-		return restrictions;
-	}
-
-	public final boolean validate(Object instance) {
-		Object value = getValue(instance);
-		value = this.interceptors.intercept(instance);
-		return this.restrictions.validate(value);
-	}
-
-	public final String getRestrictionMessageFor(Object instance) {
-		Object value = getValue(instance);
-		value = this.interceptors.intercept(value);
-		return this.restrictions.getRestrictionMessageFor(value);
-	}
-
-	public final Object parse(String content, Object destination, Culture culture) {
-		Object value = this.interceptors.intercept(content);
-		value = this.adapter == null ? value : this.adapter.convert(value);
-		super.setValue(destination, value);
-		return value;
-	}
-
-	public final String read(Object entity, Culture culture) {
-		Object value = super.getValue(entity);
-		if (formatter == null)
-			return value == null ? "" : value.toString();
-		else
-			return formatter.formatObject(value, culture);
-	}
-
-	public final boolean getInsertEmptyOption() {
-		return this.insertEmptyOption;
-	}
-
-	/**
-	 * @return the group
-	 */
-	public final String getGroup() {
-		return group;
+	public final UIPresentationMember buildPresentation() {
+		UIPresentationMember member = new UIPresentationMember();
+		member.appendCss = this.appendCss;
+		member.controlType = this.controlType;
+		member.hint = this.hint;
+		member.id = this.getName();
+		member.name = this.getName();
+		member.label = this.label;
+		member.maxlength = this.maxlength;
+		member.options = this.options;
+		member.placeholder = this.placeholder;
+		member.required = this.required;
+		member.value = "";
+		return member;
 	}
 
 }

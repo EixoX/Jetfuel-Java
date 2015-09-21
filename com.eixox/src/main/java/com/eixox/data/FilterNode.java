@@ -10,10 +10,6 @@ public class FilterNode implements Filter {
 		this.filter = filter;
 	}
 
-	public final ColumnSchema getColumnSchema() {
-		return filter.getColumnSchema();
-	}
-
 	public final FilterType getFilterType() {
 		return FilterType.NODE;
 	}

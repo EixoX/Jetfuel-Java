@@ -1,47 +1,55 @@
 package com.eixox.data.entities;
 
-public abstract class EntityUpdate extends EntityFilterBase<EntityUpdate> {
+import com.eixox.data.ColumnType;
+import com.eixox.data.DataUpdate;
+import com.eixox.data.Storage;
 
-	public final Object[] values;
+public class EntityUpdate extends EntityFilterBase<EntityUpdate> {
 
-	public EntityUpdate(EntityAspect aspect) {
+	private final DataUpdate update;
+	public final Storage storage;
+
+	public EntityUpdate(EntityAspect aspect, Storage storage) {
 		super(aspect);
-		this.values = new Object[aspect.getCount()];
+		this.storage = storage;
+		this.update = storage.update(aspect.tableName);
 	}
 
 	public final EntityUpdate reset() {
-		for (int i = 0; i < values.length; i++)
-			values[i] = Void.class;
+		this.update.reset();
 		return this;
 	}
 
 	public final EntityUpdate set(int ordinal, Object value) {
-		this.values[ordinal] = value;
+		this.update.set(aspect.getColumnName(ordinal), value);
 		return this;
 	}
 
 	public final EntityUpdate set(String name, Object value) {
-		this.values[aspect.getOrdinalOrException(name)] = value;
-		return this;
+		return set(aspect.getOrdinalOrException(name), value);
 	}
 
 	public final void set(Object entity) {
-		for (int i = 0; i < values.length; i++) {
-			EntityAspectMember member = aspect.get(i);
-			this.values[i] = member.readOnly ? Void.class : member.getValue(entity);
+		for (EntityAspectMember member : aspect) {
+			if (member.columntType != ColumnType.IDENTITY)
+				if (!member.readOnly) {
+					this.update.set(member.columnName, member.getValue(entity));
+				}
 		}
 	}
 
 	public final Object get(int ordinal) {
-		return this.values[ordinal];
+		return this.update.get(aspect.getColumnName(ordinal));
 	}
 
 	public final Object get(String name) {
-		return this.values[aspect.getOrdinalOrException(name)];
+		return get(aspect.getOrdinalOrException(name));
 	}
 
-	public abstract long execute();
-	
+	public final long execute() {
+		return this.update.execute();
+	}
+
 	@Override
 	protected final EntityUpdate getThis() {
 		return this;

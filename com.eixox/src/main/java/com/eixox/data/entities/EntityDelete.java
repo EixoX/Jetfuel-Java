@@ -1,16 +1,25 @@
 package com.eixox.data.entities;
 
-public abstract class EntityDelete extends EntityFilterBase<EntityDelete> {
+import com.eixox.data.DataDelete;
+import com.eixox.data.Storage;
 
-	public EntityDelete(EntityAspect aspect) {
+public class EntityDelete extends EntityFilterBase<EntityDelete> {
+
+	public final Storage storage;
+
+	public EntityDelete(EntityAspect aspect, Storage storage) {
 		super(aspect);
+		this.storage = storage;
 	}
 
 	@Override
 	protected final EntityDelete getThis() {
 		return this;
 	}
-	
-	
-	public abstract long execute();
+
+	public final long execute() {
+		DataDelete delete = storage.delete(this.aspect.tableName);
+		delete.filter = this.filter;
+		return delete.execute();
+	}
 }

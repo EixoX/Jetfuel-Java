@@ -3,7 +3,10 @@ package com.eixox.database;
 import java.util.HashMap;
 import java.util.Properties;
 
-public class PgSqlStorage<T> extends DatabaseStorage<T> {
+import com.eixox.data.entities.EntityAspect;
+import com.eixox.data.entities.EntityStorage;
+
+public class PgSqlStorage<T> extends EntityStorage<T> {
 
 	private static final HashMap<Class<?>, PgSqlStorage<?>> instances = new HashMap<Class<?>, PgSqlStorage<?>>();
 
@@ -14,8 +17,12 @@ public class PgSqlStorage<T> extends DatabaseStorage<T> {
 		return props;
 	}
 
+	private static final String url = "jdbc:postgresql://localhost/test";
+
 	private PgSqlStorage(Class<T> claz) {
-		super(new PostgresDatabase("jdbc:postgresql://localhost/test", buildProperties()), claz);
+		super(
+				EntityAspect.getDefaultInstance(claz),
+				new PostgresDatabase(url, buildProperties()));
 	}
 
 	@SuppressWarnings("unchecked")

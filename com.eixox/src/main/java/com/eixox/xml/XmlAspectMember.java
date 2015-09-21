@@ -34,7 +34,7 @@ public class XmlAspectMember extends AbstractAspectMember implements XmlAdapter 
 			valueAdapter = ValueAdapters.getAdapter(componentType);
 			this.xmlAdapter = valueAdapter == null ? 
 					new XmlObjectArrayAdapter(xmlName, componentType):
-					new XmlValueArrayAdapter(xmlName, annotation.valueFormat(), valueAdapter);
+					new XmlValueArrayAdapter(xmlName, annotation.type(), valueAdapter);
 		}
 		else if(List.class.isAssignableFrom(dataType)){
 			ParameterizedType genericType = (ParameterizedType)member.getGenericType();
@@ -42,13 +42,13 @@ public class XmlAspectMember extends AbstractAspectMember implements XmlAdapter 
 			valueAdapter = ValueAdapters.getAdapter(componentType);
 			this.xmlAdapter = valueAdapter == null ?
 					new XmlObjectListAdapter(xmlName, componentType):
-					new XmlValueListAdapter(xmlName, annotation.valueFormat(), valueAdapter);
+					new XmlValueListAdapter(xmlName, annotation.type(), valueAdapter);
 		}
 		else {
 			valueAdapter = ValueAdapters.getAdapter(dataType);
 			this.xmlAdapter = valueAdapter == null ? 
 					new XmlObjectAdapter(xmlName, dataType):
-					new XmlValueAdapter(xmlName, annotation.valueFormat(), valueAdapter);
+					new XmlValueAdapter(xmlName, annotation.type(), valueAdapter);
 		}
 	}
 
