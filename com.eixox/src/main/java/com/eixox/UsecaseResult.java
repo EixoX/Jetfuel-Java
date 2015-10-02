@@ -13,8 +13,16 @@ public class UsecaseResult {
 	public static final UsecaseResult success(Object result) {
 		UsecaseResult res = new UsecaseResult();
 		res.result = result;
-		res.resultType = UsecaseResultType.SUCESS;
+		res.resultType = UsecaseResultType.SUCCESS;
 		res.message = "OK";
 		return res;
+	}
+	
+	public static final UsecaseResult exception(Exception ex){
+		UsecaseResult res = new UsecaseResult();
+		res.resultType = UsecaseResultType.EXCEPTION;
+		res.message = ex.getLocalizedMessage();
+		res.exception = ex;
+		return res;		
 	}
 }

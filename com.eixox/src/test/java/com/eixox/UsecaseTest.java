@@ -23,7 +23,7 @@ public class UsecaseTest {
 		example.parse(Cultures.EN_US);
 
 		result = example.execute();
-		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCESS);
+		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
 
 	}
 
@@ -40,7 +40,7 @@ public class UsecaseTest {
 		example.aStringProperty = "Teste";
 
 		result = example.execute();
-		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCESS);
+		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class UsecaseTest {
 		example.parse(Cultures.EN_US);
 
 		result = example.execute();
-		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCESS);
+		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
 
 	}
 

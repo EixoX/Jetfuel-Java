@@ -1,7 +1,7 @@
 package com.eixox;
 
 public enum UsecaseResultType {
-	SUCESS,
+	SUCCESS,
 	VALIDATION_FAILED,
 	HAS_WARNINGS,
 	FAILED,
