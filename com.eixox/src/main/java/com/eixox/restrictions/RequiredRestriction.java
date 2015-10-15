@@ -19,7 +19,7 @@ public class RequiredRestriction implements Restriction {
 		else if (input instanceof Number)
 			return ((Number) input).intValue() != 0;
 		else if (input instanceof Date)
-			return ((Date) input).getTime() > 0;
+			return ((Date) input).getTime() != 0;
 		else
 			return true;
 	}

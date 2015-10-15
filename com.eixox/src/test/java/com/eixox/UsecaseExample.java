@@ -18,7 +18,7 @@ public class UsecaseExample extends Usecase {
 
 	@Override
 	protected void executeFlow(UsecaseResult result) {
-		result.resultType = UsecaseResultType.SUCESS;
+		result.resultType = UsecaseResultType.SUCCESS;
 		result.result = UUID.randomUUID();
 	}
 

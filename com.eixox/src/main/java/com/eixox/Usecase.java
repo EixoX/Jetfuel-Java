@@ -1,28 +1,28 @@
 package com.eixox;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.eixox.globalization.Culture;
-import com.eixox.interceptors.InterceptorAspect;
-import com.eixox.ui.UIControlPresentation;
-import com.eixox.ui.UIControlState;
+import com.eixox.ui.ControlState;
+import com.eixox.ui.UIPresentation;
+import com.eixox.ui.UIPresentationMember;
 
 public abstract class Usecase {
 
-	private final UsecaseAspect aspect;
-	private final UsecaseProperty[] properties;
+	public final UsecaseAspect aspect;
+	public final UIPresentation presentation;
 
 	public Usecase() {
 		this.aspect = UsecaseAspect.getInstance(getClass());
-		this.properties = new UsecaseProperty[aspect.getCount()];
-		for (int i = 0; i < this.properties.length; i++) {
-			this.properties[i] = new UsecaseProperty();
-			aspect.get(i).write(this.properties[i]);
+		this.presentation = new UIPresentation(this.aspect.getCount());
+		for (UsecaseAspectMember member : this.aspect) {
+			this.presentation.add(new UIPresentationMember(member.ui));
+		}
+	}
+
+	public final void refreshPresentation() {
+		int l = this.aspect.getCount();
+		for (int i = 0; i < l; i++) {
+			String newValue = this.aspect.get(i).getValueToString(this);
+			this.presentation.get(i).value = newValue;
 		}
 	}
 
@@ -30,147 +30,48 @@ public abstract class Usecase {
 		return toString();
 	}
 
-	public final UsecaseAspect getAspect() {
-		return aspect;
-	}
+	public final void parse(Culture culture) {
 
-	public final UsecaseProperty[] getProperties() {
-		return properties;
-	}
-
-	public final UsecaseProperty getProperty(String name) {
-		for (int i = 0; i < properties.length; i++)
-			if (name.equalsIgnoreCase(properties[i].name))
-				return properties[i];
-		return null;
-	}
-
-	public final void refreshProperties(Culture culture) {
-		for (int i = 0; i < this.properties.length; i++) {
-			UsecaseAspectMember member = aspect.get(i);
-			member.write(this.properties[i]);
-			this.properties[i].value = member.getValue(this);
+		int l = this.presentation.size();
+		for (int i = 0; i < l; i++) {
+			this.aspect.get(i).parse(
+					this,
+					culture,
+					this.presentation
+							.get(i).value);
 		}
 	}
 
-	public void parse(NameValueCollection<String> items, Culture culture) {
-		for (int i = 0; i < this.properties.length; i++) {
-			UsecaseProperty property = this.properties[i];
-			property.value = items.get(property.name);
+	protected void postExecute(UsecaseResult result) {
+
+	}
+
+	public synchronized boolean validate() {
+		int l = this.presentation.size();
+		boolean valid = true;
+		for (int i = 0; i < l; i++) {
+			UsecaseAspectMember uam = this.aspect.get(i);
+			Object value = uam.getValue(this);
+			UIPresentationMember uipm = this.presentation.get(i);
+			uipm.message = uam.restrictions.getRestrictionMessageFor(value);
+			if (uipm.message != null && uipm.message.length() > 0) {
+				uipm.controlState = ControlState.ERROR;
+				valid = false;
+			} else
+				uipm.controlState = ControlState.SUCCESS;
 		}
-		parse(culture);
-	}
-
-	public void parse(HttpServletRequest request, Culture culture) {
-		for (int i = 0; i < this.properties.length; i++) {
-			UsecaseProperty property = this.properties[i];
-			property.value = request.getParameter(property.name);
-		}
-		parse(culture);
-	}
-
-	public void parse(Culture culture) {
-		for (int i = 0; i < this.properties.length; i++) {
-			UsecaseProperty property = this.properties[i];
-			UsecaseAspectMember member = this.aspect.get(i);
-			member.parse(property, this, culture);
-		}
-	}
-
-	public void invalidate(String name, String message) {
-		UsecaseProperty prop = getProperty(name);
-		prop.message = message;
-		prop.state = UIControlState.ERROR;
-	}
-
-	public boolean validate() {
-		boolean result = true;
-		for (int i = 0; i < this.properties.length; i++) {
-			UsecaseProperty property = this.properties[i];
-			UsecaseAspectMember member = this.aspect.get(i);
-			result &= member.validate(this, property);
-		}
-		return result;
-	}
-
-	public final void set(int ordinal, String value) {
-		UsecaseProperty property = this.properties[ordinal];
-		property.value = value;
-		property.state = UIControlState.NORMAL;
-		property.message = null;
-	}
-
-	public final void set(String name, String value) {
-		set(getOrdinalOrException(name), value);
-	}
-
-	public final boolean trySet(String name, String value) {
-		int ordinal = getOrdinal(name);
-		if (ordinal < 0)
-			return false;
-		else {
-			set(ordinal, value);
-			return true;
-		}
-	}
-
-	public final UsecaseProperty get(int ordinal) {
-		return this.properties[ordinal];
-	}
-
-	public final UsecaseProperty get(String name) {
-		return this.properties[getOrdinalOrException(name)];
-	}
-
-	public final int getOrdinal(String name) {
-		for (int i = 0; i < this.properties.length; i++)
-			if (name.equalsIgnoreCase(this.properties[i].name))
-				return i;
-		return -1;
-	}
-
-	public final int getOrdinalOrException(String name) {
-		int ordinal = getOrdinal(name);
-		if (ordinal >= 0)
-			return ordinal;
-		else
-			throw new RuntimeException(name + " was not found on " + getClass().getName());
-	}
-
-	public final Map<String, UIControlPresentation> buildUIMap(Culture culture) {
-		Map<String, UIControlPresentation> uiMap = new HashMap<String, UIControlPresentation>();
-		for (UsecaseProperty prop : this.properties) {
-			UsecaseAspectMember member = this.aspect.get(prop.name);
-			if (member.isControl())
-				uiMap.put(prop.name, member.buildUIPresentation(prop, culture));
-		}
-
-		return uiMap;
-	}
-
-	public final List<UIControlPresentation> buildUIPresentation(Culture culture) {
-		ArrayList<UIControlPresentation> presentation = new ArrayList<UIControlPresentation>(this.properties.length);
-		for (int i = 0; i < this.properties.length; i++)
-		{
-			UsecaseAspectMember member = this.aspect.get(i);
-			if (member.isControl()) {
-				presentation.add(member.buildUIPresentation(this.properties[i], culture));
-			}
-		}
-		return presentation;
+		return valid;
 	}
 
 	protected abstract void executeFlow(UsecaseResult result) throws Exception;
 
 	public synchronized final UsecaseResult execute() {
 		UsecaseResult result = new UsecaseResult();
-		result.properties = this.properties;
+		result.presentation = this.presentation;
 		try {
-			InterceptorAspect.getInstance(getClass()).apply(this);
 			if (validate()) {
 				executeFlow(result);
-			}
-			else {
+			} else {
 				result.message = "Os campos estão inválidos";
 				result.resultType = UsecaseResultType.VALIDATION_FAILED;
 			}
@@ -179,6 +80,28 @@ public abstract class Usecase {
 			result.resultType = UsecaseResultType.EXCEPTION;
 			result.message = ex.getMessage();
 		}
+		postExecute(result);
 		return result;
 	}
+
+	public static final boolean isValidName(String name) {
+		if (name == null || name.isEmpty())
+			return false;
+
+		int l = name.length();
+
+		if (l > 255)
+			return false;
+
+		for (int i = 0; i < l; i++) {
+			char c = name.charAt(i);
+			if (!Character.isLetterOrDigit(c))
+				if (c != '-')
+					return false;
+
+		}
+
+		return true;
+	}
+
 }

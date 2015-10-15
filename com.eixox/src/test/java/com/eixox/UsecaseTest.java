@@ -18,12 +18,12 @@ public class UsecaseTest {
 		result = example.execute();
 		Assert.assertTrue("Direct execution should fail validation", result.resultType == UsecaseResultType.VALIDATION_FAILED);
 
-		example.set("aLongProperty", "1");
-		example.set("aStringProperty", "Teste");
+		example.presentation.get("aLongProperty").value = "1";
+		example.presentation.get("aStringProperty").value = "Teste";
 		example.parse(Cultures.EN_US);
 
 		result = example.execute();
-		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCESS);
+		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
 
 	}
 
@@ -40,7 +40,7 @@ public class UsecaseTest {
 		example.aStringProperty = "Teste";
 
 		result = example.execute();
-		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCESS);
+		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
 	}
 
 	@Test
@@ -52,12 +52,12 @@ public class UsecaseTest {
 		result = example.execute();
 		Assert.assertTrue("Direct execution should fail validation", result.resultType == UsecaseResultType.VALIDATION_FAILED);
 
-		example.set("aLongProperty", "1");
-		example.set("aStringProperty", "Teste");
+		example.presentation.get("aLongProperty").value = "1";
+		example.presentation.get("aStringProperty").value = "Teste";
 		example.parse(Cultures.EN_US);
 
 		result = example.execute();
-		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCESS);
+		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
 
 	}
 
@@ -69,9 +69,9 @@ public class UsecaseTest {
 		inherited.aLongProperty = 1;
 		inherited.aStringProperty = "Teste 1,2 3";
 		inherited.anotherProperty = "Hey";
-		
+
 		Assert.assertFalse("The usecase should not validate", inherited.validate());
-		
+
 		inherited.andAThird = new Date();
 		Assert.assertTrue("The usecase should validate", inherited.validate());
 	}

@@ -1,10 +1,10 @@
 package com.eixox;
 
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
 import com.eixox.reflection.AbstractAspect;
 import com.eixox.reflection.AspectMember;
-import com.eixox.ui.UIControl;
 
 public class UsecaseAspect extends AbstractAspect<UsecaseAspectMember> {
 
@@ -27,10 +27,10 @@ public class UsecaseAspect extends AbstractAspect<UsecaseAspectMember> {
 	@Override
 	protected UsecaseAspectMember decorate(AspectMember member) {
 
-		if (member.isReadOnly())
+		if (member.isReadOnly() || Modifier.isStatic(member.getModifiers()))
 			return null;
-
-		return new UsecaseAspectMember(member, member.getAnnotation(UIControl.class));
+		else
+			return new UsecaseAspectMember(member);
 	}
 
 	public static synchronized final UsecaseAspect getInstance(Class<?> claz) {
@@ -41,5 +41,6 @@ public class UsecaseAspect extends AbstractAspect<UsecaseAspectMember> {
 		}
 		return aspect;
 	}
+	
 
 }

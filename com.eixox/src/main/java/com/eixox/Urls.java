@@ -131,6 +131,10 @@ public final class Urls {
 			} else
 				throw ioe;
 		}
+	}
 
+	// _____________________________________________________________________________________________
+	public static String postTo(String url, Pair<String, String>... data) throws IOException {
+		return postTo(url, Strings.urlEncode(data));
 	}
 }

@@ -3,7 +3,10 @@ package com.eixox.database;
 import java.util.HashMap;
 import java.util.Properties;
 
-public class MySqlStorage<T> extends DatabaseStorage<T> {
+import com.eixox.data.entities.EntityAspect;
+import com.eixox.data.entities.EntityStorage;
+
+public class MySqlStorage<T> extends EntityStorage<T> {
 
 	private static final HashMap<Class<?>, MySqlStorage<?>> instances = new HashMap<Class<?>, MySqlStorage<?>>();
 
@@ -13,8 +16,12 @@ public class MySqlStorage<T> extends DatabaseStorage<T> {
 		return props;
 	}
 
+	private static final String url = "jdbc:mysql://localhost:3306/test";
+
 	private MySqlStorage(Class<T> claz) {
-		super(new MySqlDatabase("jdbc:mysql://localhost:3306/test", buildProperties()), claz);
+		super(
+				EntityAspect.getDefaultInstance(claz),
+				new MySqlDatabase(url, buildProperties()));
 	}
 
 	@SuppressWarnings("unchecked")

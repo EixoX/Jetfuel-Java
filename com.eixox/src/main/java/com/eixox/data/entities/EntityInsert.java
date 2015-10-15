@@ -1,37 +1,49 @@
 package com.eixox.data.entities;
 
-public abstract class EntityInsert {
+import java.util.ArrayList;
+
+import com.eixox.data.ColumnType;
+import com.eixox.data.DataInsert;
+import com.eixox.data.Storage;
+
+public class EntityInsert {
 
 	public final EntityAspect aspect;
-	public final Object[] values;
+	public final Storage storage;
+	private final DataInsert insert;
+	private final ArrayList<EntityAspectMember> members;
 
-	public EntityInsert(EntityAspect aspect) {
+	public EntityInsert(EntityAspect aspect, Storage storage) {
 		this.aspect = aspect;
-		this.values = new Object[aspect.getCount()];
-	}
-
-	public final void reset() {
-		for (int i = 0; i < values.length; i++)
-			values[i] = null;
-	}
-
-	public final void set(int ordinal, Object value) {
-		this.values[ordinal] = value;
-	}
-
-	public final void set(String name, Object value) {
-		this.values[aspect.getOrdinalOrException(name)] = value;
-	}
-
-	public final void set(Object entity) {
-		for (int i = 0; i < values.length; i++)
-		{
-			EntityAspectMember member = aspect.get(i);
-			this.values[i] = member.readOnly ? Void.class : member.getValue(entity);
+		this.storage = storage;
+		this.insert = storage.insert(aspect.tableName);
+		this.members = new ArrayList<EntityAspectMember>(aspect.getCount());
+		for (EntityAspectMember member : aspect) {
+			if (member.columntType != ColumnType.IDENTITY)
+				if (!member.isReadOnly()) {
+					this.members.add(member);
+					this.insert.cols.add(member.columnName);
+				}
 		}
 	}
 
-	public abstract boolean execute();
+	public final void reset() {
+		this.insert.clear();
+	}
 
-	public abstract Object executeAndScopeIdentity();
+	public final void add(Object entity) {
+		Object[] values = new Object[members.size()];
+		for (int i = 0; i < values.length; i++) {
+			values[i] = members.get(i).getValue(entity);
+		}
+		this.insert.add(values);
+	}
+
+	public final long execute() {
+		return this.insert.execute();
+	}
+
+	public final Object executeAndScopeIdentity() {
+		return this.insert.executeAndScopeIdentity();
+	}
 }

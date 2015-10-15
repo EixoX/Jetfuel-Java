@@ -6,15 +6,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.eixox.adapters.ValueAdapter;
-import com.eixox.xml.XmlValueFormat;
+import com.eixox.xml.XmlType;
 
 public class XmlValueArrayAdapter implements XmlAdapter {
 
 	public final String xmlName;
-	public final XmlValueFormat xmlValueFormat;
+	public final XmlType xmlValueFormat;
 	public final ValueAdapter<?> valueAdapter;
 
-	public XmlValueArrayAdapter(String xmlName, XmlValueFormat xmlValueFormat, ValueAdapter<?> valueAdapter) {
+	public XmlValueArrayAdapter(String xmlName, XmlType xmlValueFormat, ValueAdapter<?> valueAdapter) {
 		this.xmlName = xmlName;
 		this.xmlValueFormat = xmlValueFormat;
 		this.valueAdapter = valueAdapter;
@@ -22,7 +22,7 @@ public class XmlValueArrayAdapter implements XmlAdapter {
 
 	public Object readXml(Element parent) {
 		Object value = null;
-		if (this.xmlValueFormat == XmlValueFormat.ATTRIBUTE) {
+		if (this.xmlValueFormat == XmlType.ATTRIBUTE) {
 			String content = parent.getAttribute(xmlName);
 			if (content != null && content.length() > 0) {
 				String[] valueStrings = content.split(";");

@@ -2,24 +2,23 @@ package com.eixox.data;
 
 import java.util.Date;
 
-import com.eixox.database.DatabaseColumn;
-import com.eixox.database.DatabaseTable;
+import com.eixox.data.entities.Persistent;
 
-@DatabaseTable(tableName = "testentity1")
+@Persistent(name = "testentity1")
 public class TestEntity1 {
 
-	@DatabaseColumn(type = ColumnType.IDENTITY)
+	@Persistent(type = ColumnType.IDENTITY)
 	public int id;
-	@DatabaseColumn
+	@Persistent
 	public String name;
-	@DatabaseColumn(type = ColumnType.UNIQUE)
+	@Persistent(type = ColumnType.UNIQUE)
 	public String email;
-	@DatabaseColumn
+	@Persistent
 	public Date birthDay;
-	@DatabaseColumn(type = ColumnType.UNIQUE)
+	@Persistent(type = ColumnType.UNIQUE)
 	public long cpf;
-	@DatabaseColumn
+	@Persistent
 	public Date dateCreated;
-	@DatabaseColumn
+	@Persistent
 	public Date dateUpdated;
 }

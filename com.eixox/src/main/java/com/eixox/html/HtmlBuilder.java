@@ -74,13 +74,13 @@ public final class HtmlBuilder {
 	public final HtmlBuilder appendAttribute(String name, String value) {
 		builder.append(' ');
 		builder.append(name);
+		builder.append("=\"");
 		if (value != null && !value.isEmpty()) {
-			builder.append("=\"");
 			int l = value.length();
 			for (int i = 0; i < l; i++)
 				appendAttribute(value.charAt(i));
-			builder.append("\"");
 		}
+		builder.append("\"");
 		return this;
 	}
 
@@ -90,42 +90,43 @@ public final class HtmlBuilder {
 
 	private final void appendHtml(char c) {
 		switch (c) {
-		case 34:
-			builder.append("&quot;");
-			break;
-		case 38:
-			builder.append("&amp;");
-			break;
-		case 60:
-			builder.append("&lt;");
-			break;
-		case 62:
-			builder.append("&gt;");
-			break;
-		default:
-			String entity = charToEntity.get(c);
-			if (entity == null)
-				builder.append(c);
-			else
-				builder.append(entity);
+			case 34:
+				builder.append("&quot;");
+				break;
+			case 38:
+				builder.append("&amp;");
+				break;
+			case 60:
+				builder.append("&lt;");
+				break;
+			case 62:
+				builder.append("&gt;");
+				break;
+			default:
+				String entity = charToEntity.get(c);
+				if (entity == null)
+					builder.append(c);
+				else
+					builder.append(entity);
 		}
 	}
 
 	private final void appendAttribute(char c) {
 		switch (c) {
-		case 34:
-			builder.append("&quot;");
-			break;
-		default:
-			String entity = charToEntity.get(c);
-			if (entity == null)
-				builder.append(c);
-			else
-				builder.append(entity);
+			case 34:
+				builder.append("&quot;");
+				break;
+			default:
+				String entity = charToEntity.get(c);
+				if (entity == null)
+					builder.append(c);
+				else
+					builder.append(entity);
 		}
 	}
 
 	private static final Map<Character, String> charToEntity;
+
 	static {
 		Map<Character, String> map = new HashMap<Character, String>(252);
 

@@ -6,15 +6,15 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import com.eixox.adapters.ValueAdapter;
-import com.eixox.xml.XmlValueFormat;
+import com.eixox.xml.XmlType;
 
 public class XmlValueAdapter implements XmlAdapter {
 
 	public final String xmlName;
-	public final XmlValueFormat xmlValueFormat;
+	public final XmlType xmlValueFormat;
 	public final ValueAdapter<?> valueAdapter;
 
-	public XmlValueAdapter(String xmlName, XmlValueFormat xmlValueFormat, ValueAdapter<?> valueAdapter) {
+	public XmlValueAdapter(String xmlName, XmlType xmlValueFormat, ValueAdapter<?> valueAdapter) {
 		this.xmlName = xmlName;
 		this.xmlValueFormat = xmlValueFormat;
 		this.valueAdapter = valueAdapter;

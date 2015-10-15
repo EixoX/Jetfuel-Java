@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.TYPE })
 public @interface Xml {
 
-	public XmlValueFormat valueFormat() default XmlValueFormat.TEXT;
+	public XmlType type() default XmlType.TEXT;
 
 	public String name() default "";
 }

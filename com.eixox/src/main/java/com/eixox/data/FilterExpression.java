@@ -10,20 +10,12 @@ public final class FilterExpression implements Filter {
 		this.last = this.first;
 	}
 
-	public FilterExpression(ColumnSchema columnSchema, int ordinal, FilterComparison comparison, Object value) {
-		this(new FilterTerm(columnSchema, ordinal, comparison, value));
+	public FilterExpression(String name, FilterComparison comparison, Object value) {
+		this(new FilterTerm(name, comparison, value));
 	}
 
-	public FilterExpression(ColumnSchema columnSchema, int ordinal, Object value) {
-		this(new FilterTerm(columnSchema, ordinal, value));
-	}
-
-	public FilterExpression(ColumnSchema columnSchema, String name, FilterComparison comparison, Object value) {
-		this(new FilterTerm(columnSchema, name, comparison, value));
-	}
-
-	public FilterExpression(ColumnSchema columnSchema, String name, Object value) {
-		this(new FilterTerm(columnSchema, name, value));
+	public FilterExpression(String name, Object value) {
+		this(new FilterTerm(name, value));
 	}
 
 	public final FilterExpression and(Filter filter) {
@@ -33,20 +25,12 @@ public final class FilterExpression implements Filter {
 		return this;
 	}
 
-	public final FilterExpression and(int ordinal, FilterComparison comparison, Object value) {
-		return and(new FilterTerm(this.first.getColumnSchema(), ordinal, comparison, value));
-	}
-
-	public final FilterExpression and(int ordinal, Object value) {
-		return and(new FilterTerm(this.first.getColumnSchema(), ordinal, FilterComparison.EQUAL_TO, value));
-	}
-
 	public FilterExpression and(String name, FilterComparison comparison, Object value) {
-		return and(new FilterTerm(this.first.getColumnSchema(), name, comparison, value));
+		return and(new FilterTerm(name, comparison, value));
 	}
 
 	public FilterExpression and(String name, Object value) {
-		return and(new FilterTerm(this.first.getColumnSchema(), name, FilterComparison.EQUAL_TO, value));
+		return and(new FilterTerm(name, value));
 	}
 
 	public final FilterExpression or(Filter filter) {
@@ -56,28 +40,16 @@ public final class FilterExpression implements Filter {
 		return this;
 	}
 
-	public final FilterExpression or(int ordinal, FilterComparison comparison, Object value) {
-		return or(new FilterTerm(this.first.getColumnSchema(), ordinal, comparison, value));
-	}
-
-	public final FilterExpression or(int ordinal, Object value) {
-		return or(new FilterTerm(this.first.getColumnSchema(), ordinal, FilterComparison.EQUAL_TO, value));
-	}
-
 	public FilterExpression or(String name, FilterComparison comparison, Object value) {
-		return or(new FilterTerm(this.first.getColumnSchema(), name, comparison, value));
+		return or(new FilterTerm(name, comparison, value));
 	}
 
 	public FilterExpression or(String name, Object value) {
-		return or(new FilterTerm(this.first.getColumnSchema(), name, FilterComparison.EQUAL_TO, value));
+		return or(new FilterTerm(name, value));
 	}
 
 	public final FilterType getFilterType() {
 		return FilterType.EXPRESSION;
-	}
-
-	public final ColumnSchema getColumnSchema() {
-		return this.first.getColumnSchema();
 	}
 
 }

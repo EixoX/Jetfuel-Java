@@ -6,9 +6,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eixox.data.DataSelectResult;
 import com.eixox.data.entities.EntityAspect;
 
 public class DatabaseCommand {
@@ -17,22 +19,21 @@ public class DatabaseCommand {
 	public final ArrayList<Object> parameters;
 
 	public DatabaseCommand() {
-		this.text = new StringBuilder();
+		this(512);
+	}
+
+	public DatabaseCommand(int textLength) {
 		this.parameters = new ArrayList<Object>();
+		this.text = new StringBuilder(textLength);
 	}
 
-	public DatabaseCommand(int textCapaticy) {
-		this.text = new StringBuilder(textCapaticy);
-		this.parameters = new ArrayList<Object>();
+	public DatabaseCommand(int textLength, int paramCount) {
+		this.parameters = new ArrayList<Object>(paramCount);
+		this.text = new StringBuilder(textLength);
 	}
 
-	public DatabaseCommand(int textCapaticy, int valueCapacity) {
-		this.text = new StringBuilder(textCapaticy);
-		this.parameters = new ArrayList<Object>(valueCapacity);
-	}
-
-	public int executeNonQuery(Connection conn) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+	public final int executeNonQuery(Connection conn) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
 		putParameters(ps);
 		try {
 			return ps.executeUpdate();
@@ -41,8 +42,8 @@ public class DatabaseCommand {
 		}
 	}
 
-	public Object executeScalar(Connection conn) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+	public final Object executeScalar(Connection conn) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
 		putParameters(ps);
 		try {
 			ResultSet rs = ps.executeQuery();
@@ -56,8 +57,8 @@ public class DatabaseCommand {
 		}
 	}
 
-	public Object executeScopeIdentity(Connection conn) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(text.toString(), Statement.RETURN_GENERATED_KEYS);
+	public final Object executeScopeIdentity(Connection conn) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString(), Statement.RETURN_GENERATED_KEYS);
 		putParameters(ps);
 		try {
 			ps.executeUpdate();
@@ -73,8 +74,8 @@ public class DatabaseCommand {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> int executeQuery(Connection conn, EntityAspect aspect, List<T> list) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+	public final <T> int executeQuery(Connection conn, EntityAspect aspect, List<T> list) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
 		putParameters(ps);
 		int count = list.size();
 		try {
@@ -83,9 +84,7 @@ public class DatabaseCommand {
 				if (rs.next()) {
 					int[] mappings = new int[aspect.getCount()];
 					ResultSetMetaData metadata = rs.getMetaData();
-					int imax = metadata.getColumnCount() >= mappings.length ?
-							mappings.length :
-							metadata.getColumnCount();
+					int imax = metadata.getColumnCount() >= mappings.length ? mappings.length : metadata.getColumnCount();
 
 					for (int i = 0; i < imax; i++)
 						mappings[i] = aspect.getColumnOrdinal(metadata.getColumnName(i + 1));
@@ -93,8 +92,7 @@ public class DatabaseCommand {
 					do {
 						T entity = (T) aspect.newInstance();
 						for (int i = 0; i < imax; i++)
-							if (mappings[i] >= 0)
-							{
+							if (mappings[i] >= 0) {
 								Object value = rs.getObject(i + 1);
 								if (value != null)
 									aspect.setValue(entity, mappings[i], value);
@@ -112,8 +110,8 @@ public class DatabaseCommand {
 		return list.size() - count;
 	}
 
-	public Object executeQuerySingleResult(Connection conn, EntityAspect aspect) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+	public final Object executeQuerySingleResult(Connection conn, EntityAspect aspect) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
 		putParameters(ps);
 		Object entity = null;
 		try {
@@ -126,8 +124,7 @@ public class DatabaseCommand {
 
 					for (int i = 0; i < count; i++) {
 						int ordinal = aspect.getColumnOrdinal(metadata.getColumnName(i + 1));
-						if (ordinal >= 0)
-						{
+						if (ordinal >= 0) {
 							Object value = rs.getObject(i + 1);
 							if (value != null)
 								aspect.setValue(entity, ordinal, value);
@@ -143,8 +140,8 @@ public class DatabaseCommand {
 		return entity;
 	}
 
-	public int executeMemberQuery(Connection conn, EntityAspect aspect, List<Object> list) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+	public final int executeMemberQuery(Connection conn, List<Object> list) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
 		putParameters(ps);
 		int count = list.size();
 		try {
@@ -162,10 +159,71 @@ public class DatabaseCommand {
 		return list.size() - count;
 	}
 
-	public void putParameters(PreparedStatement ps) throws SQLException {
-		int s = parameters.size();
-		for (int i = 0; i < s; i++)
-			ps.setObject(i + 1, this.parameters.get(i));
+	public final void putParameters(PreparedStatement ps) throws SQLException {
+		int s = this.parameters.size();
+		for (int i = 0; i < s; i++) {
+			Object pvalue = this.parameters.get(i);
+			if (pvalue == null)
+				ps.setNull(i + 1, Types.NULL);
+			else
+				ps.setObject(i + 1, pvalue);
+		}
+
 	}
 
+	public final DataSelectResult executeQueryToResult(Connection conn) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		DataSelectResult result = new DataSelectResult();
+		putParameters(ps);
+
+		try {
+			ResultSet rs = ps.executeQuery();
+			try {
+				if (rs.next()) {
+					ResultSetMetaData metadata = rs.getMetaData();
+					int count = metadata.getColumnCount();
+					for (int i = 0; i < count; i++) {
+						result.cols.add(metadata.getColumnName(i + 1));
+					}
+
+					do {
+						Object[] arr = new Object[count];
+						for (int i = 0; i < arr.length; i++)
+							arr[i] = rs.getObject(i + 1);
+						result.add(arr);
+					} while (rs.next());
+
+				}
+			} finally {
+				rs.close();
+			}
+		} finally {
+			ps.close();
+		}
+
+		return result;
+
+	}
+
+	public final Object[] executeQuerySingleResult(Connection conn, int colCount) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		putParameters(ps);
+		try {
+			ResultSet rs = ps.executeQuery();
+			try {
+				if (rs.next()) {
+					Object[] row = new Object[colCount];
+					for (int i = 0; i < colCount; i++)
+						row[i] = rs.getObject(i + 1);
+					return row;
+				} else
+					return null;
+
+			} finally {
+				rs.close();
+			}
+		} finally {
+			ps.close();
+		}
+	}
 }
