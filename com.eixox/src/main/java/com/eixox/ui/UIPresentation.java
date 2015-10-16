@@ -16,9 +16,8 @@ public class UIPresentation extends ArrayList<UIPresentationMember> {
 	}
 
 	public void parse(HttpServletRequest request) {
-		for (UIPresentationMember member : this)
-		{
-			String itemValue =request.getParameter(member.name); 
+		for (UIPresentationMember member : this) {
+			String itemValue = request.getParameter(member.name);
 			member.value = itemValue;
 		}
 	}
@@ -32,7 +31,6 @@ public class UIPresentation extends ArrayList<UIPresentationMember> {
 		return -1;
 	}
 
-	
 	public final UIPresentationMember get(String name) {
 		int ordinal = getOrdinal(name);
 		return ordinal < 0 ? null : super.get(ordinal);

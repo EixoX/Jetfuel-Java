@@ -2,6 +2,7 @@ package com.eixox;
 
 import com.eixox.globalization.Culture;
 import com.eixox.ui.ControlState;
+import com.eixox.ui.ControlType;
 import com.eixox.ui.UIPresentation;
 import com.eixox.ui.UIPresentationMember;
 
@@ -14,15 +15,16 @@ public abstract class Usecase {
 		this.aspect = UsecaseAspect.getInstance(getClass());
 		this.presentation = new UIPresentation(this.aspect.getCount());
 		for (UsecaseAspectMember member : this.aspect) {
-			this.presentation.add(new UIPresentationMember(member.ui));
+			if (member.ui.controlType != ControlType.NONE)
+				this.presentation.add(new UIPresentationMember(member.ui));
 		}
 	}
 
 	public final void refreshPresentation() {
-		int l = this.aspect.getCount();
-		for (int i = 0; i < l; i++) {
-			String newValue = this.aspect.get(i).getValueToString(this);
-			this.presentation.get(i).value = newValue;
+		for (UIPresentationMember uiMember : this.presentation) {
+			UsecaseAspectMember member = this.aspect.get(uiMember.name);
+			if (member != null)
+				uiMember.value = member.getValueToString(this);
 		}
 	}
 
@@ -32,13 +34,10 @@ public abstract class Usecase {
 
 	public final void parse(Culture culture) {
 
-		int l = this.presentation.size();
-		for (int i = 0; i < l; i++) {
-			this.aspect.get(i).parse(
-					this,
-					culture,
-					this.presentation
-							.get(i).value);
+		for (UIPresentationMember uiMember : this.presentation) {
+			UsecaseAspectMember member = this.aspect.get(uiMember.name);
+			if (member != null)
+				member.parse(this, culture, uiMember.value);
 		}
 	}
 
