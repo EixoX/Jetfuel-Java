@@ -10,6 +10,7 @@ import java.util.Properties;
 import com.eixox.data.DataDelete;
 import com.eixox.data.DataInsert;
 import com.eixox.data.DataSelect;
+import com.eixox.data.DataSelectResult;
 import com.eixox.data.DataUpdate;
 import com.eixox.data.Storage;
 import com.eixox.data.entities.EntityAspect;
@@ -80,4 +81,20 @@ public abstract class Database implements Storage {
 		return list;
 	}
 
+	public DataSelectResult executeQuery(String commandText, Object... commandParameters) {
+		DatabaseCommand command = new DatabaseCommand();
+		command.text.append(commandText);
+		for (int i = 0; i < commandParameters.length; i++)
+			command.parameters.add(commandParameters[i]);
+		try {
+			Connection conn = getConnection();
+			try {
+				return command.executeQueryToResult(conn);
+			} finally {
+				conn.close();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

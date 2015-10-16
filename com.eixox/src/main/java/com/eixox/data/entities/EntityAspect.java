@@ -20,7 +20,7 @@ public class EntityAspect extends AbstractAspect<EntityAspectMember> {
 		super(dataType);
 
 		Persistent ps = dataType.getAnnotation(Persistent.class);
-		this.tableName = ps == null ? dataType.getName() : Strings.isNullOrEmptyAlternate(ps.name(), dataType.getName());
+		this.tableName = ps == null ? dataType.getName() : Strings.isNullOrEmptyAlternate(ps.name(), dataType.getSimpleName());
 
 		int iord = -1;
 		ArrayList<Integer> uOrdinals = new ArrayList<Integer>();

@@ -33,7 +33,7 @@ public class DatabaseCommand {
 	}
 
 	public final int executeNonQuery(Connection conn) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		putParameters(ps);
 		try {
 			return ps.executeUpdate();
@@ -43,7 +43,7 @@ public class DatabaseCommand {
 	}
 
 	public final Object executeScalar(Connection conn) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		putParameters(ps);
 		try {
 			ResultSet rs = ps.executeQuery();
@@ -75,7 +75,7 @@ public class DatabaseCommand {
 
 	@SuppressWarnings("unchecked")
 	public final <T> int executeQuery(Connection conn, EntityAspect aspect, List<T> list) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		putParameters(ps);
 		int count = list.size();
 		try {
@@ -111,7 +111,7 @@ public class DatabaseCommand {
 	}
 
 	public final Object executeQuerySingleResult(Connection conn, EntityAspect aspect) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		putParameters(ps);
 		Object entity = null;
 		try {
@@ -141,7 +141,7 @@ public class DatabaseCommand {
 	}
 
 	public final int executeMemberQuery(Connection conn, List<Object> list) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		putParameters(ps);
 		int count = list.size();
 		try {
@@ -172,7 +172,7 @@ public class DatabaseCommand {
 	}
 
 	public final DataSelectResult executeQueryToResult(Connection conn) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		DataSelectResult result = new DataSelectResult();
 		putParameters(ps);
 
@@ -206,7 +206,7 @@ public class DatabaseCommand {
 	}
 
 	public final Object[] executeQuerySingleResult(Connection conn, int colCount) throws SQLException {
-		PreparedStatement ps = conn.prepareStatement(this.text.toString(), ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		putParameters(ps);
 		try {
 			ResultSet rs = ps.executeQuery();
