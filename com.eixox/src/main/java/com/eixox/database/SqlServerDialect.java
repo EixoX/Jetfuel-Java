@@ -3,7 +3,7 @@ package com.eixox.database;
 public class SqlServerDialect extends DatabaseDialect {
 
 	public SqlServerDialect() {
-		super('"', '"');
+		super('[', ']');
 	}
 
 	@Override
