@@ -4,6 +4,7 @@ import com.eixox.Convert;
 import com.eixox.data.DataUpdate;
 import com.eixox.data.FilterExpression;
 import com.eixox.data.Storage;
+import com.eixox.reflection.AspectMember;
 
 public class EntityStorage<T> {
 
@@ -41,9 +42,7 @@ public class EntityStorage<T> {
 		// delete by identity
 		if (this.aspect.identityOrdinal >= 0) {
 			EntityAspectMember identity = this.aspect.get(this.aspect.identityOrdinal);
-			return this.storage
-					.delete(this.aspect.tableName)
-					.where(identity.columnName, identity.getValue(entity))
+			return this.storage.delete(this.aspect.tableName).where(identity.columnName, identity.getValue(entity))
 					.execute();
 		}
 		// delete by unique members
@@ -52,18 +51,13 @@ public class EntityStorage<T> {
 				EntityAspectMember uniqueMember = aspect.get(aspect.uniqueOrdinals[i]);
 				Object uniqueValue = uniqueMember.getValue(entity);
 				if (uniqueValue != null) {
-					return this.storage
-							.delete(this.aspect.tableName)
-							.where(uniqueMember.columnName, uniqueValue)
+					return this.storage.delete(this.aspect.tableName).where(uniqueMember.columnName, uniqueValue)
 							.execute();
 				}
 			}
 		// delete by composite keys
 		if (aspect.compositeKeyOrdinals != null && aspect.compositeKeyOrdinals.length > 0) {
-			return this.storage
-					.delete(this.aspect.tableName)
-					.where(aspect.buildCompositeKeyFilter(entity))
-					.execute();
+			return this.storage.delete(this.aspect.tableName).where(aspect.buildCompositeKeyFilter(entity)).execute();
 		}
 
 		return -1;
@@ -75,18 +69,12 @@ public class EntityStorage<T> {
 		if (identity == null)
 			throw new RuntimeException(aspect.getDataType() + " has no identity set");
 		else
-			return this.storage
-					.delete(this.aspect.tableName)
-					.where(identity.columnName, id)
-					.execute();
+			return this.storage.delete(this.aspect.tableName).where(identity.columnName, id).execute();
 	}
 
 	public final long deleteByMember(String memberName, Object value) {
 		EntityAspectMember member = aspect.get(memberName);
-		return this.storage
-				.delete(this.aspect.tableName)
-				.where(member.columnName, value)
-				.execute();
+		return this.storage.delete(this.aspect.tableName).where(member.columnName, value).execute();
 	}
 
 	public final T readByIdentity(Object id) {
@@ -94,43 +82,31 @@ public class EntityStorage<T> {
 		if (identity == null)
 			throw new RuntimeException(aspect.getDataType() + " has no identity set");
 		else
-			return this.storage
-					.select(this.aspect.tableName)
-					.where(identity.columnName, id)
-					.getEntity(this.aspect);
+			return this.storage.select(this.aspect.tableName).where(identity.columnName, id).getEntity(this.aspect);
 	}
 
 	public final T readByMember(String memberName, Object value) {
-		return this.storage
-				.select(this.aspect.tableName)
+		return this.storage.select(this.aspect.tableName)
 				.where(this.aspect.getColumnName(aspect.getOrdinalOrException(memberName)), value)
 				.getEntity(this.aspect);
 	}
 
 	public final long count() {
-		return this.storage
-				.select(this.aspect.tableName)
-				.count();
+		return this.storage.select(this.aspect.tableName).count();
 	}
 
 	public final boolean exists() {
-		return this.storage
-				.select(this.aspect.tableName)
-				.exists();
+		return this.storage.select(this.aspect.tableName).exists();
 	}
 
 	public final long countWithMember(String memberName, Object value) {
-		return this.storage
-				.select(this.aspect.tableName)
-				.where(this.aspect.getColumnName(aspect.getOrdinalOrException(memberName)), value)
-				.count();
+		return this.storage.select(this.aspect.tableName)
+				.where(this.aspect.getColumnName(aspect.getOrdinalOrException(memberName)), value).count();
 	}
 
 	public final boolean existsWithMember(String memberName, Object value) {
-		return this.storage
-				.select(this.aspect.tableName)
-				.where(this.aspect.getColumnName(aspect.getOrdinalOrException(memberName)), value)
-				.exists();
+		return this.storage.select(this.aspect.tableName)
+				.where(this.aspect.getColumnName(aspect.getOrdinalOrException(memberName)), value).exists();
 	}
 
 	public final boolean insert(T entity) {
@@ -145,7 +121,9 @@ public class EntityStorage<T> {
 			if (identityValue == null)
 				return false;
 			else {
-				aspect.setValue(entity, aspect.identityOrdinal, identityValue);
+				AspectMember identity = aspect.getIdentity();
+				identityValue = Convert.changeType(identityValue, identity.getDataType());
+				identity.setValue(entity, identityValue);
 				return true;
 			}
 		}
@@ -175,13 +153,9 @@ public class EntityStorage<T> {
 				int uniqueOrdinal = aspect.uniqueOrdinals[i];
 				Object uniqueValue = aspect.getValue(entity, uniqueOrdinal);
 				if (uniqueValue != null) {
-					identityValue = this.storage
-							.select(aspect.tableName)
-							.where(
-									aspect.getColumnName(uniqueOrdinal),
-									uniqueValue)
-							.getFirstMember(
-									aspect.getColumnName(aspect.identityOrdinal));
+					identityValue = this.storage.select(aspect.tableName)
+							.where(aspect.getColumnName(uniqueOrdinal), uniqueValue)
+							.getFirstMember(aspect.getColumnName(aspect.identityOrdinal));
 					if (identityValue != null) {
 						aspect.setValue(entity, aspect.identityOrdinal, identityValue);
 						return identityValue;
@@ -191,11 +165,8 @@ public class EntityStorage<T> {
 
 		// Check for composite keys that can be used to recover the id
 		if (aspect.compositeKeyOrdinals != null && aspect.compositeKeyOrdinals.length > 0) {
-			identityValue = this.storage
-					.select(aspect.tableName)
-					.where(aspect.buildCompositeKeyFilter(entity))
-					.getFirstMember(
-							aspect.getColumnName(aspect.identityOrdinal));
+			identityValue = this.storage.select(aspect.tableName).where(aspect.buildCompositeKeyFilter(entity))
+					.getFirstMember(aspect.getColumnName(aspect.identityOrdinal));
 
 			if (identityValue != null) {
 				aspect.setValue(entity, aspect.identityOrdinal, identityValue);
@@ -210,11 +181,8 @@ public class EntityStorage<T> {
 	public final boolean exists(T entity) {
 		// update by identity
 		if (aspect.identityOrdinal >= 0) {
-			return storage.select(aspect.tableName)
-					.where(
-							aspect.getColumnName(aspect.identityOrdinal),
-							aspect.getValue(entity, aspect.identityOrdinal))
-					.exists();
+			return storage.select(aspect.tableName).where(aspect.getColumnName(aspect.identityOrdinal),
+					aspect.getValue(entity, aspect.identityOrdinal)).exists();
 		}
 
 		// update by unique members
@@ -235,11 +203,8 @@ public class EntityStorage<T> {
 	}
 
 	private final long updateByIdentity(T entity) {
-		DataUpdate update = this.storage
-				.update(aspect.tableName)
-				.where(
-						aspect.getColumnName(aspect.identityOrdinal),
-						aspect.getValue(entity, aspect.identityOrdinal));
+		DataUpdate update = this.storage.update(aspect.tableName).where(aspect.getColumnName(aspect.identityOrdinal),
+				aspect.getValue(entity, aspect.identityOrdinal));
 
 		int memberCount = this.aspect.getCount();
 		for (int i = 0; i < memberCount; i++)
@@ -254,11 +219,8 @@ public class EntityStorage<T> {
 
 	private final long updateByUniqueMember(T entity, int uniqueOrdinal, Object uniqueValue) {
 
-		DataUpdate update = this.storage
-				.update(aspect.tableName)
-				.where(
-						aspect.getColumnName(uniqueOrdinal),
-						uniqueValue);
+		DataUpdate update = this.storage.update(aspect.tableName).where(aspect.getColumnName(uniqueOrdinal),
+				uniqueValue);
 
 		int memberCount = this.aspect.getCount();
 		for (int i = 0; i < memberCount; i++) {
@@ -274,9 +236,7 @@ public class EntityStorage<T> {
 
 	private final long updateByCompositeKey(T entity, FilterExpression compositeKeyFilter) {
 
-		DataUpdate update = this.storage
-				.update(aspect.tableName)
-				.where(compositeKeyFilter);
+		DataUpdate update = this.storage.update(aspect.tableName).where(compositeKeyFilter);
 
 		int memberCount = this.aspect.getCount();
 		for (int i = 0; i < memberCount; i++)

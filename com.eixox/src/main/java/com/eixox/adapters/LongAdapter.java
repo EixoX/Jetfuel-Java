@@ -1,5 +1,6 @@
 package com.eixox.adapters;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,6 +39,8 @@ public final class LongAdapter extends ValueAdapter<Long> {
 			return ((Number) value).longValue();
 		else if (String.class.isInstance(value))
 			return parse(culture, (String) value);
+		else if (BigDecimal.class.isInstance(value))
+			return ((BigDecimal) value).longValue();
 		else
 			return 0L;
 	}

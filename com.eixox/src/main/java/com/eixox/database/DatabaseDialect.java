@@ -155,7 +155,7 @@ public class DatabaseDialect {
 		command.parameters.add(values[0]);
 		for (int i = 1; i < colCount; i++) {
 			command.text.append(',');
-			if (values.length < colCount && values[i] != null) {
+			if (i < colCount && values[i] != null) {
 				command.text.append('?');
 				command.parameters.add(values[i]);
 			} else {
@@ -184,7 +184,7 @@ public class DatabaseDialect {
 		command.text.append(')');
 		for (int i = 1; i < rowCount; i++) {
 			command.text.append(", (");
-			appendValues(command, values.get(0), colCount);
+			appendValues(command, values.get(i), colCount);
 			command.text.append(')');
 		}
 		return command;

@@ -1,10 +1,16 @@
 package com.eixox;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import com.eixox.globalization.Culture;
 import com.eixox.ui.ControlState;
 import com.eixox.ui.ControlType;
 import com.eixox.ui.UIPresentation;
 import com.eixox.ui.UIPresentationMember;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 public abstract class Usecase {
 
@@ -41,8 +47,35 @@ public abstract class Usecase {
 		}
 	}
 
-	protected void postExecute(UsecaseResult result) {
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
+	protected void postExecute(UsecaseResult result) {
+		try {
+			BasicDBObject attribs = new BasicDBObject();
+			int s = result.presentation.size();
+			for (int i = 0; i < s; i++) {
+				UIPresentationMember uim = result.presentation.get(i);
+				attribs.append(uim.name, uim.value);
+			}
+			Date now = new Date();
+			BasicDBObject dbu = new BasicDBObject("class", getClass().getName());
+			dbu.append("created_date", DATE_FORMAT.format(now));
+			dbu.append("created_time", TIME_FORMAT.format(now));
+			dbu.append("title", getTitle());
+			dbu.append("presentation", attribs);
+			dbu.append("version", 1.0);
+			dbu.append("message", result.message);
+			dbu.append("resultType", result.resultType.toString());
+			if (result.exception != null)
+				dbu.append("exception", result.exception.getMessage());
+
+			MongoClient client = new MongoClient("mongodb.eixox.com.br");
+			client.getDB("profiler").getCollection("usecase_log").insert(dbu);
+
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 
 	public synchronized boolean validate() {
