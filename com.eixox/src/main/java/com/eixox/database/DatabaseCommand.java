@@ -190,7 +190,7 @@ public class DatabaseCommand {
 						Object[] arr = new Object[count];
 						for (int i = 0; i < arr.length; i++)
 							arr[i] = rs.getObject(i + 1);
-						result.add(arr);
+						result.rows.add(arr);
 					} while (rs.next());
 
 				}

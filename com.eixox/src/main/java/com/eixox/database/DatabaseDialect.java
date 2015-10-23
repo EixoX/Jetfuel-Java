@@ -125,7 +125,6 @@ public class DatabaseDialect {
 	}
 
 	protected void appendSort(DatabaseCommand command, SortExpression sort) {
-		command.text.append(" ORDER BY ");
 		appendName(command, sort.first.name);
 		if (sort.first.direction == SortDirection.DESCENDING)
 			command.text.append(" DESC");

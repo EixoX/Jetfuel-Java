@@ -2,11 +2,10 @@ package com.eixox.data;
 
 import java.util.ArrayList;
 
-public class DataSelectResult extends ArrayList<Object[]> {
-
-	private static final long serialVersionUID = -9201186867408890430L;
+public class DataSelectResult {
 
 	public final ArrayList<String> cols;
+	public final ArrayList<Object[]> rows;
 
 	public int pageSize;
 	public int pageOrdinal;
@@ -14,10 +13,11 @@ public class DataSelectResult extends ArrayList<Object[]> {
 
 	public DataSelectResult() {
 		this.cols = new ArrayList<String>();
+		this.rows = new ArrayList<Object[]>();
 	}
 
 	public DataSelectResult(int capacity) {
-		super(capacity);
+		this.rows = new ArrayList<Object[]>(capacity);
 		this.cols = new ArrayList<String>();
 	}
 
@@ -29,11 +29,19 @@ public class DataSelectResult extends ArrayList<Object[]> {
 		return -1;
 	}
 
+	public final String getColumn(int ordinal) {
+		return this.cols.get(ordinal);
+	}
+
+	public final Object[] getRow(int ordinal) {
+		return this.rows.get(ordinal);
+	}
+
 	public final Object get(int row, int col) {
-		if (row < 0 || row >= size())
+		if (row < 0 || row >= this.rows.size())
 			return null;
 		else {
-			Object[] items = get(row);
+			Object[] items = this.rows.get(row);
 			return col < 0 || items == null || col >= items.length ? null : items[col];
 		}
 	}

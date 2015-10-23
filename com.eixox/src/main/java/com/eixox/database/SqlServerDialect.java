@@ -8,9 +8,11 @@ public class SqlServerDialect extends DatabaseDialect {
 
 	@Override
 	protected void prependPage(DatabaseCommand command, int pageSize, int pageOrdinal) {
-		command.text.append(" TOP ");
-		command.text.append(pageSize * (pageOrdinal + 1));
-		command.text.append(" ");
+		if (pageSize > 0 && pageOrdinal >= 0) {
+			command.text.append(" TOP ");
+			command.text.append(pageSize * (pageOrdinal + 1));
+			command.text.append(" ");
+		}
 	}
 
 }

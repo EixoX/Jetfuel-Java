@@ -2,15 +2,12 @@ package com.eixox;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import com.eixox.globalization.Culture;
 import com.eixox.ui.ControlState;
 import com.eixox.ui.ControlType;
 import com.eixox.ui.UIPresentation;
 import com.eixox.ui.UIPresentationMember;
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
 
 public abstract class Usecase {
 
@@ -51,7 +48,7 @@ public abstract class Usecase {
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
 	protected void postExecute(UsecaseResult result) {
-		try {
+		/*try {
 			BasicDBObject attribs = new BasicDBObject();
 			int s = result.presentation.size();
 			for (int i = 0; i < s; i++) {
@@ -75,7 +72,7 @@ public abstract class Usecase {
 
 		} catch (Exception e) {
 			System.out.println(e);
-		}
+		}*/
 	}
 
 	public synchronized boolean validate() {

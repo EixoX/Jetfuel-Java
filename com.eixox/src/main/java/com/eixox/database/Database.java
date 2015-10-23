@@ -62,7 +62,7 @@ public abstract class Database implements Storage {
 		return new DatabaseInsert(this, name);
 	}
 
-	public <T> List<T> executeQuery(EntityAspect aspect, String commandText, Object... commandParameters) {
+	public synchronized <T> List<T> executeQuery(EntityAspect aspect, String commandText, Object... commandParameters) {
 		DatabaseCommand command = new DatabaseCommand();
 		command.text.append(commandText);
 		for (int i = 0; i < commandParameters.length; i++)
@@ -81,7 +81,7 @@ public abstract class Database implements Storage {
 		return list;
 	}
 
-	public DataSelectResult executeQuery(String commandText, Object... commandParameters) {
+	public synchronized DataSelectResult executeQuery(String commandText, Object... commandParameters) {
 		DatabaseCommand command = new DatabaseCommand();
 		command.text.append(commandText);
 		for (int i = 0; i < commandParameters.length; i++)
@@ -90,6 +90,23 @@ public abstract class Database implements Storage {
 			Connection conn = getConnection();
 			try {
 				return command.executeQueryToResult(conn);
+			} finally {
+				conn.close();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public synchronized Object executeScalar(String commandText, Object... commandParameters) {
+		DatabaseCommand command = new DatabaseCommand();
+		command.text.append(commandText);
+		for (int i = 0; i < commandParameters.length; i++)
+			command.parameters.add(commandParameters[i]);
+		try {
+			Connection conn = getConnection();
+			try {
+				return command.executeScalar(conn);
 			} finally {
 				conn.close();
 			}

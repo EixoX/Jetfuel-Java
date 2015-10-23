@@ -89,7 +89,7 @@ public class MongoSelect extends DataSelect {
 				Object[] row = new Object[names.length];
 				for (int j = 0; j < row.length; j++)
 					row[j] = dbo.get(names[j]);
-				result.add(row);
+				result.rows.add(row);
 			}
 		} finally {
 			cursor.close();

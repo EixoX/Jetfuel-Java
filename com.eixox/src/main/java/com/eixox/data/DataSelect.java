@@ -49,7 +49,7 @@ public abstract class DataSelect
 	}
 
 	public final Iterator<Object[]> iterator() {
-		return toResult().iterator();
+		return toResult().rows.iterator();
 	}
 
 	public final DataSelect orderBy(SortDirection direction, String... names) {
