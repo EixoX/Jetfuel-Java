@@ -18,4 +18,9 @@ public class PostgresDialect extends DatabaseDialect {
 			command.text.append(pageSize);
 		}
 	}
+	
+	@Override
+	public final boolean supportsPaging() {
+		return true;
+	}
 }

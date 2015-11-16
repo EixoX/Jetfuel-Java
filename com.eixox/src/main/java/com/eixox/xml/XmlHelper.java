@@ -28,8 +28,8 @@ public final class XmlHelper {
 		Iterator<Node> iter = getNodes(parent, nodeType).iterator();
 		return iter.hasNext() ? iter.next() : null;
 	}
-	
-	public static final String getString(Element parent, short nodeType){
+
+	public static final String getString(Element parent, short nodeType) {
 		Iterator<Node> iter = getNodes(parent, nodeType).iterator();
 		return iter.hasNext() ? iter.next().getTextContent() : null;
 	}
@@ -51,6 +51,11 @@ public final class XmlHelper {
 
 					public Node next() {
 						return nodes.item(ordinal);
+					}
+
+					public void remove() {
+						throw new RuntimeException("can't remove");
+
 					}
 
 				};
@@ -95,11 +100,9 @@ public final class XmlHelper {
 
 	public static final Date[] parseDateArray(NodeList nodes, DateFormat format) {
 		Date[] arr = new Date[nodes.getLength()];
-		for (int i = 0; i < arr.length; i++)
-		{
+		for (int i = 0; i < arr.length; i++) {
 			String txt = nodes.item(i).getTextContent();
-			if (!Strings.isNullOrEmpty(txt))
-			{
+			if (!Strings.isNullOrEmpty(txt)) {
 				try {
 					arr[i] = format.parse(txt);
 				} catch (Exception e) {

@@ -14,6 +14,7 @@ import com.eixox.data.DataSelectResult;
 import com.eixox.data.DataUpdate;
 import com.eixox.data.Storage;
 import com.eixox.data.entities.EntityAspect;
+import com.eixox.database.schema.SchemaDb;
 
 public abstract class Database implements Storage {
 
@@ -113,5 +114,20 @@ public abstract class Database implements Storage {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private SchemaDb schema = null;
+
+	protected abstract SchemaDb readSchema();
+
+	public synchronized final SchemaDb refreshSchema() {
+		schema = readSchema();
+		return schema;
+	}
+
+	public synchronized final SchemaDb getSchema() {
+		if (schema == null)
+			schema = readSchema();
+		return schema;
 	}
 }

@@ -2,6 +2,8 @@ package com.eixox.database;
 
 import java.util.Properties;
 
+import com.eixox.database.schema.SchemaDb;
+
 public class MySqlDatabase extends Database {
 
 	public final MySqlDialect dialect = new MySqlDialect();
@@ -24,5 +26,10 @@ public class MySqlDatabase extends Database {
 		return new MySqlDialect();
 	}
 
+	@Override
+	protected SchemaDb readSchema() {
+		throw new RuntimeException("THIS IS NOT YET IMPLEMENTED FOR THIS DATABASE");
+	}
+	
 
 }

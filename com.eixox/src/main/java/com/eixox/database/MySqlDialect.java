@@ -5,6 +5,11 @@ public class MySqlDialect extends DatabaseDialect {
 	public MySqlDialect() {
 		super('`', '`');
 	}
+	
+	@Override
+	public final boolean supportsPaging() {
+		return true;
+	}
 
 	@Override
 	protected void appendPage(DatabaseCommand command, int pageSize, int pageOrdinal) {

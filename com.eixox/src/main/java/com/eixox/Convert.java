@@ -220,4 +220,39 @@ public final class Convert {
 			return false;
 
 	}
+
+	public static final char[] HEX_CHARS = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c',
+			'd', 'e', 'f' };
+
+	public static String toHex(byte[] input) {
+
+		StringBuilder builder = new StringBuilder(input.length * 2);
+		for (int i = 0; i < input.length; i++) {
+			int c = input[i] & 0xFF;
+			int a = c >> 4;
+			int b = c & 0xF;
+			//System.out.println(input[i] + " -> " + c + " = " + a + " + " + b + " == " + (a * 16 + b));
+			builder.append(HEX_CHARS[a]);
+			builder.append(HEX_CHARS[b]);
+		}
+		return builder.toString();
+	}
+
+	public static final byte fromHex(char c) {
+		for (byte i = 0; i < 16; i++)
+			if (c == HEX_CHARS[i])
+				return i;
+		return -1;
+	}
+
+	public static byte[] fromHex(String input) {
+		int l = input.length();
+		byte[] arr = new byte[l / 2];
+		for (int i = 0; i < l; i += 2) {
+			int c = (fromHex(input.charAt(i)) << 4) | fromHex(input.charAt(i + 1));
+			arr[i / 2] = (byte) c;
+		}
+
+		return arr;
+	}
 }

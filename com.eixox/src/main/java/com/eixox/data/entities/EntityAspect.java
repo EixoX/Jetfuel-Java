@@ -20,7 +20,7 @@ public class EntityAspect extends AbstractAspect<EntityAspectMember> {
 		super(dataType);
 
 		Persistent ps = dataType.getAnnotation(Persistent.class);
-		this.tableName = ps == null ? dataType.getName() : Strings.isNullOrEmptyAlternate(ps.name(), dataType.getSimpleName());
+		this.tableName = ps == null ? dataType.getSimpleName() : Strings.isNullOrEmptyAlternate(ps.name(), dataType.getSimpleName());
 
 		int iord = -1;
 		ArrayList<Integer> uOrdinals = new ArrayList<Integer>();
@@ -29,20 +29,20 @@ public class EntityAspect extends AbstractAspect<EntityAspectMember> {
 
 		for (int i = 0; i < imax; i++) {
 			switch (get(i).columntType) {
-				case COMPOSITE_KEY:
-					cOrdinals.add(i);
-					break;
-				case IDENTITY:
-					if (iord < 0)
-						iord = i;
-					else
-						throw new RuntimeException(getDataType() + " has multiple data identities defined. Please remove some.");
-					break;
-				case UNIQUE:
-					uOrdinals.add(i);
-					break;
-				default:
-					break;
+			case COMPOSITE_KEY:
+				cOrdinals.add(i);
+				break;
+			case IDENTITY:
+				if (iord < 0)
+					iord = i;
+				else
+					throw new RuntimeException(getDataType() + " has multiple data identities defined. Please remove some.");
+				break;
+			case UNIQUE:
+				uOrdinals.add(i);
+				break;
+			default:
+				break;
 			}
 		}
 
@@ -126,4 +126,8 @@ public class EntityAspect extends AbstractAspect<EntityAspectMember> {
 		return aspect;
 	}
 
+	@Override
+	protected boolean decoratesParent() {
+		return true;
+	}
 }

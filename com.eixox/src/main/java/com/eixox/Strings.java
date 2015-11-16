@@ -383,4 +383,15 @@ public final class Strings {
 		else
 			return input.substring(0, size);
 	}
+
+	// ____________________________________________________________________________
+	public static final int indexOfLetterOrDigit(String input, int offset) {
+		if (input != null) {
+			int l = input.length();
+			for (int i = offset; i < l; i++)
+				if (Character.isLetterOrDigit(input.charAt(i)))
+					return i;
+		}
+		return 0;
+	}
 }

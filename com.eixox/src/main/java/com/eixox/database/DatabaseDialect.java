@@ -23,90 +23,90 @@ public class DatabaseDialect {
 
 	protected void appendFilter(DatabaseCommand command, Filter filter) {
 		switch (filter.getFilterType()) {
-			case EXPRESSION:
-				command.text.append("(");
-				appendFilter(command, ((FilterExpression) filter).first);
-				command.text.append(")");
-				break;
-			case NODE:
-				final FilterNode node = (FilterNode) filter;
-				appendFilter(command, node.filter);
-				if (node.next != null) {
-					switch (node.operation) {
-						case AND:
-							command.text.append(" AND ");
-							break;
-						case OR:
-							command.text.append(" OR ");
-							break;
-						default:
-							throw new RuntimeException("Unknwon filter operation: "
-									+ node.operation);
-					}
-					appendFilter(command, node.next);
+		case EXPRESSION:
+			command.text.append("(");
+			appendFilter(command, ((FilterExpression) filter).first);
+			command.text.append(")");
+			break;
+		case NODE:
+			final FilterNode node = (FilterNode) filter;
+			appendFilter(command, node.filter);
+			if (node.next != null) {
+				switch (node.operation) {
+				case AND:
+					command.text.append(" AND ");
+					break;
+				case OR:
+					command.text.append(" OR ");
+					break;
+				default:
+					throw new RuntimeException("Unknwon filter operation: "
+							+ node.operation);
 				}
-				break;
-			case TERM:
-				final FilterTerm term = (FilterTerm) filter;
+				appendFilter(command, node.next);
+			}
+			break;
+		case TERM:
+			final FilterTerm term = (FilterTerm) filter;
 
-				appendName(command, term.name);
-				final Object value = term.value;
-				switch (term.comparison) {
-					case EQUAL_TO:
-						if (value == null)
-							command.text.append(" IS NULL");
-						else {
-							command.text.append(" = ?");
-							command.parameters.add(value);
-						}
-						break;
-					case GREATER_OR_EQUAL:
-						command.text.append(" >= ?");
-						command.parameters.add(value);
-						break;
-					case GREATER_THAN:
-						command.text.append(" > ?");
-						command.parameters.add(value);
-						break;
-					case IN:
-						command.text.append(" IN (?)");
-						command.parameters.add(value);
-						break;
-					case LIKE:
-						command.text.append(" LIKE ?");
-						command.parameters.add(value);
-						break;
-					case LOWER_OR_EQUAL:
-						command.text.append(" <= ?");
-						command.parameters.add(value);
-						break;
-					case LOWER_THAN:
-						command.text.append(" < ?");
-						command.parameters.add(value);
-						break;
-					case NOT_EQUAL_TO:
-						if (value == null)
-							command.text.append(" IS NOT NULL");
-						else {
-							command.text.append(" != ?");
-							command.parameters.add(value);
-						}
-						break;
-					case NOT_IN:
-						command.text.append(" NOT IN (?)");
-						command.parameters.add(value);
-						break;
-					case NOT_LIKE:
-						command.text.append(" LIKE ?");
-						command.parameters.add(value);
-						break;
-					default:
-						break;
+			appendName(command, term.name);
+			final Object value = term.value;
+			switch (term.comparison) {
+			case EQUAL_TO:
+				if (value == null)
+					command.text.append(" IS NULL");
+				else {
+					command.text.append(" = ?");
+					command.parameters.add(value);
 				}
+				break;
+			case GREATER_OR_EQUAL:
+				command.text.append(" >= ?");
+				command.parameters.add(value);
+				break;
+			case GREATER_THAN:
+				command.text.append(" > ?");
+				command.parameters.add(value);
+				break;
+			case IN:
+				command.text.append(" IN (?)");
+				command.parameters.add(value);
+				break;
+			case LIKE:
+				command.text.append(" LIKE ?");
+				command.parameters.add(value);
+				break;
+			case LOWER_OR_EQUAL:
+				command.text.append(" <= ?");
+				command.parameters.add(value);
+				break;
+			case LOWER_THAN:
+				command.text.append(" < ?");
+				command.parameters.add(value);
+				break;
+			case NOT_EQUAL_TO:
+				if (value == null)
+					command.text.append(" IS NOT NULL");
+				else {
+					command.text.append(" != ?");
+					command.parameters.add(value);
+				}
+				break;
+			case NOT_IN:
+				command.text.append(" NOT IN (?)");
+				command.parameters.add(value);
+				break;
+			case NOT_LIKE:
+				command.text.append(" LIKE ?");
+				command.parameters.add(value);
 				break;
 			default:
-				throw new RuntimeException("Unknown filter type: "
-						+ filter.getFilterType());
+				break;
+			}
+			break;
+		default:
+			throw new RuntimeException("Unknown filter type: "
+					+ filter.getFilterType());
 		}
 	}
 
@@ -122,6 +122,10 @@ public class DatabaseDialect {
 
 	protected void appendPage(DatabaseCommand command, int pageSize, int pageOrdinal) {
 		// do nothing;
+	}
+
+	public boolean supportsPaging() {
+		return false;
 	}
 
 	protected void appendSort(DatabaseCommand command, SortExpression sort) {
@@ -217,7 +221,10 @@ public class DatabaseDialect {
 	public DatabaseCommand buildSelectCommand(String tableName, Filter filter, SortExpression sort, int pageSize, int pageOrdinal) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
-		prependPage(command, pageSize, pageOrdinal);
+
+		if (pageSize > 0 && pageOrdinal >= 0)
+			prependPage(command, pageSize, pageOrdinal);
+
 		command.text.append(" * FROM ");
 		appendName(command, tableName);
 		if (filter != null) {
@@ -277,7 +284,8 @@ public class DatabaseDialect {
 	public DatabaseCommand buildSelectMemberCommand(String tableName, String colName, Filter filter, SortExpression sort, int pageSize, int pageOrdinal) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
-		prependPage(command, pageSize, pageOrdinal);
+		if (pageSize > 0 && pageOrdinal >= 0)
+			prependPage(command, pageSize, pageOrdinal);
 		appendName(command, colName);
 		command.text.append(" FROM ");
 		appendName(command, tableName);
@@ -289,7 +297,8 @@ public class DatabaseDialect {
 			command.text.append(" ORDER BY ");
 			appendSort(command, sort);
 		}
-		appendPage(command, 1, 0);
+		if (pageSize > 0 && pageOrdinal >= 0)
+			appendPage(command, pageSize, pageOrdinal);
 		return command;
 	}
 
@@ -315,7 +324,8 @@ public class DatabaseDialect {
 	public DatabaseCommand buildSelectCommand(String tableName, FilterExpression where, SortExpression orderBy, int pageSize, int pageOrdinal) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
-		prependPage(command, pageSize, pageOrdinal);
+		if (pageSize > 0 && pageOrdinal >= 0)
+			prependPage(command, pageSize, pageOrdinal);
 		command.text.append(" * FROM ");
 		appendName(command, tableName);
 		if (where != null) {
@@ -326,14 +336,16 @@ public class DatabaseDialect {
 			command.text.append(" ORDER BY ");
 			appendSort(command, orderBy);
 		}
-		appendPage(command, pageSize, pageOrdinal);
+		if (pageSize > 0 && pageOrdinal >= 0)
+			appendPage(command, pageSize, pageOrdinal);
 		return command;
 	}
 
 	public DatabaseCommand buildSelectMembersCommand(String tableName, String[] names, FilterExpression filter, SortExpression sort, int pageSize, int pageOrdinal) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
-		prependPage(command, pageSize, pageOrdinal);
+		if (pageSize > 0 && pageOrdinal >= 0)
+			prependPage(command, pageSize, pageOrdinal);
 		appendName(command, names[0]);
 		for (int i = 1; i < names.length; i++) {
 			command.text.append(", ");
@@ -349,7 +361,8 @@ public class DatabaseDialect {
 			command.text.append(" ORDER BY ");
 			appendSort(command, sort);
 		}
-		appendPage(command, pageSize, pageOrdinal);
+		if (pageSize > 0 && pageOrdinal >= 0)
+			appendPage(command, pageSize, pageOrdinal);
 		return command;
 	}
 }

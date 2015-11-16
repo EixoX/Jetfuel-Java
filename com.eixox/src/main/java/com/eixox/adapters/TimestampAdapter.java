@@ -17,13 +17,13 @@ public class TimestampAdapter extends ValueAdapter<Timestamp> {
 
 	@Override
 	public Timestamp parse(Culture culture, String input) {
-		Date dt = culture.parseDateIso8601(input);
+		Date dt = culture.parseDateRfc822(input);
 		return dt == null ? null : new Timestamp(dt.getTime());
 	}
 
 	@Override
 	public int getSqlTypeId() {
-		return Types.TIMESTAMP_WITH_TIMEZONE;
+		return Types.TIMESTAMP;
 	}
 
 	@Override

@@ -36,4 +36,45 @@ public class UIPresentation extends ArrayList<UIPresentationMember> {
 		return ordinal < 0 ? null : super.get(ordinal);
 	}
 
+	public final boolean invalidate(String name, String message) {
+		UIPresentationMember member = get(name);
+		if (member == null)
+			return false;
+		else {
+			member.controlState = ControlState.ERROR;
+			member.message = message;
+			return true;
+		}
+	}
+
+	public final void invalidateVisibleControls() {
+		for (UIPresentationMember member : this)
+			if (member.controlType != ControlType.NONE && member.controlType != ControlType.HIDDEN)
+				member.controlState = ControlState.ERROR;
+	}
+
+	public final void invalidateVisibleControls(String message) {
+		for (UIPresentationMember member : this)
+			if (member.controlType != ControlType.NONE && member.controlType != ControlType.HIDDEN) {
+				member.controlState = ControlState.ERROR;
+				member.message = message;
+			}
+	}
+
+	public final boolean setValue(String name, String value, ControlState state) {
+		UIPresentationMember member = get(name);
+		if (member == null)
+			return false;
+		else {
+			member.controlState = state;
+			member.message = "";
+			member.value = value;
+			return true;
+		}
+	}
+
+	public final boolean setValue(String name, String value) {
+		return setValue(name, value, ControlState.NORMAL);
+	}
+
 }

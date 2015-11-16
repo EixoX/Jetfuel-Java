@@ -138,7 +138,11 @@ public class DatabaseSelect extends DataSelect {
 		try {
 			Connection conn = database.getConnection();
 			try {
-				return cmd.executeQuery(conn, aspect, list);
+				if (this.pageSize > 0 && database.dialect.supportsPaging() == false)
+					return cmd.executeQuery(conn, aspect, list, this.pageSize * this.pageOrdinal, this.pageSize);
+				else
+					return cmd.executeQuery(conn, aspect, list);
+
 			} finally {
 				conn.close();
 			}

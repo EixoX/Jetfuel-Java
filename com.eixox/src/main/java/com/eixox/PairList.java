@@ -27,4 +27,12 @@ public class PairList<TKey, TValue> extends ArrayList<Pair<TKey, TValue>> {
 		return super.get(ordinal).value;
 	}
 
+	public int getOrdinal(TKey key) {
+		int s = this.size();
+		for (int i = 0; i < s; i++)
+			if (key.equals(get(i).key))
+				return i;
+		return -1;
+	}
+
 }

@@ -2,7 +2,6 @@ package com.eixox.mongodb;
 
 import com.eixox.data.DataUpdate;
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
 
 public class MongoUpdate extends DataUpdate {
 
@@ -15,8 +14,8 @@ public class MongoUpdate extends DataUpdate {
 
 	@Override
 	public long execute() {
-		DBCollection collection = db.getCollection(this.from);
-		return 0;
+		// DBCollection collection = db.getCollection(this.from);
+		throw new RuntimeException("Mongo UPDATE is not implemented");
 	}
 
 }

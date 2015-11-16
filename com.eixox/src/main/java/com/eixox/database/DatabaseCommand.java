@@ -73,7 +73,6 @@ public class DatabaseCommand {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public final <T> int executeQuery(Connection conn, EntityAspect aspect, List<T> list) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		putParameters(ps);
@@ -81,26 +80,9 @@ public class DatabaseCommand {
 		try {
 			ResultSet rs = ps.executeQuery();
 			try {
-				if (rs.next()) {
-					int[] mappings = new int[aspect.getCount()];
-					ResultSetMetaData metadata = rs.getMetaData();
-					int imax = metadata.getColumnCount() >= mappings.length ? mappings.length : metadata.getColumnCount();
-
-					for (int i = 0; i < imax; i++)
-						mappings[i] = aspect.getColumnOrdinal(metadata.getColumnName(i + 1));
-
-					do {
-						T entity = (T) aspect.newInstance();
-						for (int i = 0; i < imax; i++)
-							if (mappings[i] >= 0) {
-								Object value = rs.getObject(i + 1);
-								if (value != null)
-									aspect.setValue(entity, mappings[i], value);
-							}
-
-						list.add(entity);
-					} while (rs.next());
-				}
+				ResultsetToClassIterator<T> rtc = new ResultsetToClassIterator<T>(aspect, rs);
+				while (rtc.hasNext())
+					list.add(rtc.next());
 			} finally {
 				rs.close();
 			}
@@ -110,26 +92,23 @@ public class DatabaseCommand {
 		return list.size() - count;
 	}
 
-	public final Object executeQuerySingleResult(Connection conn, EntityAspect aspect) throws SQLException {
+	public final <T> int executeQuery(Connection conn, EntityAspect aspect, List<T> list, int skip, int take) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(this.text.toString());
 		putParameters(ps);
-		Object entity = null;
+		int count = list.size();
 		try {
 			ResultSet rs = ps.executeQuery();
 			try {
-				if (rs.next()) {
-					entity = aspect.newInstance();
-					ResultSetMetaData metadata = rs.getMetaData();
-					int count = metadata.getColumnCount();
+				ResultsetToClassIterator<T> rtc = new ResultsetToClassIterator<T>(aspect, rs);
+				if (skip > 0)
+					rtc.skip(skip);
 
-					for (int i = 0; i < count; i++) {
-						int ordinal = aspect.getColumnOrdinal(metadata.getColumnName(i + 1));
-						if (ordinal >= 0) {
-							Object value = rs.getObject(i + 1);
-							if (value != null)
-								aspect.setValue(entity, ordinal, value);
-						}
-					}
+				if (take > 0)
+					return rtc.take(take, list);
+				else {
+					while (rtc.hasNext())
+						list.add(rtc.next());
+					return list.size() - count;
 				}
 			} finally {
 				rs.close();
@@ -137,7 +116,25 @@ public class DatabaseCommand {
 		} finally {
 			ps.close();
 		}
-		return entity;
+
+	}
+
+	public final <T> T executeQuerySingleResult(Connection conn, EntityAspect aspect) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
+		putParameters(ps);
+
+		try {
+			ResultSet rs = ps.executeQuery();
+			try {
+				ResultsetToClassIterator<T> rtc = new ResultsetToClassIterator<T>(aspect, rs);
+				return rtc.hasNext() ? rtc.next() : null;
+			} finally {
+				rs.close();
+			}
+		} finally {
+			ps.close();
+		}
+
 	}
 
 	public final int executeMemberQuery(Connection conn, List<Object> list) throws SQLException {
@@ -219,6 +216,21 @@ public class DatabaseCommand {
 				} else
 					return null;
 
+			} finally {
+				rs.close();
+			}
+		} finally {
+			ps.close();
+		}
+	}
+
+	public final <T> T executeQuery(Connection conn, ResultSetProcessor<T> processor) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
+		putParameters(ps);
+		try {
+			ResultSet rs = ps.executeQuery();
+			try {
+				return processor.process(rs);
 			} finally {
 				rs.close();
 			}

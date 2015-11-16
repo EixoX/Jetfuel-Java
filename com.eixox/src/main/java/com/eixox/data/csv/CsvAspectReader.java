@@ -12,10 +12,13 @@ public class CsvAspectReader<T> implements Iterable<T>, Iterator<T> {
 	private final CsvAspect<T> aspect;
 	public EntityInterceptor<T> interceptor;
 	private String line;
+	public final String separators;
+	public String[] row;
 
-	public CsvAspectReader(InputStreamReader reader, CsvAspect<T> aspect) {
+	public CsvAspectReader(InputStreamReader reader, CsvAspect<T> aspect, String separators) {
 		this.reader = new BufferedReader(reader);
 		this.aspect = aspect;
+		this.separators = separators;
 	}
 
 	public boolean hasNext() {
@@ -32,13 +35,22 @@ public class CsvAspectReader<T> implements Iterable<T>, Iterator<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public T next() {
-		// TODO Auto-generated method stub
-		return null;
+		this.row = this.line.split(this.separators);
+		T instance = (T) aspect.newInstance();
+		for (int i = 0; i < row.length; i++)
+			this.aspect.setValue(instance, i, this.row[i]);
+		return interceptor == null ? instance : interceptor.intercept(instance);
 	}
 
 	public final Iterator<T> iterator() {
 		return this;
+	}
+
+	public void remove() {
+		throw new RuntimeException("can't remove!");
+
 	}
 
 }

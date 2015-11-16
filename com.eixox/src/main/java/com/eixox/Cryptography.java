@@ -5,7 +5,10 @@ import java.security.MessageDigest;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-public class Cryptography {
+public final class Cryptography {
+
+	private Cryptography() {
+	}
 
 	public static byte[] aesEncrypt(byte[] key, byte[] content) {
 		try {
@@ -63,14 +66,24 @@ public class Cryptography {
 		}
 	}
 
-	public static String sha1Hash(String input) {
+	public static byte[] sha1Hash(String input) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-1");
-			md.update(input.getBytes());
+			md.update(input.getBytes("UTF-8"));
 			byte[] bytes = md.digest();
-			return Base64.encode(bytes);
+			return bytes;
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
+
+	public static String sha1HashToBase64(String input) {
+		return Base64.encode(sha1Hash(input));
+	}
+
+	public static String sha1HashToHex(String input) {
+		return Convert.toHex(sha1Hash(input));
+	}
+
+	
 }

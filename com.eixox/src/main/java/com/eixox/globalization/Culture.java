@@ -7,12 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-
 public abstract class Culture {
-
-	public static final DateTimeFormatter ISOFORMATTER = ISODateTimeFormat.dateTimeParser();
 
 	private static final DateFormat rfc822Formatter = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss Z", Locale.US);
 
@@ -262,10 +257,4 @@ public abstract class Culture {
 			return this.dateTimeFormatter.format(input);
 	}
 
-	public final Date parseDateIso8601(String input) {
-		if (input == null || input.isEmpty())
-			return null;
-		else
-			return ISOFORMATTER.parseDateTime(input).toDate();
-	}
 }
