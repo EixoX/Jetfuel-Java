@@ -2,8 +2,6 @@ package com.eixox.ui;
 
 import java.util.ArrayList;
 
-import javax.servlet.http.HttpServletRequest;
-
 public class UIPresentation extends ArrayList<UIPresentationMember> {
 
 	private static final long serialVersionUID = 6539046574902926538L;
@@ -13,13 +11,6 @@ public class UIPresentation extends ArrayList<UIPresentationMember> {
 
 	public UIPresentation(int size) {
 		super(size);
-	}
-
-	public void parse(HttpServletRequest request) {
-		for (UIPresentationMember member : this) {
-			String itemValue = request.getParameter(member.name);
-			member.value = itemValue;
-		}
 	}
 
 	public final int getOrdinal(String name) {

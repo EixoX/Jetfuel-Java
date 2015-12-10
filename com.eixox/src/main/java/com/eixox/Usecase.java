@@ -37,7 +37,7 @@ public abstract class Usecase {
 	
 	public final void parsePresentation(Culture culture){
 		this.culture = culture;
-		this.parsePresentation();
+		parsePresentation();
 	}
 
 	public void formatPresentation() {
