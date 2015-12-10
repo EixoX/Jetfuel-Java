@@ -1,6 +1,7 @@
 package com.eixox;
 
 import com.eixox.globalization.Culture;
+import com.eixox.globalization.Cultures;
 import com.eixox.ui.ControlState;
 import com.eixox.ui.ControlType;
 import com.eixox.ui.UIPresentation;
@@ -10,8 +11,10 @@ public abstract class Usecase {
 
 	public final UsecaseAspect aspect;
 	public final UIPresentation presentation;
+	public Culture culture;
 
-	public Usecase() {
+	public Usecase(Culture culture) {
+		this.culture = culture;
 		this.aspect = UsecaseAspect.getInstance(getClass());
 		this.presentation = new UIPresentation(this.aspect.getCount());
 		for (UsecaseAspectMember member : this.aspect) {
@@ -20,11 +23,28 @@ public abstract class Usecase {
 		}
 	}
 
-	public final void refreshPresentation() {
+	public Usecase() {
+		this(Cultures.EN_US);
+	}
+
+	public void parsePresentation() {
 		for (UIPresentationMember uiMember : this.presentation) {
 			UsecaseAspectMember member = this.aspect.get(uiMember.name);
 			if (member != null)
-				uiMember.value = member.getValueToString(this);
+				member.parse(this, culture, uiMember.value);
+		}
+	}
+	
+	public final void parsePresentation(Culture culture){
+		this.culture = culture;
+		this.parsePresentation();
+	}
+
+	public void formatPresentation() {
+		for (UIPresentationMember uiMember : this.presentation) {
+			UsecaseAspectMember member = this.aspect.get(uiMember.name);
+			if (member != null)
+				uiMember.value = member.getValueToString(this, culture);
 		}
 	}
 
@@ -32,17 +52,10 @@ public abstract class Usecase {
 		return toString();
 	}
 
-	public final void parse(Culture culture) {
-
-		for (UIPresentationMember uiMember : this.presentation) {
-			UsecaseAspectMember member = this.aspect.get(uiMember.name);
-			if (member != null)
-				member.parse(this, culture, uiMember.value);
-		}
-	}
-
-	//private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-	//private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+	// private static final DateFormat DATE_FORMAT = new
+	// SimpleDateFormat("yyyy-MM-dd");
+	// private static final DateFormat TIME_FORMAT = new
+	// SimpleDateFormat("HH:mm:ss");
 
 	protected void postExecute(UsecaseResult result) {
 		/*

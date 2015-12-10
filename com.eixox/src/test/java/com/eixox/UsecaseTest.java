@@ -20,7 +20,7 @@ public class UsecaseTest {
 
 		example.presentation.get("aLongProperty").value = "1";
 		example.presentation.get("aStringProperty").value = "Teste";
-		example.parse(Cultures.EN_US);
+		example.parsePresentation();
 
 		result = example.execute();
 		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
@@ -54,7 +54,7 @@ public class UsecaseTest {
 
 		example.presentation.get("aLongProperty").value = "1";
 		example.presentation.get("aStringProperty").value = "Teste";
-		example.parse(Cultures.EN_US);
+		example.parsePresentation();
 
 		result = example.execute();
 		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
