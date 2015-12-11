@@ -131,4 +131,9 @@ public final class Dates {
 	public static final Timestamp timestampNow() {
 		return new Timestamp(new Date().getTime());
 	}
+
+	// ______________________________________________________________________
+	public static final Timestamp timestampFromDate(Date date) {
+		return date == null ? null : new Timestamp(date.getTime());
+	}
 }
