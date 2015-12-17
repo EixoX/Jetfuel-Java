@@ -3,6 +3,7 @@ package com.eixox.adapters;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,9 +13,8 @@ import com.eixox.globalization.Culture;
 
 public class DateYmdAdapter extends ValueAdapter<Date> {
 
-	
 	public static final DateYmdAdapter INSTANCE = new DateYmdAdapter();
-	
+
 	public DateYmdAdapter() {
 		super(Date.class);
 	}
@@ -31,14 +31,14 @@ public class DateYmdAdapter extends ValueAdapter<Date> {
 		try {
 
 			switch (input.length()) {
-				case 8:
-					return FORMAT_YMD.parse(input);
-				case 10:
-					return FORMAT_YMDH.parse(input);
-				case 12:
-					return FORMAT_YMDHM.parse(input);
-				default:
-					return FORMAT_YMDHMS.parse(input);
+			case 8:
+				return FORMAT_YMD.parse(input);
+			case 10:
+				return FORMAT_YMDH.parse(input);
+			case 12:
+				return FORMAT_YMDHM.parse(input);
+			default:
+				return FORMAT_YMDHMS.parse(input);
 			}
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
@@ -86,6 +86,15 @@ public class DateYmdAdapter extends ValueAdapter<Date> {
 		else
 			return parse(value.toString());
 
+	}
+
+	public static final Date parseDate(String input) {
+		return INSTANCE.parse(input);
+	}
+
+	public static final Timestamp parseTimestamp(String input) {
+		Date dt = INSTANCE.parse(input);
+		return dt == null ? null : new Timestamp(dt.getTime());
 	}
 
 }

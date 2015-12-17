@@ -56,4 +56,11 @@ public final class IntegerAdapter extends ValueAdapter<Integer> {
 	public Integer readValue(ResultSet rs, int ordinal) throws SQLException {
 		return rs.getInt(ordinal);
 	}
+
+	public static final int parseInt(String input) {
+		if (input == null || input.isEmpty())
+			return 0;
+		else
+			return Integer.parseInt(input);
+	}
 }
