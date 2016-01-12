@@ -100,6 +100,8 @@ public abstract class Usecase {
 
 	public synchronized final UsecaseResult execute() {
 		UsecaseResult result = new UsecaseResult();
+		result.presentation = this.presentation;
+		
 		try {
 			if (validate()) {
 				executeFlow(result);
@@ -117,7 +119,7 @@ public abstract class Usecase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		result.presentation = this.presentation;
+		
 		return result;
 	}
 
