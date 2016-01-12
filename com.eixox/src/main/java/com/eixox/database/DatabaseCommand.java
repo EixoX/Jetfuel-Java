@@ -10,6 +10,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eixox.Strings;
 import com.eixox.data.DataSelectResult;
 import com.eixox.data.entities.EntityAspect;
 

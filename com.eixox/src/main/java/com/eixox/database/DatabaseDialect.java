@@ -68,10 +68,6 @@ public class DatabaseDialect {
 				command.text.append(" > ?");
 				command.parameters.add(value);
 				break;
-			case IN:
-				command.text.append(" IN (?)");
-				command.parameters.add(value);
-				break;
 			case LIKE:
 				command.text.append(" LIKE ?");
 				command.parameters.add(value);
@@ -92,9 +88,15 @@ public class DatabaseDialect {
 					command.parameters.add(value);
 				}
 				break;
+			case IN:
+				command.text.append(" IN (");
+				appendList(command, (Iterable<?>)value);
+				command.text.append(")");
+				break;
 			case NOT_IN:
-				command.text.append(" NOT IN (?)");
-				command.parameters.add(value);
+				command.text.append(" NOT IN (");
+				appendList(command, (Iterable<?>)value);
+				command.text.append(")");
 				break;
 			case NOT_LIKE:
 				command.text.append(" LIKE ?");
@@ -107,6 +109,19 @@ public class DatabaseDialect {
 		default:
 			throw new RuntimeException("Unknown filter type: "
 					+ filter.getFilterType());
+		}
+	}
+	
+	private void appendList(DatabaseCommand command, Iterable<?> iterable) {
+		boolean prependComma = false;
+		for (Object o : iterable) {
+			if (prependComma)
+				command.text.append(",");
+			else
+				prependComma = true;
+			
+			command.text.append("?");
+			command.parameters.add(o);
 		}
 	}
 
