@@ -8,7 +8,7 @@ public class FunctionalList<T> extends ArrayList<T> {
 	private static final long serialVersionUID = 1L;
 	
 	@SuppressWarnings("unchecked")
-	public FunctionalList(List oldList) {
+	public FunctionalList(List<?> oldList) {
 		for (Object o : oldList) {
 			this.add((T)o);
 		}
@@ -24,6 +24,16 @@ public class FunctionalList<T> extends ArrayList<T> {
 		
 		for (int i = 0; i < this.size(); i++)
 			list.add((F) provider.provide((E)this.get(i)));
+		
+		return list;
+	}
+	
+	public FunctionalList<T> filter(FilterProvider<T> filterProvider) {
+		FunctionalList<T> list = new FunctionalList<T>();
+		
+		for (int i = 0; i < this.size(); i++)
+			if (filterProvider.filter(this.get(i)))
+				list.add(this.get(i));
 		
 		return list;
 	}
