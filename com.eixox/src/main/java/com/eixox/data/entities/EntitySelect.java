@@ -10,7 +10,7 @@ import com.eixox.data.SortExpression;
 import com.eixox.data.SortNode;
 import com.eixox.data.Storage;
 
-public class EntitySelect<T> extends EntityFilterBase<EntitySelect<T>>implements Iterable<T> {
+public class EntitySelect<T> extends EntityFilterBase<EntitySelect<T>> implements Iterable<T> {
 
 	public final Storage storage;
 	public SortExpression sort;
@@ -136,6 +136,15 @@ public class EntitySelect<T> extends EntityFilterBase<EntitySelect<T>>implements
 
 	public final EntitySelect<T> thenBy(String... names) {
 		return thenBy(SortDirection.ASCENDING, names);
+	}
+
+	public final List<Object> getMemberList(String memberName) {
+		DataSelect select = this.storage.select(this.aspect.tableName);
+		select.pageSize = this.pageSize;
+		select.pageOrdinal = this.pageOrdinal;
+		select.sort = this.sort;
+		select.filter = this.filter;
+		return select.getMember(this.aspect.getColumnName(this.aspect.getOrdinal(memberName)));
 	}
 
 }
