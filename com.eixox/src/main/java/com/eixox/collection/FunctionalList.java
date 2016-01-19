@@ -1,7 +1,11 @@
 package com.eixox.collection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.eixox.reflection.ClassAspect;
 
 public class FunctionalList<T> extends ArrayList<T> {
 
@@ -36,6 +40,20 @@ public class FunctionalList<T> extends ArrayList<T> {
 				list.add(this.get(i));
 		
 		return list;
+	}
+	
+	public Map<Object, T> toDictionary(String key, Class<T> type) {
+		ClassAspect<T> aspect = ClassAspect.getInstance(type);
+		Map<Object, T> map = new HashMap<Object, T>();
+		
+		for (int i = 0; i < this.size(); i++) {
+			T obj = get(i);
+			Object objKey = aspect.get(key).getValue(obj);
+			
+			map.put(objKey, obj);
+		}
+		
+		return map;
 	}
 	
 	public List<T> toList() {
