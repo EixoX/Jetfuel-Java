@@ -10,7 +10,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eixox.Strings;
 import com.eixox.data.DataSelectResult;
 import com.eixox.data.entities.EntityAspect;
 
@@ -53,6 +52,16 @@ public class DatabaseCommand {
 			} finally {
 				rs.close();
 			}
+		} finally {
+			ps.close();
+		}
+	}
+	
+	public final boolean executeSql(Connection conn) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(this.text.toString());
+		putParameters(ps);
+		try {
+			return ps.execute();
 		} finally {
 			ps.close();
 		}

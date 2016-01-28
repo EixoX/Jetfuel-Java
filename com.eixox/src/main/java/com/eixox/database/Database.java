@@ -132,6 +132,23 @@ public abstract class Database implements Storage {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public synchronized boolean executeSql(String commandText, Object... commandParameters) {
+		DatabaseCommand command = new DatabaseCommand();
+		command.text.append(commandText);
+		for (int i = 0; i < commandParameters.length; i++)
+			command.parameters.add(commandParameters[i]);
+		try {
+			Connection conn = getConnection();
+			try {
+				return command.executeSql(conn);
+			} finally {
+				conn.close();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	private SchemaDb schema = null;
 
