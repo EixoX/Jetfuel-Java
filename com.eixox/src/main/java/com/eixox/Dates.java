@@ -1,5 +1,6 @@
 package com.eixox;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -135,5 +136,10 @@ public final class Dates {
 	// ______________________________________________________________________
 	public static final Timestamp timestampFromDate(Date date) {
 		return date == null ? null : new Timestamp(date.getTime());
+	}
+
+	// ______________________________________________________________________
+	public static final Time timeNow() {
+		return new Time(new Date().getTime());
 	}
 }
