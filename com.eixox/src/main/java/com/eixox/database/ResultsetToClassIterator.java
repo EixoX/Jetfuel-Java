@@ -18,11 +18,15 @@ public final class ResultsetToClassIterator<T> implements Iterable<T>, Iterator<
 	public ResultsetToClassIterator(EntityAspect aspect, ResultSet resultSet) throws SQLException {
 		this.aspect = aspect;
 		this.resultSet = resultSet;
-		this.mappings = new int[aspect.getCount()];
+
 		ResultSetMetaData metadata = resultSet.getMetaData();
-		this.colCount = metadata.getColumnCount() >= mappings.length ? mappings.length : metadata.getColumnCount();
-		for (int i = 0; i < colCount; i++)
-			mappings[i] = aspect.getColumnOrdinal(metadata.getColumnName(i + 1));
+		this.colCount = metadata.getColumnCount();
+		this.mappings = new int[this.colCount];
+		for (int i = 0; i < colCount; i++) {
+			String colName = metadata.getColumnName(i + 1);
+			mappings[i] = aspect.getColumnOrdinal(colName);
+		}
+
 	}
 
 	public final boolean hasNext() {
@@ -81,7 +85,7 @@ public final class ResultsetToClassIterator<T> implements Iterable<T>, Iterator<
 
 	public void remove() {
 		// fire the dude who added remove on the iterator.
-		
+
 	}
 
 }
