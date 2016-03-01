@@ -172,6 +172,8 @@ public class DatabaseCommand {
 			Object pvalue = this.parameters.get(i);
 			if (pvalue == null)
 				ps.setNull(i + 1, Types.NULL);
+			else if(pvalue instanceof Character)
+				ps.setObject(i + 1, pvalue.toString());
 			else
 				ps.setObject(i + 1, pvalue);
 		}

@@ -69,8 +69,15 @@ public final class ResultsetToClassIterator<T> implements Iterable<T>, Iterator<
 			for (int i = 0; i < colCount; i++)
 				if (mappings[i] >= 0) {
 					Object value = resultSet.getObject(i + 1);
-					if (value != null)
-						aspect.setValue(entity, mappings[i], value);
+					if (value != null) {
+						Class<?> targetType = aspect.get(mappings[i]).getDataType();
+						if (targetType == Character.class || targetType == Character.TYPE) {
+							String s = (String) value;
+							if (!s.isEmpty())
+								aspect.setValue(entity, mappings[i], s.charAt(0));
+						} else
+							aspect.setValue(entity, mappings[i], value);
+					}
 				}
 			return entity;
 

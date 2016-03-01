@@ -1,6 +1,7 @@
 package com.eixox.database;
 
 import java.sql.Connection;
+import java.util.List;
 
 import com.eixox.data.DataInsert;
 
@@ -15,17 +16,31 @@ public class DatabaseInsert extends DataInsert {
 
 	@Override
 	public final long execute() {
-		DatabaseCommand cmd = database.dialect.buildInsertCommand(this.from, this.cols, this);
-		try {
-			Connection conn = database.getConnection();
+
+		long counter = 0;
+
+		int imax = this.size();
+		for (int i = 0; i < imax; i += 50) {
+			int end = i + 50;
+			if (end > imax)
+				end = imax;
+
+			List<Object[]> subList = this.subList(i, end);
+			DatabaseCommand cmd = database.dialect.buildInsertCommand(this.from, this.cols, subList);
 			try {
-				return cmd.executeNonQuery(conn);
-			} finally {
-				conn.close();
+				Connection conn = database.getConnection();
+				try {
+					counter += cmd.executeNonQuery(conn);
+				} finally {
+					conn.close();
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
+
+		return counter;
+
 	}
 
 	@Override

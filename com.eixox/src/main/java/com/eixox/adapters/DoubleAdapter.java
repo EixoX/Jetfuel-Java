@@ -12,6 +12,10 @@ public final class DoubleAdapter extends ValueAdapter<Double> {
 		super(Double.class);
 	}
 
+	public static final double parseDouble(String input) {
+		return input == null || input.isEmpty() ? 0.0 : Double.parseDouble(input);
+	}
+
 	@Override
 	public final Double parse(Culture culture, String input) {
 		Number n = culture.parseNumber(input);

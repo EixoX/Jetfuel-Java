@@ -13,6 +13,10 @@ public final class LongAdapter extends ValueAdapter<Long> {
 		super(Long.class);
 	}
 
+	public static final long parseLong(String input) {
+		return input == null || input.isEmpty() ? 0L : Long.parseLong(input);
+	}
+
 	@Override
 	public final Long parse(Culture culture, String input) {
 		Number n = culture.parseNumber(input);

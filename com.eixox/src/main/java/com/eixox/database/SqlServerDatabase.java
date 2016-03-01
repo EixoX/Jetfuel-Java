@@ -27,6 +27,7 @@ public class SqlServerDatabase extends Database {
 	@Override
 	public final String getDriverClassName() {
 		return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		//return "net.sourceforge.jtds.jdbc.Driver";
 	}
 
 	@Override

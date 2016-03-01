@@ -5,10 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
+import com.eixox.Formats;
+import com.eixox.Strings;
 import com.eixox.globalization.Culture;
 
 public class DateYmdAdapter extends ValueAdapter<Date> {
@@ -19,30 +21,114 @@ public class DateYmdAdapter extends ValueAdapter<Date> {
 		super(Date.class);
 	}
 
-	public static final SimpleDateFormat FORMAT_YMD = new SimpleDateFormat("yyyyMMdd");
-	public static final SimpleDateFormat FORMAT_YMDH = new SimpleDateFormat("yyyyMMddHH");
-	public static final SimpleDateFormat FORMAT_YMDHM = new SimpleDateFormat("yyyyMMddHHmm");
-	public static final SimpleDateFormat FORMAT_YMDHMS = new SimpleDateFormat("yyyyMMddHHmmss");
+	public static final GregorianCalendar parseCalendar(String input) {
+
+		if (input == null || input.isEmpty())
+			return null;
+
+		int year = 0;
+		int month = 0;
+		int day = 0;
+		int hour = 0;
+		int minute = 0;
+		int second = 0;
+
+		switch (input.length()) {
+		case 1:
+		case 2:
+		case 3:
+			year = Integer.parseInt(input);
+			month = 1;
+			day = 1;
+			break;
+		case 4:
+			year = Integer.parseInt(input.substring(0, 2));
+			month = Integer.parseInt(input.substring(2, 4));
+			day = 1;
+			break;
+		case 5:
+			year = Integer.parseInt(input.substring(0, 2));
+			month = Integer.parseInt(input.substring(2, 3));
+			day = Integer.parseInt(input.substring(3, 5));
+			break;
+		case 6:
+			year = Integer.parseInt(input.substring(0, 2));
+			month = Integer.parseInt(input.substring(2, 4));
+			day = Integer.parseInt(input.substring(4, 6));
+			break;
+		case 7:
+			year = Integer.parseInt(input.substring(0, 4));
+			month = Integer.parseInt(input.substring(4, 5));
+			day = Integer.parseInt(input.substring(5, 7));
+			break;
+		case 8:
+			year = Integer.parseInt(input.substring(0, 4));
+			month = Integer.parseInt(input.substring(4, 6));
+			day = Integer.parseInt(input.substring(6, 8));
+			break;
+		case 10:
+			year = Integer.parseInt(input.substring(0, 4));
+			month = Integer.parseInt(input.substring(4, 6));
+			day = Integer.parseInt(input.substring(6, 8));
+			hour = Integer.parseInt(input.substring(8, 10));
+			break;
+		case 12:
+			year = Integer.parseInt(input.substring(0, 4));
+			month = Integer.parseInt(input.substring(4, 6));
+			day = Integer.parseInt(input.substring(6, 8));
+			hour = Integer.parseInt(input.substring(8, 10));
+			minute = Integer.parseInt(input.substring(10, 12));
+			break;
+		case 14:
+			year = Integer.parseInt(input.substring(0, 4));
+			month = Integer.parseInt(input.substring(4, 6));
+			day = Integer.parseInt(input.substring(6, 8));
+			hour = Integer.parseInt(input.substring(8, 10));
+			minute = Integer.parseInt(input.substring(10, 12));
+			second = Integer.parseInt(input.substring(12, 14));
+			break;
+		case 15:
+			year = Integer.parseInt(input.substring(0, 4));
+			month = Integer.parseInt(input.substring(4, 6));
+			day = Integer.parseInt(input.substring(6, 8));
+			hour = Integer.parseInt(input.substring(9, 11));
+			minute = Integer.parseInt(input.substring(11, 13));
+			second = Integer.parseInt(input.substring(13, 15));
+			break;
+		case 16:
+			year = Integer.parseInt(input.substring(0, 4));
+			month = Integer.parseInt(input.substring(4, 6));
+			day = Integer.parseInt(input.substring(6, 8));
+			hour = Integer.parseInt(input.substring(8, 10));
+			minute = Integer.parseInt(input.substring(11, 13));
+			second = Integer.parseInt(input.substring(14, 16));
+			break;
+		case 17:
+			year = Integer.parseInt(input.substring(0, 4));
+			month = Integer.parseInt(input.substring(4, 6));
+			day = Integer.parseInt(input.substring(6, 8));
+			hour = Integer.parseInt(input.substring(9, 11));
+			minute = Integer.parseInt(input.substring(12, 14));
+			second = Integer.parseInt(input.substring(15, 17));
+			break;
+		default:
+			throw new RuntimeException("Unrecognizable YMD date format on " + input);
+		}
+
+		if (year < 100) {
+			if (year < 60)
+				year += 2000;
+			else
+				year += 1900;
+		}
+
+		return new GregorianCalendar(year, month, day, hour, minute, second);
+	}
 
 	@Override
 	public Date parse(Culture culture, String input) {
-		if (input.length() < 8)
-			return null;
-		try {
-
-			switch (input.length()) {
-			case 8:
-				return FORMAT_YMD.parse(input);
-			case 10:
-				return FORMAT_YMDH.parse(input);
-			case 12:
-				return FORMAT_YMDHM.parse(input);
-			default:
-				return FORMAT_YMDHMS.parse(input);
-			}
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
+		Calendar cal = parseCalendar(input);
+		return cal == null ? null : cal.getTime();
 	}
 
 	@Override
@@ -62,7 +148,21 @@ public class DateYmdAdapter extends ValueAdapter<Date> {
 
 	@Override
 	public String format(Culture culture, Date input) {
-		return FORMAT_YMDHMS.format(input);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(input.getTime());
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH) + 1;
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
+		int second = calendar.get(Calendar.SECOND);
+		return Strings.concat(
+				Formats.zeroPadLeft(year, 4),
+				Formats.zeroPadLeft(month, 2),
+				Formats.zeroPadLeft(day, 2),
+				Formats.zeroPadLeft(hour, 2),
+				Formats.zeroPadLeft(minute, 2),
+				Formats.zeroPadLeft(second, 2));
 	}
 
 	@Override
@@ -89,12 +189,13 @@ public class DateYmdAdapter extends ValueAdapter<Date> {
 	}
 
 	public static final Date parseDate(String input) {
-		return INSTANCE.parse(input);
+		Calendar cal = parseCalendar(input);
+		return cal == null ? null : cal.getTime();
 	}
 
 	public static final Timestamp parseTimestamp(String input) {
-		Date dt = INSTANCE.parse(input);
-		return dt == null ? null : new Timestamp(dt.getTime());
+		Calendar cal = parseCalendar(input);
+		return cal == null ? null : new Timestamp(cal.getTimeInMillis());
 	}
 
 }
