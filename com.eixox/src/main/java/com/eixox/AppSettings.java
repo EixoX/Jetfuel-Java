@@ -13,7 +13,7 @@ public final class AppSettings {
 
 	static {
 		PROPERTIES = new Properties();
-		ClassLoader classLoader = ClassLoader.getSystemClassLoader(); //Thread.currentThread().getContextClassLoader();
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		try {
 			PROPERTIES.loadFromXML(classLoader.getResourceAsStream("AppSettings.xml"));
 		} catch (Exception e) {
