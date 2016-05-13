@@ -47,6 +47,7 @@ public class EntityUpdate extends EntityFilterBase<EntityUpdate> {
 	}
 
 	public final long execute() {
+		this.update.filter = this.filter;
 		return this.update.execute();
 	}
 
