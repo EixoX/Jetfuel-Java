@@ -11,7 +11,6 @@ public class UIPresentationMember {
 	public String placeholder;
 	public boolean required;
 	public int maxlength;
-	public String appendCss;
 	public OptionList options;
 	public String id;
 	public String name;
@@ -24,7 +23,6 @@ public class UIPresentationMember {
 	public UIPresentationMember(UIAspectMember aspect) {
 		this.controlState = ControlState.NORMAL;
 		this.controlType = aspect.controlType;
-		this.appendCss = aspect.appendCss;
 		this.label = aspect.label;
 		this.hint = aspect.hint;
 		this.placeholder = aspect.placeholder;

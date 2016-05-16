@@ -1,133 +1,190 @@
 package com.eixox.data.entities;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import com.eixox.Arrays;
-import com.eixox.Strings;
+import com.eixox.data.Aggregate;
+import com.eixox.data.AggregateFilterExpression;
+import com.eixox.data.Filter;
 import com.eixox.data.FilterExpression;
-import com.eixox.reflection.AbstractAspect;
-import com.eixox.reflection.AspectMember;
+import com.eixox.data.FilterNode;
+import com.eixox.data.FilterOperation;
+import com.eixox.data.FilterTerm;
 
-public class EntityAspect extends AbstractAspect<EntityAspectMember> {
+public class EntityAspect<T> extends ArrayList<EntityAspectMember<T>> {
 
+	private static final long serialVersionUID = -8834993804389021748L;
 	public final String tableName;
-	public final int identityOrdinal;
-	public final int[] uniqueOrdinals;
-	public final int[] compositeKeyOrdinals;
+	public final Class<T> entityClass;
+	public final EntityAspectMember<T> identity;
+	public final EntityAspectMember<T>[] compositeKeys;
+	public final EntityAspectMember<T>[] uniques;
+	public final boolean hasAggregates;
 
-	protected EntityAspect(Class<?> dataType) {
-		super(dataType);
+	private final String findTableName() {
+		Persistent ps = this.entityClass.getAnnotation(Persistent.class);
+		return ps == null || ps.name().isEmpty() ? this.entityClass.getSimpleName() : ps.name();
+	}
 
-		Persistent ps = dataType.getAnnotation(Persistent.class);
-		this.tableName = ps == null ? dataType.getSimpleName() : Strings.isNullOrEmptyAlternate(ps.name(), dataType.getSimpleName());
+	public EntityAspect(Class<T> claz) {
+		this(claz, claz.getDeclaredFields());
+	}
 
-		int iord = -1;
-		ArrayList<Integer> uOrdinals = new ArrayList<Integer>();
-		ArrayList<Integer> cOrdinals = new ArrayList<Integer>();
-		int imax = getCount();
+	protected EntityAspectMember<T> decorate(Field field) {
+		Persistent persistent = field.getAnnotation(Persistent.class);
+		return persistent == null ? null : new EntityAspectMember<T>(this, field, persistent);
 
-		for (int i = 0; i < imax; i++) {
-			switch (get(i).columntType) {
-			case COMPOSITE_KEY:
-				cOrdinals.add(i);
-				break;
-			case IDENTITY:
-				if (iord < 0)
-					iord = i;
-				else
-					throw new RuntimeException(getDataType() + " has multiple data identities defined. Please remove some.");
-				break;
-			case UNIQUE:
-				uOrdinals.add(i);
-				break;
-			default:
-				break;
+	}
+
+	@SuppressWarnings("unchecked")
+	public EntityAspect(Class<T> claz, Field[] fields) {
+		super(fields.length);
+		this.entityClass = claz;
+
+		boolean hasaggr = false;
+		EntityAspectMember<T> id = null;
+		ArrayList<EntityAspectMember<T>> uniquesList = new ArrayList<EntityAspectMember<T>>();
+		ArrayList<EntityAspectMember<T>> compositeList = new ArrayList<EntityAspectMember<T>>();
+
+		for (int i = 0; i < fields.length; i++) {
+			EntityAspectMember<T> member = decorate(fields[i]);
+			if (member != null) {
+				this.add(member);
+				if (member.aggregate != Aggregate.NONE)
+					hasaggr = true;
+
+				switch (member.columnType) {
+				case COMPOSITE_KEY:
+					compositeList.add(member);
+					break;
+				case IDENTITY:
+					if (id != null)
+						throw new RuntimeException(
+								"You can't have more than one identity for a given entity: " + member.field);
+					else
+						id = member;
+					break;
+				case UNIQUE:
+					uniquesList.add(member);
+					break;
+				default:
+					break;
+				}
 			}
 		}
-
-		this.identityOrdinal = iord;
-		this.uniqueOrdinals = Arrays.toInt(uOrdinals);
-		this.compositeKeyOrdinals = Arrays.toInt(cOrdinals);
+		this.tableName = findTableName();
+		this.identity = id;
+		this.compositeKeys = compositeList.toArray(new EntityAspectMember[0]);
+		this.uniques = uniquesList.toArray(new EntityAspectMember[0]);
+		this.hasAggregates = hasaggr;
 	}
 
-	public final FilterExpression buildCompositeKeyFilter(Object entity) {
-		if (this.compositeKeyOrdinals == null || this.compositeKeyOrdinals.length == 0)
-			return null;
+	public final String getName() {
+		return this.tableName;
+	}
 
-		EntityAspectMember member = get(this.compositeKeyOrdinals[0]);
-		FilterExpression exp = new FilterExpression(member.columnName, member.getValue(entity));
-		for (int i = 1; i < this.compositeKeyOrdinals.length; i++) {
-			member = get(this.compositeKeyOrdinals[i]);
-			exp.and(member.columnName, member.getValue(entity));
+	public final EntityAspectMember<T> get(String name) {
+		int s = this.size();
+		for (int i = 0; i < s; i++) {
+			EntityAspectMember<T> eam = this.get(i);
+			if (name.equalsIgnoreCase(eam.field.getName()))
+				return eam;
 		}
-		return exp;
+		throw new RuntimeException(name + " was not found on " + this.entityClass);
 	}
 
-	public final boolean hasIdentity() {
-		return this.identityOrdinal >= 0;
+	public final EntityAspectMember<T> getByColumnName(String columnName) {
+		int s = this.size();
+		for (int i = 0; i < s; i++) {
+			EntityAspectMember<T> eam = this.get(i);
+			if (columnName.equalsIgnoreCase(eam.columName))
+				return eam;
+		}
+		return null;
 	}
 
-	public final EntityAspectMember getIdentity() {
-		return this.identityOrdinal >= 0 ? super.get(this.identityOrdinal) : null;
+	public final T newInstance() {
+		try {
+			return this.entityClass.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public final boolean hasUniques() {
-		return this.uniqueOrdinals != null && this.uniqueOrdinals.length > 0;
+	public boolean isIdentity(Object value) {
+		if (value == null)
+			return false;
+		else if (Number.class.isAssignableFrom(value.getClass())) {
+			return ((Number) value).longValue() > 0L;
+		} else if (value instanceof String) {
+			return !((String) value).isEmpty();
+		} else
+			throw new RuntimeException("IMPLEMENT the emptiness of " + value.getClass());
 	}
 
-	public final String getUniqueColumnName(int index) {
-		if (index < 0 || index >= this.uniqueOrdinals.length)
-			return null;
-		return super.get(this.uniqueOrdinals[index]).columnName;
-	}
-
-	public final boolean hasCompositeKey() {
-		return this.compositeKeyOrdinals != null && this.compositeKeyOrdinals.length > 0;
-	}
-
-	public final boolean isCompositeKeyMember(int ordinal) {
-		for (int i = 0; i < this.compositeKeyOrdinals.length; i++)
-			if (ordinal == this.compositeKeyOrdinals[i])
-				return true;
-
-		return false;
-	}
-
-	public final String getColumnName(int ordinal) {
-		return super.get(ordinal).columnName;
-	}
-
-	public final int getColumnOrdinal(String columnName) {
-		int size = super.getCount();
-		for (int i = 0; i < size; i++)
-			if (columnName.equalsIgnoreCase(get(i).columnName))
+	public final int getOrdinal(String name) {
+		int s = this.size();
+		for (int i = 0; i < s; i++)
+			if (name.equalsIgnoreCase(get(i).getName()))
 				return i;
 		return -1;
 	}
 
-	@Override
-	protected EntityAspectMember decorate(AspectMember member) {
-		Persistent ps = member.getAnnotation(Persistent.class);
-		if (ps != null) {
-			return new EntityAspectMember(member, ps.type(), ps.name(), ps.nullable(), ps.readonly());
-		} else
-			return null;
-	}
+	public final void transformFilter(Filter source, FilterExpression where,
+			AggregateFilterExpression having, FilterOperation op) {
 
-	public static HashMap<Class<?>, EntityAspect> DEFAULT_INSTANCES = new HashMap<Class<?>, EntityAspect>();
+		switch (source.getFilterType()) {
+		case EXPRESSION:
+			FilterExpression exp = new FilterExpression();
+			AggregateFilterExpression aggr = new AggregateFilterExpression();
+			transformFilter(((FilterExpression) source).first, exp, aggr, FilterOperation.AND);
+			switch (op) {
+			case AND:
+				if (!exp.isEmpty())
+					where.andWhere(exp);
+				if (aggr.first != null)
+					having.andHaving(aggr);
+				break;
+			case OR:
+				if (!exp.isEmpty())
+					where.orWhere(exp);
+				if (aggr.first != null)
+					having.orHaving(aggr);
+				break;
+			default:
+				throw new RuntimeException("Can't handle filter operation " + op);
+			}
+			break;
+		case NODE:
+			FilterNode node = (FilterNode) source;
+			transformFilter(node.filter, where, having, op);
+			if (node.next != null) {
+				transformFilter(node.next, where, having, node.operation);
+			}
+			break;
+		case TERM:
+			FilterTerm term = (FilterTerm) source;
+			EntityAspectMember<T> member = get(term.name);
+			switch (op) {
+			case AND:
+				if (member.aggregate != Aggregate.NONE)
+					having.andHaving(member.aggregate, member.columName, term.comparison, term.value);
+				else
+					where.andWhere(member.columName, term.comparison, term.value);
+				break;
+			case OR:
+				if (member.aggregate != Aggregate.NONE)
+					having.orHaving(member.aggregate, member.columName, term.comparison, term.value);
+				else
+					where.orWhere(member.columName, term.comparison, term.value);
+				break;
+			default:
+				throw new RuntimeException("Can't handle filter operation " + op);
+			}
+			break;
+		default:
+			throw new RuntimeException("Can't handle filter type " + source.getFilterType());
 
-	public static synchronized final EntityAspect getDefaultInstance(Class<?> claz) {
-		EntityAspect aspect = DEFAULT_INSTANCES.get(claz);
-		if (aspect == null) {
-			aspect = new EntityAspect(claz);
-			DEFAULT_INSTANCES.put(claz, aspect);
 		}
-		return aspect;
-	}
-
-	@Override
-	protected boolean decoratesParent() {
-		return true;
 	}
 }

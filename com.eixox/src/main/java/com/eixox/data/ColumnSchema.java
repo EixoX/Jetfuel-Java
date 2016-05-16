@@ -1,29 +1,22 @@
 package com.eixox.data;
 
-public interface ColumnSchema {
+import java.util.List;
 
-	public int getCount();
+public interface ColumnSchema<T extends Column> {
 
-	public Column getColumn(int ordinal);
+	public int getColumnCount();
 
-	public Column getColumn(String name);
+	public T get(int ordinal);
+
+	public T get(String name);
 
 	public int getOrdinal(String name);
 
-	public int getOrdinalOrException(String name);
-
 	public int getIdentityOrdinal();
 
-	public int[] getUniqueOrdinals();
+	public List<T> getUniqueKeys();
 
-	public int[] getCompositeKeyOrdinals();
+	public List<T> getCompositeKeys();
 
-	public boolean hasIdentity();
-
-	public boolean hasUniques();
-
-	public boolean hasCompositeKey();
-
-	public String getColumnName(int ordinal);
-
+	public String getTableName();
 }

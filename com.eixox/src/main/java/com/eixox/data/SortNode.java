@@ -1,18 +1,15 @@
 package com.eixox.data;
 
-public class SortNode {
+public final class SortNode {
 
-	public String name;
-	public SortDirection direction;
+	public final Aggregate aggregate;
+	public final String name;
+	public final SortDirection direction;
 	public SortNode next;
 
-	public SortNode(String name, SortDirection direction) {
+	public SortNode(Aggregate aggregate, String name, SortDirection direction) {
+		this.aggregate = aggregate;
 		this.name = name;
 		this.direction = direction;
 	}
-
-	public SortNode(String name) {
-		this(name, SortDirection.ASCENDING);
-	}
-
 }

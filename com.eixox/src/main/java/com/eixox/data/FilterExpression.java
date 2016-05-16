@@ -1,55 +1,106 @@
 package com.eixox.data;
 
-public final class FilterExpression implements Filter {
+public class FilterExpression implements Filter, Filterable<FilterExpression> {
 
-	public final FilterNode first;
-	private FilterNode last;
+	public FilterNode first;
+	public FilterNode last;
 
-	public FilterExpression(Filter filter) {
-		this.first = new FilterNode(filter);
-		this.last = this.first;
+	public final boolean isEmpty() {
+		return this.first == null;
 	}
 
-	public FilterExpression(String name, FilterComparison comparison, Object value) {
-		this(new FilterTerm(name, comparison, value));
-	}
-
-	public FilterExpression(String name, Object value) {
-		this(new FilterTerm(name, value));
-	}
-
-	public final FilterExpression and(Filter filter) {
-		this.last.operation = FilterOperation.AND;
-		this.last.next = new FilterNode(filter);
-		this.last = this.last.next;
+	public final FilterExpression clear() {
+		this.first = null;
+		this.last = null;
 		return this;
-	}
-
-	public FilterExpression and(String name, FilterComparison comparison, Object value) {
-		return and(new FilterTerm(name, comparison, value));
-	}
-
-	public FilterExpression and(String name, Object value) {
-		return and(new FilterTerm(name, value));
-	}
-
-	public final FilterExpression or(Filter filter) {
-		this.last.operation = FilterOperation.OR;
-		this.last.next = new FilterNode(filter);
-		this.last = this.last.next;
-		return this;
-	}
-
-	public FilterExpression or(String name, FilterComparison comparison, Object value) {
-		return or(new FilterTerm(name, comparison, value));
-	}
-
-	public FilterExpression or(String name, Object value) {
-		return or(new FilterTerm(name, value));
 	}
 
 	public final FilterType getFilterType() {
 		return FilterType.EXPRESSION;
+	}
+
+	public final FilterExpression where(FilterTerm term) {
+		this.first = new FilterNode(term);
+		this.last = this.first;
+		return this;
+	}
+
+	public final FilterExpression where(FilterExpression expression) {
+		this.first = new FilterNode(expression);
+		this.last = this.first;
+		return this;
+	}
+
+	public final FilterExpression where(String name, FilterComparison comparison, Object value) {
+		return where(new FilterTerm(name, comparison, value));
+	}
+
+	public final FilterExpression where(String name, Object value) {
+		return where(new FilterTerm(name, value));
+	}
+
+	public final FilterExpression andWhere(FilterTerm term) {
+		if (this.first == null) {
+			this.first = new FilterNode(term);
+			this.last = this.first;
+		} else {
+			this.last.next = new FilterNode(term);
+			this.last.operation = FilterOperation.AND;
+			this.last = this.last.next;
+		}
+		return this;
+	}
+
+	public final FilterExpression andWhere(FilterExpression expression) {
+		if (this.first == null) {
+			this.first = new FilterNode(expression);
+			this.last = this.first;
+		} else {
+			this.last.next = new FilterNode(expression);
+			this.last.operation = FilterOperation.AND;
+			this.last = this.last.next;
+		}
+		return this;
+	}
+
+	public final FilterExpression andWhere(String name, FilterComparison comparison, Object value) {
+		return andWhere(new FilterTerm(name, comparison, value));
+	}
+
+	public final FilterExpression andWhere(String name, Object value) {
+		return andWhere(new FilterTerm(name, value));
+	}
+
+	public final FilterExpression orWhere(FilterTerm term) {
+		if (this.first == null) {
+			this.first = new FilterNode(term);
+			this.last = this.first;
+		} else {
+			this.last.next = new FilterNode(term);
+			this.last.operation = FilterOperation.OR;
+			this.last = this.last.next;
+		}
+		return this;
+	}
+
+	public final FilterExpression orWhere(FilterExpression expression) {
+		if (this.first == null) {
+			this.first = new FilterNode(expression);
+			this.last = this.first;
+		} else {
+			this.last.next = new FilterNode(expression);
+			this.last.operation = FilterOperation.OR;
+			this.last = this.last.next;
+		}
+		return this;
+	}
+
+	public final FilterExpression orWhere(String name, FilterComparison comparison, Object value) {
+		return orWhere(new FilterTerm(name, comparison, value));
+	}
+
+	public final FilterExpression orWhere(String name, Object value) {
+		return orWhere(new FilterTerm(name, value));
 	}
 
 }

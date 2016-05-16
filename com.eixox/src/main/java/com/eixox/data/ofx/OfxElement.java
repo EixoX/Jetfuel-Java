@@ -4,8 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.eixox.Strings;
-import com.eixox.adapters.DateYmdAdapter;
+import com.eixox.data.adapters.DateYmdAdapter;
 
 public class OfxElement {
 
@@ -47,6 +46,6 @@ public class OfxElement {
 
 	public final Date getDate(String name) {
 		String txt = getText(name);
-		return txt == null || txt.isEmpty() ? null : DateYmdAdapter.INSTANCE.parse(Strings.left(txt, 8));
+		return txt == null || txt.isEmpty() ? null : DateYmdAdapter.parseDate(txt);
 	}
 }

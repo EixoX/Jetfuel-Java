@@ -1,10 +1,10 @@
 package com.eixox.data;
 
-public class FilterTerm implements Filter {
+public final class FilterTerm implements Filter {
 
-	public String name;
-	public FilterComparison comparison;
-	public Object value;
+	public final String name;
+	public final FilterComparison comparison;
+	public final Object value;
 
 	public FilterTerm(String name, FilterComparison comparison, Object value) {
 		this.name = name;

@@ -1,31 +1,53 @@
 package com.eixox.database;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
-import com.eixox.data.DataUpdate;
+import com.eixox.data.Update;
 
-public class DatabaseUpdate extends DataUpdate {
+public class DatabaseUpdate extends Update {
 
+	private static final long serialVersionUID = -779814878323604636L;
 	public final Database database;
+	public final String tableName;
 
-	public DatabaseUpdate(Database database, String name) {
-		super(name);
+	public DatabaseUpdate(Database database, String tableName) {
 		this.database = database;
+		this.tableName = tableName;
+	}
+
+	public long execute(Connection conn) throws SQLException {
+		DatabaseCommand cmd = this.database.createCommand()
+				.appendSql("UPDATE ")
+				.appendName(tableName)
+				.appendSql(" SET ");
+
+		boolean prependComma = false;
+		for (Entry<String, Object> item : this.entrySet()) {
+			if (prependComma)
+				cmd.appendSql(", ");
+			else
+				prependComma = true;
+
+			cmd.appendName(item.getKey());
+			cmd.text.append("=?");
+			cmd.params.add(item.getValue());
+		}
+
+		return cmd.appendWhere(where).executeUpsert();
 	}
 
 	@Override
-	public final long execute() {
-
-		DatabaseCommand cmd = database.dialect.buildUpdateCommand(this.from, this.values, this.filter);
+	public long execute() {
 		try {
-			Connection conn = database.getConnection();
+			Connection conn = this.database.createConnection();
 			try {
-				return cmd.executeNonQuery(conn);
+				return execute(conn);
 			} finally {
 				conn.close();
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 

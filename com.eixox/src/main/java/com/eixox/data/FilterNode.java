@@ -6,8 +6,12 @@ public class FilterNode implements Filter {
 	public FilterOperation operation;
 	public FilterNode next;
 
-	public FilterNode(Filter filter) {
-		this.filter = filter;
+	public FilterNode(FilterTerm term) {
+		this.filter = term;
+	}
+
+	public FilterNode(FilterExpression exp) {
+		this.filter = exp;
 	}
 
 	public final FilterType getFilterType() {

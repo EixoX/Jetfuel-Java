@@ -1,47 +1,28 @@
 package com.eixox.data;
 
-public abstract class Filterable<T> {
+public interface Filterable<T> {
 
-	public FilterExpression filter;
+	public T where(FilterTerm term);
 
-	protected abstract T getThis();
+	public T where(FilterExpression expression);
 
-	public final T where(Filter filter) {
-		this.filter = new FilterExpression(filter);
-		return getThis();
-	}
+	public T where(String name, FilterComparison comparison, Object value);
 
-	public final T where(String name, Object value) {
-		return where(new FilterTerm(name, value));
-	}
+	public T where(String name, Object value);
 
-	public final T where(String name, FilterComparison comparison, Object value) {
-		return where(new FilterTerm(name, comparison, value));
-	}
+	public T andWhere(FilterTerm term);
 
-	public final T and(Filter filter) {
-		this.filter = this.filter == null ? new FilterExpression(filter) : this.filter.and(filter);
-		return getThis();
-	}
+	public T andWhere(FilterExpression expression);
 
-	public final T and(String name, Object value) {
-		return and(new FilterTerm(name, value));
-	}
+	public T andWhere(String name, FilterComparison comparison, Object value);
 
-	public final T and(String name, FilterComparison comparison, Object value) {
-		return and(new FilterTerm(name, comparison, value));
-	}
+	public T andWhere(String name, Object value);
 
-	public final T or(Filter filter) {
-		this.filter = this.filter == null ? new FilterExpression(filter) : this.filter.or(filter);
-		return getThis();
-	}
+	public T orWhere(FilterTerm term);
 
-	public final T or(String name, Object value) {
-		return or(new FilterTerm(name, value));
-	}
+	public T orWhere(FilterExpression expression);
 
-	public final T or(String name, FilterComparison comparison, Object value) {
-		return or(new FilterTerm(name, comparison, value));
-	}
+	public T orWhere(String name, FilterComparison comparison, Object value);
+
+	public T orWhere(String name, Object value);
 }

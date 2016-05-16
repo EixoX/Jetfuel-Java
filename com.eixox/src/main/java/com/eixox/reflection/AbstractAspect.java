@@ -2,6 +2,7 @@ package com.eixox.reflection;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -149,12 +150,11 @@ public abstract class AbstractAspect<G extends AbstractAspectMember> implements 
 
 	public final Object newInstance() {
 		try {
-			return this.dataType.newInstance();
-		} catch (InstantiationException e) {
+			Constructor<?> constructor = this.dataType.getConstructor();
+			return constructor.newInstance();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
+		} 
 	}
 
 	public final G[] getMembers(String... names) {

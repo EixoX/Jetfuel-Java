@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -12,66 +13,64 @@ import com.eixox.data.FilterExpression;
 import com.eixox.data.FilterNode;
 import com.eixox.data.FilterTerm;
 import com.eixox.data.SortExpression;
-import com.mongodb.BasicDBObject;
 
 public final class MongoDialect {
 
-	public static final BasicDBObject buildSort(SortExpression sort) {
+	public static final Document buildSort(SortExpression sort) {
 		return null;
 	}
 
-	public static final BasicDBObject buildQuery(Filter filter) {
+	public static final Document buildQuery(Filter filter) {
 
 		switch (filter.getFilterType()) {
-			case EXPRESSION:
-				return buildQuery(((FilterExpression) filter).first);
-			case NODE:
-				FilterNode node = (FilterNode) filter;
-				if (node.next != null) {
-					switch (node.operation) {
-						case AND:
-							return new BasicDBObject("$and",
-									new Object[] { buildQuery(node.filter), buildQuery(node.next) });
-						case OR:
-							return new BasicDBObject("$or",
-									new Object[] { buildQuery(node.filter), buildQuery(node.next) });
-						default:
-							throw new RuntimeException("Uknown logic operator " + node.operation);
-					}
-				} else
-					return buildQuery(node.filter);
-			case TERM:
-				FilterTerm term = (FilterTerm) filter;
-				switch (term.comparison) {
-					case EQUAL_TO:
-						return new BasicDBObject(term.name, term.value);
-					case GREATER_OR_EQUAL:
-						return new BasicDBObject(term.name, new BasicDBObject("$gte", term.value));
-					case GREATER_THAN:
-						return new BasicDBObject(term.name, new BasicDBObject("$gt", term.value));
-					case IN:
-						return new BasicDBObject(term.name, new BasicDBObject("$in", term.value));
-					case LIKE:
-						return new BasicDBObject(term.name, new BasicDBObject("$regex", term.value));
-					case LOWER_OR_EQUAL:
-						return new BasicDBObject(term.name, new BasicDBObject("$lte", term.value));
-					case LOWER_THAN:
-						return new BasicDBObject(term.name, new BasicDBObject("$lt", term.value));
-					case NOT_EQUAL_TO:
-						return new BasicDBObject(term.name, new BasicDBObject("$ne", term.value));
-					case NOT_IN:
-						return new BasicDBObject(term.name, new BasicDBObject("$nin", term.value));
-					default:
-						throw new RuntimeException("Unkown query comparison " + term.comparison);
-
+		case EXPRESSION:
+			return buildQuery(((FilterExpression) filter).first);
+		case NODE:
+			FilterNode node = (FilterNode) filter;
+			if (node.next != null) {
+				switch (node.operation) {
+				case AND:
+					return new Document("$and", new Object[] { buildQuery(node.filter), buildQuery(node.next) });
+				case OR:
+					return new Document("$or", new Object[] { buildQuery(node.filter), buildQuery(node.next) });
+				default:
+					throw new RuntimeException("Uknown logic operator " + node.operation);
 				}
+			} else
+				return buildQuery(node.filter);
+		case TERM:
+			FilterTerm term = (FilterTerm) filter;
+			switch (term.comparison) {
+			case EQUAL_TO:
+				return new Document(term.name, term.value);
+			case GREATER_OR_EQUAL:
+				return new Document(term.name, new Document("$gte", term.value));
+			case GREATER_THAN:
+				return new Document(term.name, new Document("$gt", term.value));
+			case IN:
+				return new Document(term.name, new Document("$in", term.value));
+			case LIKE:
+				return new Document(term.name, new Document("$regex", term.value));
+			case LOWER_OR_EQUAL:
+				return new Document(term.name, new Document("$lte", term.value));
+			case LOWER_THAN:
+				return new Document(term.name, new Document("$lt", term.value));
+			case NOT_EQUAL_TO:
+				return new Document(term.name, new Document("$ne", term.value));
+			case NOT_IN:
+				return new Document(term.name, new Document("$nin", term.value));
 			default:
-				return null;
+				throw new RuntimeException("Unkown query comparison " + term.comparison);
+
+			}
+		default:
+			return null;
 
 		}
 	}
 
-	private static final void appendMembers(BasicDBObject parent, Class<?> claz, Object instance) throws IllegalArgumentException, IllegalAccessException {
+	private static final void appendMembers(Document parent, Class<?> claz, Object instance)
+			throws IllegalArgumentException, IllegalAccessException {
 		for (Field fld : claz.getDeclaredFields()) {
 			fld.setAccessible(true);
 			Object obj = fld.get(instance);
@@ -83,8 +82,8 @@ public final class MongoDialect {
 			appendMembers(parent, superclass, instance);
 	}
 
-	public static final BasicDBObject toDbObject(Object input) {
-		BasicDBObject dbo = new BasicDBObject();
+	public static final Document toDbObject(Object input) {
+		Document dbo = new Document();
 		try {
 			appendMembers(dbo, input.getClass(), input);
 		} catch (Exception e) {
@@ -94,9 +93,9 @@ public final class MongoDialect {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static final void appendToBson(BasicDBObject dbo, String name, Object value) {
+	private static final void appendToBson(Document dbo, String name, Object value) {
 		if (name != null && !name.isEmpty() && value != null) {
-			if (dbo.containsField(name)) {
+			if (dbo.containsKey(name)) {
 				Object itemCtnt = dbo.get(name);
 				if (List.class.isAssignableFrom(itemCtnt.getClass())) {
 					((List<Object>) itemCtnt).add(value);
@@ -111,33 +110,33 @@ public final class MongoDialect {
 		}
 	}
 
-	private static final void xmlToBson(BasicDBObject dbo, Node node) {
+	private static final void xmlToBson(Document dbo, Node node) {
 		switch (node.getNodeType()) {
-			case Node.ATTRIBUTE_NODE:
-				appendToBson(dbo, node.getNodeName(), node.getNodeValue());
-				break;
-			case Node.ELEMENT_NODE:
-			case Node.DOCUMENT_NODE:
-			case Node.DOCUMENT_FRAGMENT_NODE:
-			case Node.ENTITY_NODE:
-			case Node.ENTITY_REFERENCE_NODE:
-				NodeList children = node.getChildNodes();
-				int l = children.getLength();
-				short firstNodeType = l == 1 ? children.item(0).getNodeType() : -100;
-				if (firstNodeType == Node.TEXT_NODE || firstNodeType == Node.CDATA_SECTION_NODE)
-					appendToBson(dbo, node.getNodeName(), node.getTextContent());
-				else {
-					BasicDBObject childDbo = new BasicDBObject();
-					for (int i = 0; i < l; i++)
-						xmlToBson(childDbo, children.item(i));
-					appendToBson(dbo, node.getNodeName(), childDbo);
-				}
-				break;
+		case Node.ATTRIBUTE_NODE:
+			appendToBson(dbo, node.getNodeName(), node.getNodeValue());
+			break;
+		case Node.ELEMENT_NODE:
+		case Node.DOCUMENT_NODE:
+		case Node.DOCUMENT_FRAGMENT_NODE:
+		case Node.ENTITY_NODE:
+		case Node.ENTITY_REFERENCE_NODE:
+			NodeList children = node.getChildNodes();
+			int l = children.getLength();
+			short firstNodeType = l == 1 ? children.item(0).getNodeType() : -100;
+			if (firstNodeType == Node.TEXT_NODE || firstNodeType == Node.CDATA_SECTION_NODE)
+				appendToBson(dbo, node.getNodeName(), node.getTextContent());
+			else {
+				Document childDbo = new Document();
+				for (int i = 0; i < l; i++)
+					xmlToBson(childDbo, children.item(i));
+				appendToBson(dbo, node.getNodeName(), childDbo);
+			}
+			break;
 		}
 	}
 
-	public static final BasicDBObject xmlToBson(Node node) {
-		BasicDBObject dbo = new BasicDBObject();
+	public static final Document xmlToBson(Node node) {
+		Document dbo = new Document();
 		xmlToBson(dbo, node);
 		return dbo;
 	}

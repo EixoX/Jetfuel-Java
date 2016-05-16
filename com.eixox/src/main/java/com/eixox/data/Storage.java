@@ -2,11 +2,15 @@ package com.eixox.data;
 
 public interface Storage {
 
-	public DataSelect select(String name);
+	public Select select();
 
-	public DataUpdate update(String name);
+	public Update update();
 
-	public DataDelete delete(String name);
+	public Delete delete();
 
-	public DataInsert insert(String name);
+	public Insert insert();
+
+	public long bulkUpdate(Iterable<Update> updates);
+
+	public long bulkDelete(Iterable<Delete> deletes);
 }

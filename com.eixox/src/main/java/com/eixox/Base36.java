@@ -3,7 +3,7 @@ package com.eixox;
 public class Base36 {
 
 	public long value;
-	public static final String ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
+	public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789";
 
 	public Base36(long value)
 	{

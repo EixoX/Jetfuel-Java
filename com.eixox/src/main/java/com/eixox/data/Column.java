@@ -1,9 +1,15 @@
 package com.eixox.data;
 
+/*
+ * Represents a stored column.
+ */
 public interface Column {
 
-	public String getColumnName();
-	public boolean isNullable();
 	public ColumnType getColumnType();
-	public boolean isReadOnly();
+
+	public String getColumnName();
+
+	public boolean isNullable();
+
+
 }

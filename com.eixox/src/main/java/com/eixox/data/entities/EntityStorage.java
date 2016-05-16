@@ -1,297 +1,322 @@
 package com.eixox.data.entities;
 
-import com.eixox.Convert;
-import com.eixox.data.DataUpdate;
-import com.eixox.data.FilterExpression;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.eixox.data.Aggregate;
+import com.eixox.data.ColumnType;
+import com.eixox.data.Delete;
+import com.eixox.data.Insert;
+import com.eixox.data.Select;
 import com.eixox.data.Storage;
-import com.eixox.reflection.AspectMember;
+import com.eixox.data.Update;
 
 public class EntityStorage<T> {
 
-	public final EntityAspect aspect;
 	public final Storage storage;
+	public final EntityAspect<T> aspect;
 
-	public EntityStorage(EntityAspect aspect, Storage storage) {
+	public EntityStorage(Storage storage, EntityAspect<T> aspect) {
 		this.aspect = aspect;
 		this.storage = storage;
 	}
 
-	public EntityStorage(Storage dataStorage, Class<T> claz) {
-		this.aspect = EntityAspect.getDefaultInstance(claz);
-		this.storage = dataStorage;
-	}
-
 	public final EntitySelect<T> select() {
-		return new EntitySelect<T>(this.aspect, this.storage);
+		return new EntitySelect<T>(this);
 	}
 
-	public final EntityDelete delete() {
-		return new EntityDelete(this.aspect, this.storage);
+	public final T selectById(Object id) {
+		if (this.aspect.identity == null)
+			throw new RuntimeException(this.aspect.entityClass + " has no identity set.");
+		else if (!aspect.isIdentity(id))
+			return null;
+		else
+			return select().where(aspect.identity, id).first();
 	}
 
-	public final EntityInsert insert() {
-		return new EntityInsert(this.aspect, this.storage);
+	public final T selectByMember(String name, Object value) {
+		return select().where(aspect.get(name), value).first();
 	}
 
-	public final EntityUpdate update() {
-		return new EntityUpdate(this.aspect, this.storage);
+	public final T selectByCompositeKeys(Object... keys) {
+		EntitySelect<T> select = select();
+		for (int i = 0; i < aspect.compositeKeys.length; i++)
+			select.andWhere(aspect.compositeKeys[i], keys[i]);
+		return select.first();
+	}
+
+	public final EntityDelete<T> delete() {
+		return new EntityDelete<T>(this);
+	}
+
+	private final Delete buildDelete(T entity) {
+		if (aspect.identity != null) {
+			Object id = aspect.identity.getValue(entity);
+			if (aspect.isIdentity(id))
+				return this.storage.delete().where(aspect.identity.columName, id);
+		}
+		if (aspect.uniques != null) {
+			for (int i = 0; i < aspect.uniques.length; i++) {
+				Object uq = aspect.uniques[i].getValue(entity);
+				if (uq != null)
+					return this.storage.delete().where(aspect.uniques[i].columName, uq);
+			}
+		}
+		if (aspect.compositeKeys != null && aspect.compositeKeys.length > 0) {
+			Delete delete = this.storage.delete();
+			for (int i = 0; i < aspect.compositeKeys.length; i++)
+				delete.andWhere(aspect.compositeKeys[i].columName, aspect.compositeKeys[i].getValue(entity));
+		}
+		throw new RuntimeException("Can't find ways to delete " + entity);
+	}
+
+	public final boolean deleteById(Object id) {
+		if (this.aspect.identity == null)
+			throw new RuntimeException(this.aspect.entityClass + " has no identity set.");
+		else if (!aspect.isIdentity(id))
+			return false;
+		else
+			return storage.delete().where(aspect.identity.columName, id).execute() > 0;
+	}
+
+	public final boolean deleteByMember(String name, Object value) {
+		return storage.delete().where(aspect.get(name).columName, value).execute() > 0;
+	}
+
+	public final long deleteByCompositeKeys(Object... keys) {
+		Delete delete = storage.delete();
+		for (int i = 0; i < aspect.compositeKeys.length; i++)
+			delete.andWhere(aspect.compositeKeys[i].columName, keys[i]);
+		return delete.execute();
 	}
 
 	public final long delete(T entity) {
+		return buildDelete(entity).execute();
+	}
 
-		// delete by identity
-		if (this.aspect.identityOrdinal >= 0) {
-			EntityAspectMember identity = this.aspect.get(this.aspect.identityOrdinal);
-			return this.storage.delete(this.aspect.tableName).where(identity.columnName, identity.getValue(entity))
-					.execute();
+	public final long delete(T... entities) {
+		List<Delete> deletes = new LinkedList<Delete>();
+		for (int i = 0; i < entities.length; i++)
+			deletes.add(buildDelete(entities[i]));
+		return storage.bulkDelete(deletes);
+	}
+
+	public final long delete(Iterable<T> entities) {
+		List<Delete> deletes = new LinkedList<Delete>();
+		for (T entity : entities)
+			deletes.add(buildDelete(entity));
+		return storage.bulkDelete(deletes);
+	}
+
+	public final EntityUpdate<T> update() {
+		return new EntityUpdate<T>(this);
+	}
+
+	public final boolean updateByMember(T entity, EntityAspectMember<T> member, Object value) {
+		return buildUpdateByMember(entity, member, value).execute() > 0;
+	}
+
+	public final boolean updateByMember(T entity, String name, Object value) {
+		return buildUpdateByMember(entity, aspect.get(name), value).execute() > 0;
+	}
+
+	private final Update buildUpdateByMember(T entity, EntityAspectMember<T> member, Object value) {
+		Update update = storage.update();
+		for (EntityAspectMember<T> child : aspect)
+			if (child != member)
+				if (child.columnType != ColumnType.IDENTITY)
+					if (child.updatable)
+						update.put(child.columName, child.getValue(entity));
+
+		update.where(member.columName, value);
+		return update;
+	}
+
+	private final Update buildUpdateByCompositeKeys(T entity) {
+		Update update = storage.update();
+		for (EntityAspectMember<T> child : aspect)
+			if (child.columnType != ColumnType.COMPOSITE_KEY)
+				if (child.columnType != ColumnType.IDENTITY)
+					if (child.updatable)
+						update.put(child.columName, child.getValue(entity));
+
+		for (int i = 0; i < aspect.compositeKeys.length; i++)
+			update.andWhere(aspect.compositeKeys[i].columName, aspect.compositeKeys[i].getValue(entity));
+		return update;
+	}
+
+	private final Update buildUpdate(T entity) {
+		if (aspect.identity != null) {
+			Object id = aspect.identity.getValue(entity);
+			if (aspect.isIdentity(id))
+				return buildUpdateByMember(entity, aspect.identity, id);
 		}
-		// delete by unique members
-		if (aspect.uniqueOrdinals != null && aspect.uniqueOrdinals.length > 0)
-			for (int i = 0; i < aspect.uniqueOrdinals.length; i++) {
-				EntityAspectMember uniqueMember = aspect.get(aspect.uniqueOrdinals[i]);
-				Object uniqueValue = uniqueMember.getValue(entity);
-				if (uniqueValue != null) {
-					return this.storage.delete(this.aspect.tableName).where(uniqueMember.columnName, uniqueValue)
-							.execute();
-				}
+		if (aspect.uniques != null)
+			for (int i = 0; i < aspect.uniques.length; i++) {
+				Object uq = aspect.uniques[i].getValue(entity);
+				if (uq != null)
+					return buildUpdateByMember(entity, aspect.uniques[i], uq);
 			}
-		// delete by composite keys
-		if (aspect.compositeKeyOrdinals != null && aspect.compositeKeyOrdinals.length > 0) {
-			return this.storage.delete(this.aspect.tableName).where(aspect.buildCompositeKeyFilter(entity)).execute();
+		if (aspect.compositeKeys != null && aspect.compositeKeys.length > 0) {
+			return buildUpdateByCompositeKeys(entity);
 		}
-
-		return -1;
-
-	}
-
-	public final long deleteByIdentity(Object id) {
-		EntityAspectMember identity = aspect.getIdentity();
-		if (identity == null)
-			throw new RuntimeException(aspect.getDataType() + " has no identity set");
-		else
-			return this.storage.delete(this.aspect.tableName).where(identity.columnName, id).execute();
-	}
-
-	public final long deleteByMember(String memberName, Object value) {
-		EntityAspectMember member = aspect.get(memberName);
-		return this.storage.delete(this.aspect.tableName).where(member.columnName, value).execute();
-	}
-
-	public final T readByIdentity(Object id) {
-		EntityAspectMember identity = aspect.getIdentity();
-		if (identity == null)
-			throw new RuntimeException(aspect.getDataType() + " has no identity set");
-		else
-			return this.storage.select(this.aspect.tableName).where(identity.columnName, id).getEntity(this.aspect);
-	}
-
-	public final T readByMember(String memberName, Object value) {
-		return this.storage.select(this.aspect.tableName)
-				.where(this.aspect.getColumnName(aspect.getOrdinalOrException(memberName)), value)
-				.getEntity(this.aspect);
-	}
-
-	public final long count() {
-		return this.storage.select(this.aspect.tableName).count();
-	}
-
-	public final boolean exists() {
-		return this.storage.select(this.aspect.tableName).exists();
-	}
-
-	public final long countWithMember(String memberName, Object value) {
-		return this.storage.select(this.aspect.tableName)
-				.where(this.aspect.getColumnName(aspect.getOrdinalOrException(memberName)), value).count();
-	}
-
-	public final boolean existsWithMember(String memberName, Object value) {
-		return this.storage.select(this.aspect.tableName)
-				.where(this.aspect.getColumnName(aspect.getOrdinalOrException(memberName)), value).exists();
-	}
-
-	public final boolean insert(T entity) {
-
-		final EntityInsert insert = insert();
-		insert.add(entity);
-
-		if (aspect.identityOrdinal < 0) {
-			return insert.execute() > 0;
-		} else {
-			Object identityValue = insert.executeAndScopeIdentity();
-			if (identityValue == null)
-				return false;
-			else {
-				AspectMember identity = aspect.getIdentity();
-				identityValue = Convert.changeType(identityValue, identity.getDataType());
-				identity.setValue(entity, identityValue);
-				return true;
-			}
-		}
-	}
-
-	public final long insert(Iterable<T> iterable) {
-		EntityInsert insert = insert();
-		for (T item : iterable)
-			insert.add(item);
-		return insert.execute();
-	}
-
-	public final Object ensureIdentity(T entity) {
-
-		// It needs an identity ordinal.
-		if (aspect.identityOrdinal < 0)
-			return null;
-
-		// Check an already set identity
-		Object identityValue = aspect.getValue(entity, aspect.identityOrdinal);
-		if (!Convert.isNullOrEmpty(identityValue))
-			return identityValue;
-
-		// Check for unique items that can be used to recover the identity
-		if (aspect.uniqueOrdinals != null && aspect.uniqueOrdinals.length > 0)
-			for (int i = 0; i < aspect.uniqueOrdinals.length; i++) {
-				int uniqueOrdinal = aspect.uniqueOrdinals[i];
-				Object uniqueValue = aspect.getValue(entity, uniqueOrdinal);
-				if (uniqueValue != null) {
-					identityValue = this.storage.select(aspect.tableName)
-							.where(aspect.getColumnName(uniqueOrdinal), uniqueValue)
-							.getFirstMember(aspect.getColumnName(aspect.identityOrdinal));
-					if (identityValue != null) {
-						aspect.setValue(entity, aspect.identityOrdinal, identityValue);
-						return identityValue;
-					}
-				}
-			}
-
-		// Check for composite keys that can be used to recover the id
-		if (aspect.compositeKeyOrdinals != null && aspect.compositeKeyOrdinals.length > 0) {
-			identityValue = this.storage.select(aspect.tableName).where(aspect.buildCompositeKeyFilter(entity))
-					.getFirstMember(aspect.getColumnName(aspect.identityOrdinal));
-
-			if (identityValue != null) {
-				aspect.setValue(entity, aspect.identityOrdinal, identityValue);
-				return identityValue;
-			}
-		}
-
-		return null;
-
-	}
-
-	public final boolean exists(T entity) {
-		// update by identity
-		if (aspect.identityOrdinal >= 0) {
-			return storage.select(aspect.tableName).where(aspect.getColumnName(aspect.identityOrdinal),
-					aspect.getValue(entity, aspect.identityOrdinal)).exists();
-		}
-
-		// update by unique members
-		if (aspect.uniqueOrdinals != null && aspect.uniqueOrdinals.length > 0)
-			for (int i = 0; i < aspect.uniqueOrdinals.length; i++) {
-				int uniqueOrdinal = aspect.uniqueOrdinals[i];
-				Object uniqueValue = aspect.getValue(entity, uniqueOrdinal);
-				if (uniqueValue != null) {
-					return select().where(uniqueOrdinal, uniqueValue).exists();
-				}
-			}
-
-		// update by composite keys
-		if (aspect.compositeKeyOrdinals != null && aspect.compositeKeyOrdinals.length > 0) {
-			return select().where(aspect.buildCompositeKeyFilter(entity)).exists();
-		}
-		return false;
-	}
-
-	private final long updateByIdentity(T entity) {
-		DataUpdate update = this.storage.update(aspect.tableName).where(aspect.getColumnName(aspect.identityOrdinal),
-				aspect.getValue(entity, aspect.identityOrdinal));
-
-		int memberCount = this.aspect.getCount();
-		for (int i = 0; i < memberCount; i++)
-			if (i != aspect.identityOrdinal) {
-				EntityAspectMember member = aspect.get(i);
-				if (!member.readOnly)
-					update.set(member.columnName, member.getValue(entity));
-			}
-
-		return update.execute();
-	}
-
-	private final long updateByUniqueMember(T entity, int uniqueOrdinal, Object uniqueValue) {
-
-		DataUpdate update = this.storage.update(aspect.tableName).where(aspect.getColumnName(uniqueOrdinal),
-				uniqueValue);
-
-		int memberCount = this.aspect.getCount();
-		for (int i = 0; i < memberCount; i++) {
-			if (i != aspect.identityOrdinal && i != uniqueOrdinal) {
-				EntityAspectMember member = aspect.get(i);
-				if (!member.readOnly)
-					update.set(member.columnName, member.getValue(entity));
-			}
-		}
-
-		return update.execute();
-	}
-
-	private final long updateByCompositeKey(T entity, FilterExpression compositeKeyFilter) {
-
-		DataUpdate update = this.storage.update(aspect.tableName).where(compositeKeyFilter);
-
-		int memberCount = this.aspect.getCount();
-		for (int i = 0; i < memberCount; i++)
-			if (i != aspect.identityOrdinal && !aspect.isCompositeKeyMember(i)) {
-				EntityAspectMember member = aspect.get(i);
-				if (!member.readOnly)
-					update.set(member.columnName, member.getValue(entity));
-			}
-		return update.execute();
+		throw new RuntimeException("Can't find ways to update " + entity);
 	}
 
 	public final long update(T entity) {
-		// update by identity
-		if (aspect.identityOrdinal >= 0)
-			return updateByIdentity(entity);
-
-		// update by unique members
-		if (aspect.uniqueOrdinals != null && aspect.uniqueOrdinals.length > 0)
-			for (int i = 0; i < aspect.uniqueOrdinals.length; i++) {
-				int uniqueOrdinal = aspect.uniqueOrdinals[i];
-				Object uniqueValue = aspect.getValue(entity, uniqueOrdinal);
-				if (uniqueValue != null)
-					return updateByUniqueMember(entity, uniqueOrdinal, uniqueValue);
-			}
-
-		// update by composite keys
-		if (aspect.compositeKeyOrdinals != null && aspect.compositeKeyOrdinals.length > 0)
-			return updateByCompositeKey(entity, aspect.buildCompositeKeyFilter(entity));
-
-		return -1L;
-
+		return buildUpdate(entity).execute();
 	}
 
-	public final boolean save(T entity) {
-		if (aspect.identityOrdinal >= 0) {
-			return ensureIdentity(entity) != null ? update(entity) > 0 : insert(entity);
+	public final void update(T... entity) {
+		for (int i = 0; i < entity.length; i++) {
+			Update up = buildUpdate(entity[i]);
+			if (up != null)
+				up.execute();
+		}
+	}
+
+	public final synchronized long update(Iterable<T> entities) {
+		List<Update> list = new LinkedList<Update>();
+		for (T entity : entities) {
+			Update up = buildUpdate(entity);
+			if (up != null)
+				list.add(up);
+		}
+		return this.storage.bulkUpdate(list);
+	}
+
+	public final synchronized void insert(T entity) {
+		Insert insert = this.storage.insert();
+		for (EntityAspectMember<T> member : this.aspect)
+			if (member.columnType != ColumnType.IDENTITY)
+				if (member.aggregate == Aggregate.NONE)
+					insert.columns.add(member.columName);
+		Object[] row = new Object[insert.columns.size()];
+		int j = 0;
+		for (EntityAspectMember<T> member : this.aspect)
+			if (member.columnType != ColumnType.IDENTITY)
+				if (member.aggregate == Aggregate.NONE)
+					row[j++] = member.getValue(entity);
+		insert.add(row);
+		if (aspect.identity != null) {
+			insert.execute(true);
+			aspect.identity.setValue(entity, insert.get(0).generatedKey);
+		} else
+			insert.execute(false);
+	}
+
+	public final synchronized void insert(T... entity) {
+		Insert insert = this.storage.insert();
+		for (EntityAspectMember<T> member : this.aspect)
+			if (member.columnType != ColumnType.IDENTITY)
+				if (member.aggregate == Aggregate.NONE)
+					insert.columns.add(member.columName);
+
+		for (int i = 0; i < entity.length; i++) {
+			Object[] row = new Object[insert.columns.size()];
+			int j = 0;
+			for (EntityAspectMember<T> member : this.aspect)
+				if (member.columnType != ColumnType.IDENTITY)
+					if (member.aggregate == Aggregate.NONE)
+						row[j++] = member.getValue(entity[i]);
+			insert.add(row);
 		}
 
-		// save by unique members
-		if (aspect.uniqueOrdinals != null && aspect.uniqueOrdinals.length > 0)
-			for (int i = 0; i < aspect.uniqueOrdinals.length; i++) {
-				int uniqueOrdinal = aspect.uniqueOrdinals[i];
-				Object uniqueValue = aspect.getValue(entity, uniqueOrdinal);
-				if (uniqueValue != null) {
-					if (select().where(uniqueOrdinal, uniqueValue).exists())
-						return update(entity) > 0;
+		if (aspect.identity != null) {
+			insert.execute(true);
+			for (int i = 0; i < entity.length; i++)
+				aspect.identity.setValue(entity[i], insert.get(i).generatedKey);
+		} else {
+			insert.execute(false);
+		}
+	}
+
+	public final synchronized void insert(List<T> entities) {
+		int s = entities.size();
+		Insert insert = this.storage.insert();
+		for (EntityAspectMember<T> member : this.aspect)
+			if (member.columnType != ColumnType.IDENTITY)
+				if (member.aggregate == Aggregate.NONE)
+					insert.columns.add(member.columName);
+
+		int c = insert.columns.size();
+		for (int i = 0; i < s; i++) {
+			Object[] row = new Object[c];
+			T entity = entities.get(i);
+			int j = 0;
+			for (EntityAspectMember<T> member : this.aspect)
+				if (member.columnType != ColumnType.IDENTITY)
+					if (member.aggregate == Aggregate.NONE)
+						row[j++] = member.getValue(entity);
+			insert.add(row);
+		}
+
+		if (aspect.identity != null) {
+			insert.execute(true);
+			for (int i = 0; i < s; i++)
+				aspect.identity.setValue(entities.get(i), insert.get(i).generatedKey);
+		} else {
+			insert.execute(false);
+		}
+	}
+
+	public final synchronized Object locateIdentity(T entity) {
+		if (aspect.identity != null) {
+			Object id = aspect.identity.getValue(entity);
+			if (aspect.isIdentity(id))
+				return id;
+
+			if (aspect.uniques != null)
+				for (int i = 0; i < aspect.uniques.length; i++) {
+					id = storage
+							.select()
+							.addColumn(aspect.identity.columName)
+							.where(aspect.uniques[i].columName, aspect.uniques[i].getValue(entity))
+							.scalar();
+					if (aspect.isIdentity(id))
+						return id;
+				}
+
+			if (aspect.compositeKeys != null && aspect.compositeKeys.length > 0) {
+				Select select = storage.select().addColumn(aspect.identity.columName);
+				for (int i = 0; i < aspect.compositeKeys.length; i++)
+					select.where(aspect.compositeKeys[i].columName, aspect.compositeKeys[i].getValue(entity));
+				return select.scalar();
+			} else
+				return null;
+		} else
+			return null;
+	}
+
+	public final synchronized boolean save(T entity) {
+		Object id = locateIdentity(entity);
+		if (id != null)
+			return updateByMember(entity, aspect.identity, id);
+		else {
+			if (aspect.uniques != null) {
+				for (int i = 0; i < aspect.uniques.length; i++) {
+					Object uq = aspect.uniques[i].getValue(entity);
+					if (uq != null)
+						if (storage.select().where(aspect.uniques[i].columName, uq).exists())
+							return updateByMember(entity, aspect.uniques[i], uq);
 				}
 			}
-
-		// update by composite keys
-		if (aspect.compositeKeyOrdinals != null && aspect.compositeKeyOrdinals.length > 0) {
-			if (select().where(aspect.buildCompositeKeyFilter(entity)).exists())
-				return update(entity) > 0;
+			if (aspect.compositeKeys != null && aspect.compositeKeys.length > 0) {
+				Select select = storage.select();
+				for (int i = 0; i < aspect.compositeKeys.length; i++)
+					select.where(aspect.compositeKeys[i].columName, aspect.compositeKeys[i].getValue(entity));
+				if (select.exists()) {
+					return buildUpdateByCompositeKeys(entity).execute() > 0;
+				}
+			}
 		}
-
-		return insert(entity);
+		insert(entity);
+		return true;
 	}
+
+	public final void save(Iterable<T> entities) {
+		for (T entity : entities)
+			save(entity);
+	}
+
 }

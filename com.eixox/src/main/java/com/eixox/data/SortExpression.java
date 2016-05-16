@@ -1,33 +1,50 @@
 package com.eixox.data;
 
-public class SortExpression {
+public class SortExpression implements Sortable<SortExpression> {
 
-	public final SortNode first;
+	public SortNode first;
 	public SortNode last;
 
-	public SortExpression(SortDirection direction, String... names) {
-		this.first = new SortNode(names[0], direction);
-		this.last = this.first;
-		for (int i = 1; i < names.length; i++) {
-			this.last.next = new SortNode(names[i], direction);
-			this.last = this.last.next;
-		}
+	public final boolean isEmpty() {
+		return this.first == null;
 	}
 
-	public SortExpression(String... names) {
-		this(SortDirection.ASCENDING, names);
-	}
-
-	public final SortExpression thenBy(SortDirection direction, String... names) {
-		for (int i = 0; i < names.length; i++) {
-			this.last.next = new SortNode(names[i], direction);
-			this.last = this.last.next;
-		}
+	public final SortExpression clear() {
+		this.first = null;
+		this.last = null;
 		return this;
 	}
 
-	public final SortExpression thenBy(String... names) {
-		return thenBy(SortDirection.ASCENDING, names);
+	public final SortExpression orderBy(Aggregate aggregate, String name, SortDirection direction) {
+		this.first = new SortNode(aggregate, name, direction);
+		this.last = this.first;
+		return this;
+	}
+
+	public final SortExpression orderBy(String name, SortDirection direction) {
+		return orderBy(Aggregate.NONE, name, direction);
+	}
+
+	public final SortExpression orderBy(String name) {
+		return orderBy(Aggregate.NONE, name, SortDirection.ASC);
+	}
+
+	public final SortExpression thenOrderBy(Aggregate aggregate, String name, SortDirection direction) {
+		if (this.first == null)
+			return orderBy(aggregate, name, direction);
+		else {
+			this.last.next = new SortNode(aggregate, name, direction);
+			this.last = this.last.next;
+			return this;
+		}
+	}
+
+	public final SortExpression thenOrderBy(String name, SortDirection direction) {
+		return thenOrderBy(Aggregate.NONE, name, direction);
+	}
+
+	public final SortExpression thenOrderBy(String name) {
+		return thenOrderBy(name);
 	}
 
 }

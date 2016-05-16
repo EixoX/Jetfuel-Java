@@ -1,21 +1,22 @@
 package com.eixox.mongodb;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.eixox.data.DataSelect;
 import com.eixox.data.DataSelectResult;
 import com.eixox.data.entities.EntityAspect;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.eixox.reflection.AspectMember;
+import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 public class MongoSelect extends DataSelect {
 
-	public final DB db;
+	public final MongoDatabase db;
 
-	public MongoSelect(DB db, String collectionName) {
+	public MongoSelect(MongoDatabase db, String collectionName) {
 		super(collectionName);
 		this.db = db;
 	}
@@ -28,95 +29,58 @@ public class MongoSelect extends DataSelect {
 
 	@Override
 	public final long count() {
-		DBCollection collection = this.db.getCollection(this.from);
+		MongoCollection<BasicDBObject> collection = this.db.getCollection(this.from, BasicDBObject.class);
 		return this.filter == null ? collection.count() : collection.count(MongoDialect.buildQuery(this.filter));
 	}
 
 	@Override
 	public boolean exists() {
-		DBCollection collection = this.db.getCollection(this.from);
-		return this.filter == null ? (collection.findOne() != null) : (collection.findOne(MongoDialect.buildQuery(this.filter)) != null);
+		MongoCollection<BasicDBObject> collection = this.db.getCollection(this.from, BasicDBObject.class);
+		return this.filter == null ? (collection.find().first() != null)
+				: (collection.find(MongoDialect.buildQuery(this.filter)).first() != null);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object getFirstMember(String name) {
-		DBCollection collection = this.db.getCollection(this.from);
-		DBObject first = this.filter == null ? collection.findOne() : collection.findOne(MongoDialect.buildQuery(this.filter));
-		return first == null ? null : first.get(name);
-	}
+	public <T> long transform(final EntityAspect aspect, final List<T> list) {
 
-	@Override
-	public List<Object> getMember(String name) {
-		List<Object> list = new ArrayList<Object>();
-		DBCollection collection = this.db.getCollection(this.from);
-		DBCursor cursor = this.filter == null ? collection.find() : collection.find(MongoDialect.buildQuery(this.filter));
-		try {
-			if (this.sort != null)
-				cursor.sort(MongoDialect.buildSort(this.sort));
+		MongoCollection<BasicDBObject> collection = this.db.getCollection(this.from, BasicDBObject.class);
+		FindIterable<BasicDBObject> cursor = null;
+		int start = list.size();
 
-			if (this.pageSize > 0 && this.pageOrdinal > 0)
+		if (this.filter == null)
+			cursor = collection.find();
+		else
+			cursor = collection.find(MongoDialect.buildQuery(this.filter));
+
+		if (this.sort != null)
+			cursor.sort(MongoDialect.buildSort(this.sort));
+
+		if (this.pageSize > 0) {
+			if (this.pageOrdinal > 0)
 				cursor.skip(this.pageSize * this.pageOrdinal);
 
-			for (int i = 0; cursor.hasNext() && (this.pageSize > 0 && i < this.pageSize); i++) {
-				DBObject dbo = cursor.next();
-				list.add(dbo.get(name));
+			cursor.limit(this.pageSize);
+		}
+
+		cursor.forEach(new Block<BasicDBObject>() {
+			public void apply(BasicDBObject arg0) {
+				T child = (T) aspect.newInstance();
+				for (AspectMember member : aspect) {
+					Object value = arg0.get(member.getName());
+					if (value != null)
+						member.setValue(child, value);
+				}
+				list.add(child);
 			}
-		} finally {
-			cursor.close();
-		}
-		return list;
+		});
+
+		return list.size() - start;
 
 	}
 
 	@Override
-	public DataSelectResult getMembers(String... names) {
-
-		DataSelectResult result = new DataSelectResult();
-		for (int i = 0; i < names.length; i++)
-			result.cols.add(names[i]);
-
-		DBCollection collection = this.db.getCollection(this.from);
-		DBCursor cursor = this.filter == null ? collection.find() : collection.find(MongoDialect.buildQuery(this.filter));
-		try {
-			if (this.sort != null)
-				cursor.sort(MongoDialect.buildSort(this.sort));
-
-			if (this.pageSize > 0 && this.pageOrdinal > 0)
-				cursor.skip(this.pageSize * this.pageOrdinal);
-
-			for (int i = 0; cursor.hasNext() && (this.pageSize > 0 && i < this.pageSize); i++) {
-				DBObject dbo = cursor.next();
-				Object[] row = new Object[names.length];
-				for (int j = 0; j < row.length; j++)
-					row[j] = dbo.get(names[j]);
-				result.rows.add(row);
-			}
-		} finally {
-			cursor.close();
-		}
-		return result;
-	}
-
-	@Override
-	public Object[] getFirstMembers(String... names) {
-		Object[] row = new Object[names.length];
-		DBCollection collection = this.db.getCollection(this.from);
-		DBObject dbo = this.filter == null ? collection.findOne() : collection.findOne(MongoDialect.buildQuery(this.filter));
-		if (dbo != null) {
-			for (int j = 0; j < row.length; j++)
-				row[j] = dbo.get(names[j]);
-		}
-		return row;
-	}
-
-	@Override
-	public <T> long transform(EntityAspect aspect, List<T> list) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public <T> T getEntity(EntityAspect aspect) {
+	public <T> T toEntity(EntityAspect aspect) {
 		// TODO Auto-generated method stub
 		return null;
 	}

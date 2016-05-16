@@ -1,6 +1,5 @@
 package com.eixox.ui;
 
-import com.eixox.html.AppendCss;
 import com.eixox.reflection.AbstractAspectMember;
 import com.eixox.reflection.AspectMember;
 import com.eixox.restrictions.Length;
@@ -15,7 +14,6 @@ public class UIAspectMember extends AbstractAspectMember {
 	public final String placeholder;
 	public final boolean required;
 	public final int maxlength;
-	public final String appendCss;
 	public final OptionList options;
 
 	public static final ControlType getControlType(AspectMember member) {
@@ -53,11 +51,6 @@ public class UIAspectMember extends AbstractAspectMember {
 		}
 	}
 
-	public static final String getAppendCss(AspectMember member) {
-		AppendCss ac = member.getAnnotation(AppendCss.class);
-		return ac == null ? null : ac.value();
-	}
-
 	public static final OptionList getOptionList(AspectMember member) {
 		Options opsAnn = member.getAnnotation(Options.class);
 		if (opsAnn == null)
@@ -92,7 +85,6 @@ public class UIAspectMember extends AbstractAspectMember {
 			this.placeholder = getPlaceHolder(member);
 			this.required = getRequired(member);
 			this.maxlength = getMaxlength(member);
-			this.appendCss = getAppendCss(member);
 			this.options = getOptionList(member);
 		} else {
 			this.label = null;
@@ -100,14 +92,12 @@ public class UIAspectMember extends AbstractAspectMember {
 			this.placeholder = null;
 			this.required = false;
 			this.maxlength = 0;
-			this.appendCss = null;
 			this.options = null;
 		}
 	}
 
 	public final UIPresentationMember buildPresentation() {
 		UIPresentationMember member = new UIPresentationMember();
-		member.appendCss = this.appendCss;
 		member.controlType = this.controlType;
 		member.hint = this.hint;
 		member.id = this.getName();

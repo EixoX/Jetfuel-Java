@@ -1,150 +1,224 @@
 package com.eixox.data.entities;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.eixox.data.DataSelect;
+import com.eixox.data.Aggregate;
+import com.eixox.data.FilterComparison;
+import com.eixox.data.FilterExpression;
+import com.eixox.data.FilterOperation;
+import com.eixox.data.FilterTerm;
+import com.eixox.data.Filterable;
+import com.eixox.data.Pageable;
+import com.eixox.data.Select;
+import com.eixox.data.SelectAggregate;
 import com.eixox.data.SortDirection;
-import com.eixox.data.SortExpression;
-import com.eixox.data.SortNode;
-import com.eixox.data.Storage;
+import com.eixox.data.Sortable;
 
-public class EntitySelect<T> extends EntityFilterBase<EntitySelect<T>> implements Iterable<T> {
+public class EntitySelect<T> implements
+		Filterable<EntitySelect<T>>,
+		Sortable<EntitySelect<T>>,
+		Pageable<EntitySelect<T>>,
+		Iterable<T> {
 
-	public final Storage storage;
-	public SortExpression sort;
+	public final EntityStorage<T> storage;
+	private final Select select;
 
-	public int pageSize;
-	public int pageOrdinal;
-
-	public EntitySelect(EntityAspect aspect, Storage storage) {
-		super(aspect);
+	public EntitySelect(EntityStorage<T> storage) {
 		this.storage = storage;
-	}
-
-	public final Object readMember(int ordinal) {
-		DataSelect select = this.storage.select(this.aspect.tableName);
-		select.pageSize = this.pageSize;
-		select.pageOrdinal = this.pageOrdinal;
-		select.sort = this.sort;
-		select.filter = this.filter;
-		return select.getFirstMember(aspect.getColumnName(ordinal));
-	}
-
-	public final T singleResult() {
-		DataSelect select = this.storage.select(this.aspect.tableName);
-		select.pageSize = 1;
-		select.pageOrdinal = 0;
-		select.sort = this.sort;
-		select.filter = this.filter;
-		return select.getEntity(this.aspect);
+		this.select = this.storage.storage.select();
+		for (EntityAspectMember<T> member : storage.aspect) {
+			if (member.aggregate != Aggregate.NONE)
+				this.select.aggregates.add(new SelectAggregate(member.aggregate, member.columName, member.columName));
+			else
+				this.select.columns.add(member.columName);
+		}
 	}
 
 	public final long count() {
-		DataSelect select = this.storage.select(this.aspect.tableName);
-		select.filter = this.filter;
-		return select.count();
+		return this.select.count();
 	}
 
 	public final boolean exists() {
-		DataSelect select = this.storage.select(this.aspect.tableName);
-		select.filter = this.filter;
-		return select.exists();
+		return this.select.exists();
 	}
 
-	public final EntitySelectResult<T> toResult() {
-		DataSelect select = this.storage.select(this.aspect.tableName);
-		select.pageSize = this.pageSize;
-		select.pageOrdinal = this.pageOrdinal;
-		select.sort = this.sort;
-		select.filter = this.filter;
-		EntitySelectResult<T> result = new EntitySelectResult<T>(select.count(), this.pageSize, this.pageOrdinal);
-		select.transform(this.aspect, result.items);
-		return result;
+	public final T first() {
+		return this.select.first(storage.aspect);
 	}
 
 	public final List<T> toList() {
-		DataSelect select = this.storage.select(this.aspect.tableName);
-		select.pageSize = this.pageSize;
-		select.pageOrdinal = this.pageOrdinal;
-		select.sort = this.sort;
-		select.filter = this.filter;
-		List<T> list = this.pageSize > 0 ? new ArrayList<T>(this.pageSize) : new ArrayList<T>();
-		select.transform(this.aspect, list);
-		return list;
+		return this.select.transform(storage.aspect);
+	}
 
+	public final int toList(List<T> list) {
+		return this.select.transform(storage.aspect, list);
 	}
 
 	public final Iterator<T> iterator() {
-		return toList().listIterator();
-	}
-
-	public final Object readMember(String memberName) {
-		return readMember(aspect.getOrdinalOrException(memberName));
+		return toList().iterator();
 	}
 
 	public final EntitySelect<T> page(int pageSize, int pageOrdinal) {
-		this.pageSize = pageSize;
-		this.pageOrdinal = pageOrdinal;
+		this.select.page(pageSize, pageOrdinal);
 		return this;
 	}
 
-	@Override
-	protected final EntitySelect<T> getThis() {
+	public final EntitySelect<T> limit(int pageSize) {
+		this.select.limit = pageSize;
 		return this;
 	}
 
-	public final EntitySelect<T> orderBy(SortDirection direction, int... ordinals) {
-		this.sort = new SortExpression(direction, aspect.getColumnName(ordinals[0]));
-		for (int i = 1; i < ordinals.length; i++) {
-			this.sort.last.next = new SortNode(aspect.getColumnName(ordinals[i]), direction);
-			this.sort.last = this.sort.last.next;
-		}
+	public final EntitySelect<T> offset(int offset) {
+		this.select.offset = offset;
 		return this;
 	}
 
-	public final EntitySelect<T> orderBy(SortDirection direction, String... names) {
-		int[] ordinals = new int[names.length];
-		for (int i = 0; i < names.length; i++)
-			ordinals[i] = aspect.getOrdinalOrException(names[i]);
-		return orderBy(direction, ordinals);
+	public final EntitySelect<T> orderBy(String name, SortDirection direction) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.select.sort.orderBy(member.aggregate, member.columName, direction);
+		return this;
 	}
 
-	public final EntitySelect<T> orderBy(String... names) {
-		return orderBy(SortDirection.ASCENDING, names);
+	public final EntitySelect<T> orderBy(String name) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.select.sort.orderBy(member.aggregate, member.columName, SortDirection.ASC);
+		return this;
 	}
 
-	public final EntitySelect<T> thenBy(SortDirection direction, int... ordinals) {
-		if (this.sort == null)
-			return orderBy(direction, ordinals);
-		else {
-			for (int i = 0; i < ordinals.length; i++) {
-				this.sort.last.next = new SortNode(aspect.getColumnName(ordinals[i]), direction);
-				this.sort.last = this.sort.last.next;
-			}
-			return this;
-		}
+	public final EntitySelect<T> thenOrderBy(String name, SortDirection direction) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.select.sort.thenOrderBy(member.aggregate, member.columName, direction);
+		return this;
 	}
 
-	public final EntitySelect<T> thenBy(SortDirection direction, String... names) {
-		int[] ordinals = new int[names.length];
-		for (int i = 0; i < names.length; i++)
-			ordinals[i] = aspect.getOrdinalOrException(names[i]);
-		return thenBy(direction, ordinals);
+	public final EntitySelect<T> thenOrderBy(String name) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.select.sort.thenOrderBy(member.aggregate, member.columName, SortDirection.ASC);
+		return this;
 	}
 
-	public final EntitySelect<T> thenBy(String... names) {
-		return thenBy(SortDirection.ASCENDING, names);
+	public final EntitySelect<T> where(FilterTerm term) {
+		EntityAspectMember<T> member = storage.aspect.get(term.name);
+		if (member.aggregate != Aggregate.NONE)
+			select.having.having(member.aggregate, member.columName, term.comparison, term.value);
+		else
+			select.filter.where(member.columName, term.comparison, term.value);
+		return this;
 	}
 
-	public final List<Object> getMemberList(String memberName) {
-		DataSelect select = this.storage.select(this.aspect.tableName);
-		select.pageSize = this.pageSize;
-		select.pageOrdinal = this.pageOrdinal;
-		select.sort = this.sort;
-		select.filter = this.filter;
-		return select.getMember(this.aspect.getColumnName(this.aspect.getOrdinal(memberName)));
+	public final EntitySelect<T> where(FilterExpression expression) {
+		storage.aspect.transformFilter(expression, select.filter.clear(), select.having.clear(),
+				FilterOperation.AND);
+		return this;
+	}
+
+	public final EntitySelect<T> where(String name, FilterComparison comparison, Object value) {
+		return where(storage.aspect.get(name), comparison, value);
+	}
+
+	public final EntitySelect<T> where(String name, Object value) {
+		return where(storage.aspect.get(name), value);
+	}
+
+	public EntitySelect<T> where(EntityAspectMember<T> member, Object value) {
+		if (member.aggregate != Aggregate.NONE)
+			select.having.having(member.aggregate, member.columName, value);
+		else
+			select.filter.where(member.columName, value);
+		return this;
+	}
+
+	public EntitySelect<T> where(EntityAspectMember<T> member, FilterComparison comparison, Object value) {
+		if (member.aggregate != Aggregate.NONE)
+			select.having.having(member.aggregate, member.columName, comparison, value);
+		else
+			select.filter.where(member.columName, comparison, value);
+		return this;
+	}
+
+	public final EntitySelect<T> andWhere(FilterTerm term) {
+		EntityAspectMember<T> member = storage.aspect.get(term.name);
+		if (member.aggregate != Aggregate.NONE)
+			select.having.andHaving(member.aggregate, member.columName, term.comparison, term.value);
+		else
+			select.filter.andWhere(member.columName, term.comparison, term.value);
+		return this;
+	}
+
+	public final EntitySelect<T> andWhere(FilterExpression expression) {
+		storage.aspect.transformFilter(expression, select.filter, select.having, FilterOperation.AND);
+		return this;
+	}
+
+	public final EntitySelect<T> andWhere(String name, FilterComparison comparison, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		if (member.aggregate != Aggregate.NONE)
+			select.having.andHaving(member.aggregate, member.columName, comparison, value);
+		else
+			select.filter.andWhere(member.columName, comparison, value);
+		return this;
+	}
+
+	public final EntitySelect<T> andWhere(String name, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		if (member.aggregate != Aggregate.NONE)
+			select.having.andHaving(member.aggregate, member.columName, value);
+		else
+			select.filter.andWhere(member.columName, value);
+		return this;
+	}
+
+	public EntitySelect<T> andWhere(EntityAspectMember<T> member, Object value) {
+		this.select.andWhere(member.columName, value);
+		return this;
+	}
+
+	public EntitySelect<T> andWhere(EntityAspectMember<T> member, FilterComparison comparison, Object value) {
+		this.select.andWhere(member.columName, comparison, value);
+		return this;
+	}
+
+	public final EntitySelect<T> orWhere(FilterTerm term) {
+		EntityAspectMember<T> member = storage.aspect.get(term.name);
+		if (member.aggregate != Aggregate.NONE)
+			select.having.orHaving(member.aggregate, member.columName, term.comparison, term.value);
+		else
+			select.filter.orWhere(member.columName, term.comparison, term.value);
+		return this;
+	}
+
+	public final EntitySelect<T> orWhere(FilterExpression expression) {
+		storage.aspect.transformFilter(expression, select.filter, select.having, FilterOperation.OR);
+		return this;
+	}
+
+	public final EntitySelect<T> orWhere(String name, FilterComparison comparison, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		if (member.aggregate != Aggregate.NONE)
+			select.having.orHaving(member.aggregate, member.columName, comparison, value);
+		else
+			select.filter.orWhere(member.columName, comparison, value);
+		return this;
+	}
+
+	public final EntitySelect<T> orWhere(String name, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		if (member.aggregate != Aggregate.NONE)
+			select.having.orHaving(member.aggregate, member.columName, value);
+		else
+			select.filter.orWhere(member.columName, value);
+		return this;
+	}
+
+	public EntitySelect<T> orWhere(EntityAspectMember<T> member, Object value) {
+		this.select.orWhere(member.columName, value);
+		return this;
+	}
+
+	public EntitySelect<T> orWhere(EntityAspectMember<T> member, FilterComparison comparison, Object value) {
+		this.select.orWhere(member.columName, comparison, value);
+		return this;
 	}
 
 }

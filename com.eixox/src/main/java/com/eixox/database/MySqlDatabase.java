@@ -1,35 +1,43 @@
 package com.eixox.database;
 
+import java.sql.SQLException;
 import java.util.Properties;
-
-import com.eixox.database.schema.SchemaDb;
 
 public class MySqlDatabase extends Database {
 
-	public final MySqlDialect dialect = new MySqlDialect();
-
-	public MySqlDatabase(String url) {
-		super(url);
-	}
-
-	public MySqlDatabase(String url, Properties properties) {
+	public MySqlDatabase(String url, Properties properties)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 		super(url, properties);
 	}
 
 	@Override
-	public final String getDriverClassName() {
+	public String getDriverName() {
 		return "com.mysql.jdbc.Driver";
 	}
 
 	@Override
-	protected DatabaseDialect createDialect() {
-		return new MySqlDialect();
+	public char getNamePrefix() {
+		return '`';
 	}
 
 	@Override
-	protected SchemaDb readSchema() {
-		throw new RuntimeException("THIS IS NOT YET IMPLEMENTED FOR THIS DATABASE");
+	public char getNameSuffix() {
+		return '`';
 	}
-	
+
+	@Override
+	public boolean supportsTOP() {
+		return false;
+	}
+
+	@Override
+	public boolean supportsOFFSET() {
+		return true;
+	}
+
+	@Override
+	public boolean supportsLIMIT() {
+		return true;
+	}
 
 }

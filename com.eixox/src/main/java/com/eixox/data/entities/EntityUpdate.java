@@ -1,58 +1,99 @@
 package com.eixox.data.entities;
 
-import com.eixox.data.ColumnType;
-import com.eixox.data.DataUpdate;
-import com.eixox.data.Storage;
+import com.eixox.data.FilterComparison;
+import com.eixox.data.FilterExpression;
+import com.eixox.data.FilterOperation;
+import com.eixox.data.FilterTerm;
+import com.eixox.data.Filterable;
+import com.eixox.data.Update;
 
-public class EntityUpdate extends EntityFilterBase<EntityUpdate> {
+public class EntityUpdate<T> implements Filterable<EntityUpdate<T>> {
 
-	private final DataUpdate update;
-	public final Storage storage;
+	private final Update update;
+	public final EntityStorage<T> storage;
 
-	public EntityUpdate(EntityAspect aspect, Storage storage) {
-		super(aspect);
+	public EntityUpdate(EntityStorage<T> storage) {
+		this.update = storage.storage.update();
 		this.storage = storage;
-		this.update = storage.update(aspect.tableName);
 	}
 
-	public final EntityUpdate reset() {
-		this.update.reset();
+	public final EntityUpdate<T> set(String name, Object value) {
+		EntityAspectMember<T> member = this.storage.aspect.get(name);
+		this.update.put(member.columName, value);
 		return this;
 	}
 
-	public final EntityUpdate set(int ordinal, Object value) {
-		this.update.set(aspect.getColumnName(ordinal), value);
+	public EntityUpdate<T> where(FilterTerm term) {
+		EntityAspectMember<T> member = storage.aspect.get(term.name);
+		this.update.where.where(member.columName, term.comparison, term.value);
 		return this;
 	}
 
-	public final EntityUpdate set(String name, Object value) {
-		return set(aspect.getOrdinalOrException(name), value);
+	public EntityUpdate<T> where(FilterExpression expression) {
+		storage.aspect.transformFilter(expression, update.where, null, FilterOperation.AND);
+		return this;
 	}
 
-	public final void set(Object entity) {
-		for (EntityAspectMember member : aspect) {
-			if (member.columntType != ColumnType.IDENTITY)
-				if (!member.readOnly) {
-					this.update.set(member.columnName, member.getValue(entity));
-				}
-		}
+	public EntityUpdate<T> where(String name, FilterComparison comparison, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.update.where.where(member.columName, comparison, value);
+		return this;
 	}
 
-	public final Object get(int ordinal) {
-		return this.update.get(aspect.getColumnName(ordinal));
+	public EntityUpdate<T> where(String name, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.update.where.where(member.columName, value);
+		return this;
 	}
 
-	public final Object get(String name) {
-		return get(aspect.getOrdinalOrException(name));
+	public EntityUpdate<T> andWhere(FilterTerm term) {
+		EntityAspectMember<T> member = storage.aspect.get(term.name);
+		this.update.where.andWhere(member.columName, term.comparison, term.value);
+		return this;
 	}
 
-	public final long execute() {
-		this.update.filter = this.filter;
+	public EntityUpdate<T> andWhere(FilterExpression expression) {
+		storage.aspect.transformFilter(expression, update.where, null, FilterOperation.AND);
+		return this;
+	}
+
+	public EntityUpdate<T> andWhere(String name, FilterComparison comparison, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.update.where.andWhere(member.columName, comparison, value);
+		return this;
+	}
+
+	public EntityUpdate<T> andWhere(String name, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.update.where.andWhere(member.columName, value);
+		return this;
+	}
+
+	public EntityUpdate<T> orWhere(FilterTerm term) {
+		EntityAspectMember<T> member = storage.aspect.get(term.name);
+		this.update.where.orWhere(member.columName, term.comparison, term.value);
+		return this;
+	}
+
+	public EntityUpdate<T> orWhere(FilterExpression expression) {
+		storage.aspect.transformFilter(expression, update.where, null, FilterOperation.OR);
+		return this;
+	}
+
+	public EntityUpdate<T> orWhere(String name, FilterComparison comparison, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.update.where.orWhere(member.columName, comparison, value);
+		return this;
+	}
+
+	public EntityUpdate<T> orWhere(String name, Object value) {
+		EntityAspectMember<T> member = storage.aspect.get(name);
+		this.update.where.orWhere(member.columName, value);
+		return this;
+	}
+
+	public long execute() {
 		return this.update.execute();
 	}
 
-	@Override
-	protected final EntityUpdate getThis() {
-		return this;
-	}
 }

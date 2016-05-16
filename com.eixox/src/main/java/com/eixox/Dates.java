@@ -142,4 +142,30 @@ public final class Dates {
 	public static final Time timeNow() {
 		return new Time(new Date().getTime());
 	}
+
+	// ______________________________________________________________________
+	public static final Timestamp addDays(Timestamp start, int days) {
+		return addHours(start, days * 24);
+	}
+
+	// ______________________________________________________________________
+	public static final Timestamp addHours(Timestamp start, int hours) {
+
+		long timeToAdd = hours * 60 * 60 * 1000;
+		return new Timestamp(start.getTime() + timeToAdd);
+	}
+
+	// ______________________________________________________________________
+	public static final Timestamp addMinutes(Timestamp start, int minutes) {
+
+		long timeToAdd = minutes * 60 * 1000;
+		return new Timestamp(start.getTime() + timeToAdd);
+	}
+
+	// ______________________________________________________________________
+	public static final Timestamp addSeconds(Timestamp start, int seconds) {
+
+		long timeToAdd = seconds * 1000;
+		return new Timestamp(start.getTime() + timeToAdd);
+	}
 }
