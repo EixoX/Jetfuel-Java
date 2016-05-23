@@ -3,32 +3,32 @@ package com.eixox.database;
 import java.util.HashMap;
 import java.util.Properties;
 
-import com.eixox.data.entities.EntityAspect;
 import com.eixox.data.entities.EntityStorage;
 
-public class MySqlStorage<T> extends EntityStorage<T> {
+public class MySqlStorage {
 
-	private static final HashMap<Class<?>, MySqlStorage<?>> instances = new HashMap<Class<?>, MySqlStorage<?>>();
+	private static final HashMap<Class<?>, EntityStorage<?>> instances;
+	private static final Properties properties;
+	private static final String url;
+	private static final MySqlDatabase database;
 
-	private static final Properties buildProperties() {
-		Properties props = new Properties();
-		props.put("user", "root");
-		return props;
-	}
-
-	private static final String url = "jdbc:mysql://localhost:3306/test";
-
-	private MySqlStorage(Class<T> claz) {
-		super(
-				EntityAspect.getDefaultInstance(claz),
-				new MySqlDatabase(url, buildProperties()));
+	static {
+		instances = new HashMap<Class<?>, EntityStorage<?>>();
+		url = "jdbc:mysql://localhost:3306/test";
+		properties = new Properties();
+		properties.put("user", "root");
+		try {
+			database = new MySqlDatabase(url, properties);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public static synchronized final <T> MySqlStorage<T> getInstance(Class<T> claz) {
-		MySqlStorage<T> storage = (MySqlStorage<T>) instances.get(claz);
+	public static synchronized final <T> EntityStorage<T> getInstance(Class<T> claz) {
+		EntityStorage<T> storage = (EntityStorage<T>) instances.get(claz);
 		if (storage == null) {
-			storage = new MySqlStorage<T>(claz);
+			storage = database.createStorage(claz);
 			instances.put(claz, storage);
 		}
 		return storage;

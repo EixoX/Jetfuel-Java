@@ -1,4 +1,4 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -7,19 +7,19 @@ import java.util.UUID;
 
 public final class UUIDAdapter implements ValueAdapter<UUID> {
 
-	public Class<UUID> getDataType() {
+	public final Class<UUID> getDataType() {
 		return UUID.class;
 	}
 
-	public String format(UUID value) {
+	public final String format(UUID value) {
 		return value == null ? "" : value.toString();
 	}
 
-	public UUID parse(String input) {
+	public final UUID parse(String input) {
 		return input == null || input.isEmpty() ? null : UUID.fromString(input);
 	}
 
-	public void parseIntoField(String source, Field field, Object target) {
+	public final void parseIntoField(String source, Field field, Object target) {
 		try {
 			UUID value = parse(source);
 			field.set(target, value);
@@ -28,7 +28,7 @@ public final class UUIDAdapter implements ValueAdapter<UUID> {
 		}
 	}
 
-	public void readIntoField(ResultSet source, int position, Field field, Object target) {
+	public final void readIntoField(ResultSet source, int position, Field field, Object target) {
 		try {
 			UUID uid = parse(source.getString(position));
 			field.set(target, uid);
@@ -38,7 +38,7 @@ public final class UUIDAdapter implements ValueAdapter<UUID> {
 
 	}
 
-	public void readIntoField(ResultSet source, String name, Field field, Object target) {
+	public final void readIntoField(ResultSet source, String name, Field field, Object target) {
 		try {
 			UUID uid = parse(source.getString(name));
 			field.set(target, uid);
@@ -48,7 +48,7 @@ public final class UUIDAdapter implements ValueAdapter<UUID> {
 
 	}
 
-	public void readIntoStatement(Object source, Field field, PreparedStatement target, int position) {
+	public final void readIntoStatement(Object source, Field field, PreparedStatement target, int position) {
 		try {
 			UUID val = (UUID) field.get(source);
 			String st = val == null ? null : val.toString();
@@ -59,7 +59,7 @@ public final class UUIDAdapter implements ValueAdapter<UUID> {
 
 	}
 
-	public void formatSql(UUID source, StringBuilder target) {
+	public final void formatSql(UUID source, StringBuilder target) {
 
 		if (source == null)
 			target.append("NULL");
@@ -70,5 +70,24 @@ public final class UUIDAdapter implements ValueAdapter<UUID> {
 		}
 
 	}
+
+	public final UUID convert(Object source) {
+		if (source == null)
+			return null;
+		else if (source instanceof UUID)
+			return ((UUID) source);
+		else if (source instanceof String)
+			return parse((String) source);
+		else if (source instanceof byte[])
+			return UUID.nameUUIDFromBytes((byte[]) source);
+		else
+			throw new RuntimeException("Can't convert " + source.getClass() + " to UUID.");
+	}
+	
+
+	public final String formatObject(Object value) {
+		return format((UUID) value);
+	}
+
 
 }

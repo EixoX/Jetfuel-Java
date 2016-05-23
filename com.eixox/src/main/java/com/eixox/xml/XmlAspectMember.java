@@ -7,7 +7,7 @@ import org.w3c.dom.Element;
 
 import com.eixox.Strings;
 import com.eixox.adapters.ValueAdapter;
-import com.eixox.adapters.ValueAdapters;
+import com.eixox.adapters.ValueAdapterFactory;
 import com.eixox.reflection.AbstractAspectMember;
 import com.eixox.reflection.AspectMember;
 import com.eixox.xml.adapters.XmlAdapter;
@@ -31,7 +31,7 @@ public class XmlAspectMember extends AbstractAspectMember implements XmlAdapter 
 		ValueAdapter<?> valueAdapter = null; 
 		if(dataType.isArray()){
 			componentType = dataType.getComponentType();
-			valueAdapter = ValueAdapters.getAdapter(componentType);
+			valueAdapter = ValueAdapterFactory.getAdapter(componentType);
 			this.xmlAdapter = valueAdapter == null ? 
 					new XmlObjectArrayAdapter(xmlName, componentType):
 					new XmlValueArrayAdapter(xmlName, annotation.type(), valueAdapter);
@@ -39,13 +39,13 @@ public class XmlAspectMember extends AbstractAspectMember implements XmlAdapter 
 		else if(List.class.isAssignableFrom(dataType)){
 			ParameterizedType genericType = (ParameterizedType)member.getGenericType();
 			componentType = (Class<?>) genericType.getActualTypeArguments()[0];
-			valueAdapter = ValueAdapters.getAdapter(componentType);
+			valueAdapter = ValueAdapterFactory.getAdapter(componentType);
 			this.xmlAdapter = valueAdapter == null ?
 					new XmlObjectListAdapter(xmlName, componentType):
 					new XmlValueListAdapter(xmlName, annotation.type(), valueAdapter);
 		}
 		else {
-			valueAdapter = ValueAdapters.getAdapter(dataType);
+			valueAdapter = ValueAdapterFactory.getAdapter(dataType);
 			this.xmlAdapter = valueAdapter == null ? 
 					new XmlObjectAdapter(xmlName, dataType):
 					new XmlValueAdapter(xmlName, annotation.type(), valueAdapter);

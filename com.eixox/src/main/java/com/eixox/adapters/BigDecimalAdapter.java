@@ -1,11 +1,11 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class BigDecimalToDoubleAdapter implements ValueAdapter<BigDecimal> {
+public class BigDecimalAdapter implements ValueAdapter<BigDecimal> {
 
 	public Class<BigDecimal> getDataType() {
 		return BigDecimal.class;
@@ -64,6 +64,16 @@ public class BigDecimalToDoubleAdapter implements ValueAdapter<BigDecimal> {
 	public void formatSql(BigDecimal source, StringBuilder target) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public BigDecimal convert(Object source) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String formatObject(Object value) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

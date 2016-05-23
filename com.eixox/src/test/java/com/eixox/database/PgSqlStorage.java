@@ -3,33 +3,33 @@ package com.eixox.database;
 import java.util.HashMap;
 import java.util.Properties;
 
-import com.eixox.data.entities.EntityAspect;
 import com.eixox.data.entities.EntityStorage;
 
-public class PgSqlStorage<T> extends EntityStorage<T> {
+public class PgSqlStorage {
 
-	private static final HashMap<Class<?>, PgSqlStorage<?>> instances = new HashMap<Class<?>, PgSqlStorage<?>>();
+	private static final HashMap<Class<?>, EntityStorage<?>> instances;
+	private static final Properties properties;
+	private static final String url;
+	private static final PostgresDatabase database;
 
-	private static final Properties buildProperties() {
-		Properties props = new Properties();
-		props.put("user", "postgres");
-		props.put("password", "popopo6");
-		return props;
-	}
-
-	private static final String url = "jdbc:postgresql://localhost/test";
-
-	private PgSqlStorage(Class<T> claz) {
-		super(
-				EntityAspect.getDefaultInstance(claz),
-				new PostgresDatabase(url, buildProperties()));
+	static {
+		instances = new HashMap<Class<?>, EntityStorage<?>>();
+		url = "jdbc:postgresql://localhost/test";
+		properties = new Properties();
+		properties.put("user", "postgres");
+		properties.put("password", "popopo6");
+		try {
+			database = new PostgresDatabase(url, properties);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public static synchronized final <T> PgSqlStorage<T> getInstance(Class<T> claz) {
-		PgSqlStorage<T> storage = (PgSqlStorage<T>) instances.get(claz);
+	public static synchronized final <T> EntityStorage<T> getInstance(Class<T> claz) {
+		EntityStorage<T> storage = (EntityStorage<T>) instances.get(claz);
 		if (storage == null) {
-			storage = new PgSqlStorage<T>(claz);
+			storage = database.createStorage(claz);
 			instances.put(claz, storage);
 		}
 		return storage;

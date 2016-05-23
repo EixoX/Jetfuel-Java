@@ -2,9 +2,9 @@ package com.eixox.data.entities;
 
 import java.lang.reflect.Field;
 
+import com.eixox.adapters.ValueAdapter;
 import com.eixox.data.Aggregate;
 import com.eixox.data.ColumnType;
-import com.eixox.data.adapters.ValueAdapter;
 
 public class EntityAspectMember<T> {
 

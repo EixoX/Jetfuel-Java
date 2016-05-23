@@ -1,4 +1,4 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;

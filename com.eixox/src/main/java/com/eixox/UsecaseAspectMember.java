@@ -3,8 +3,7 @@ package com.eixox;
 import java.lang.annotation.Annotation;
 
 import com.eixox.adapters.ValueAdapter;
-import com.eixox.adapters.ValueAdapters;
-import com.eixox.globalization.Culture;
+import com.eixox.adapters.ValueAdapterFactory;
 import com.eixox.interceptors.Interceptor;
 import com.eixox.interceptors.InterceptorBuilder;
 import com.eixox.interceptors.InterceptorList;
@@ -30,7 +29,7 @@ public class UsecaseAspectMember extends UIAspectMember {
 		this.interceptors = new InterceptorList();
 		this.restrictions = new RestrictionList();
 		this.ui = new UIAspectMember(member);
-		this.adapter = ValueAdapters.getAdapter(member.getDataType());
+		this.adapter = ValueAdapterFactory.getAdapter(member.getDataType());
 
 		for (Annotation an : member.getAnnotations()) {
 			Interceptor interceptor = INTERCEPTOR_BUILDER.build(an);
@@ -53,9 +52,9 @@ public class UsecaseAspectMember extends UIAspectMember {
 		}
 	}
 
-	public final void parse(Object instance, Culture culture, String value) {
+	public final void parse(Object instance, String value) {
 		String v = (String) this.interceptors.intercept(value);
-		Object output = this.adapter != null ? this.adapter.parse(culture, v) : v;
+		Object output = this.adapter != null ? this.adapter.parse(v) : v;
 		super.setValue(instance, output);
 	}
 

@@ -33,7 +33,7 @@ public class XmlValueAdapter implements XmlAdapter {
 					null;
 			break;
 		}
-		return this.valueAdapter.parseObject(content);
+		return this.valueAdapter.parse(content);
 	}
 
 	public void writeXml(Element parent, Object value) {

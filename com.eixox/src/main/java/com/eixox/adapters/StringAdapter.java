@@ -1,4 +1,4 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -81,4 +81,19 @@ public class StringAdapter implements ValueAdapter<String> {
 		else
 			return input.substring(input.length() - length);
 	}
+
+	public String convert(Object source) {
+		if (source == null)
+			return null;
+		else if (source instanceof String)
+			return (String) source;
+		else
+			return source.toString();
+	}
+	
+
+	public final String formatObject(Object value) {
+		return format((String) value);
+	}
+
 }

@@ -34,7 +34,7 @@ public class CONFIG_001 {
 	public String contato_email;
 	
 	public final void read(String line){
-		this.cvm_codigo = IntegerAdapter.parseInt(line.substring(0,  6));
+		this.cvm_codigo = IntegerAdapter.ENGLISH.parseInteger(line.substring(0,  6));
 		this.exercicio_data = DateYmdAdapter.parseTimestamp(line.substring(6, 14));
 		//this.status_id = IntegerAdapter.parseInt(input)
 	}

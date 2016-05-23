@@ -3,7 +3,7 @@ package com.eixox.web;
 import java.util.List;
 
 import com.eixox.Convert;
-import com.eixox.html.HtmlBuilder;
+import com.eixox.data.html.HtmlBuilder;
 import com.eixox.ui.Option;
 import com.eixox.ui.UIPresentation;
 import com.eixox.ui.UIPresentationMember;
@@ -68,7 +68,7 @@ public final class Bootstrap3Presenter {
 				.appendAttribute("type", inputType)
 				.appendAttribute("id", presentation.id)
 				.appendAttribute("name", presentation.name)
-				.appendAttribute("class", presentation.appendCss == null ? "form-control" : "form-control " + presentation.appendCss)
+				.appendAttribute("class", "form-control")
 				.appendAttribute("placeholder", presentation.placeholder)
 				.appendAttribute("value", presentation.value);
 
@@ -192,7 +192,7 @@ public final class Bootstrap3Presenter {
 		builder.openTag("select")
 				.appendAttribute("id", presentation.id)
 				.appendAttribute("name", presentation.name)
-				.appendAttribute("class", presentation.appendCss == null ? "form-control" : "form-control " + presentation.appendCss)
+				.appendAttribute("class", "form-control")
 				.appendAttribute("placeholder", presentation.placeholder)
 				.appendAttribute("value", presentation.value);
 

@@ -1,4 +1,4 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -71,4 +71,24 @@ public class CharAdapter implements ValueAdapter<Character> {
 			target.append("'");
 		}
 	}
+
+	public final Character convert(Object source) {
+		if (source == null)
+			return null;
+		else if (source instanceof Character)
+			return (Character) source;
+		else if (source instanceof Number)
+			return (char) ((Number) source).intValue();
+		else if (source instanceof String) {
+			String s = (String) source;
+			return s.isEmpty() ? Character.MIN_VALUE : s.charAt(0);
+		} else
+			throw new RuntimeException("Can't convert " + source.getClass() + " to Character.");
+	}
+	
+
+	public final String formatObject(Object value) {
+		return format((Character) value);
+	}
+
 }

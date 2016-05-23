@@ -1,10 +1,15 @@
 package com.eixox.mongodb;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-import com.eixox.data.DataSelect;
-import com.eixox.data.DataSelectResult;
+import org.bson.Document;
+
+import com.eixox.data.Select;
+import com.eixox.data.SelectResult;
 import com.eixox.data.entities.EntityAspect;
+import com.eixox.data.entities.EntityAspectMember;
 import com.eixox.reflection.AspectMember;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
@@ -12,19 +17,14 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-public class MongoSelect extends DataSelect {
+public class MongoSelect extends Select {
 
 	public final MongoDatabase db;
+	public final String from;
 
 	public MongoSelect(MongoDatabase db, String collectionName) {
-		super(collectionName);
 		this.db = db;
-	}
-
-	@Override
-	public DataSelectResult toResult() {
-		// TODO Auto-generated method stub
-		return null;
+		this.from = collectionName;
 	}
 
 	@Override
@@ -36,53 +36,70 @@ public class MongoSelect extends DataSelect {
 	@Override
 	public boolean exists() {
 		MongoCollection<BasicDBObject> collection = this.db.getCollection(this.from, BasicDBObject.class);
-		return this.filter == null ? (collection.find().first() != null)
+		return this.filter == null
+				? (collection.find().first() != null)
 				: (collection.find(MongoDialect.buildQuery(this.filter)).first() != null);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> long transform(final EntityAspect aspect, final List<T> list) {
+	private final FindIterable<Document> buildCursor() {
 
-		MongoCollection<BasicDBObject> collection = this.db.getCollection(this.from, BasicDBObject.class);
-		FindIterable<BasicDBObject> cursor = null;
-		int start = list.size();
+		MongoCollection<Document> collection = this.db.getCollection(this.from);
 
-		if (this.filter == null)
-			cursor = collection.find();
-		else
-			cursor = collection.find(MongoDialect.buildQuery(this.filter));
+		FindIterable<Document> find = this.filter == null
+				? collection.find()
+				: collection.find(MongoDialect.buildQuery(this.filter));
 
 		if (this.sort != null)
-			cursor.sort(MongoDialect.buildSort(this.sort));
+			find = find.sort(MongoDialect.buildSort(this.sort));
 
-		if (this.pageSize > 0) {
-			if (this.pageOrdinal > 0)
-				cursor.skip(this.pageSize * this.pageOrdinal);
+		if (this.offset > 0)
+			find = find.skip(this.offset);
 
-			cursor.limit(this.pageSize);
-		}
+		if (this.limit > 0)
+			find = find.limit(limit);
 
-		cursor.forEach(new Block<BasicDBObject>() {
-			public void apply(BasicDBObject arg0) {
-				T child = (T) aspect.newInstance();
-				for (AspectMember member : aspect) {
-					Object value = arg0.get(member.getName());
-					if (value != null)
-						member.setValue(child, value);
-				}
-				list.add(child);
-			}
-		});
-
-		return list.size() - start;
-
+		return find;
 	}
 
 	@Override
-	public <T> T toEntity(EntityAspect aspect) {
+	public SelectResult toResult() {
+		SelectResult result = new SelectResult();
+		for (Document doc : buildCursor()) {
+			for (String key : doc.keySet()) {
+				if (result.getOrdinal(key) < 0)
+					result.columns.add(key);
+			}
+
+			Object[] row = new Object[result.columns.size()];
+			for (int i = 0; i < row.length; i++)
+				row[i] = doc.get(result.columns.get(i));
+			result.rows.add(row);
+		}
+		return result;
+	}
+
+	@Override
+	public Object scalar() {
+		Document doc = buildCursor().first();
+		return doc == null ? null : doc.get(doc.keySet().iterator().next());
+	}
+
+	@Override
+	public Object[] first() {
+		Document doc = buildCursor().first();
+		throw new RuntimeException("NOT IMPLEMENTED");
+	}
+
+	@Override
+	public <T> T first(EntityAspect<T> aspect) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public <T> int transform(EntityAspect<T> aspect, List<T> target) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.eixox.data.adapters.DateYmdAdapter;
+import com.eixox.adapters.DateYmdAdapter;
 
 public class OfxElement {
 

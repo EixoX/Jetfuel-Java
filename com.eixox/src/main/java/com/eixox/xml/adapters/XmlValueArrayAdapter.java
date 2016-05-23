@@ -28,7 +28,7 @@ public class XmlValueArrayAdapter implements XmlAdapter {
 				String[] valueStrings = content.split(";");
 				value = Array.newInstance(valueAdapter.getDataType(), valueStrings.length);
 				for (int i = 0; i < valueStrings.length; i++) {
-					Object arrayValue1 = valueAdapter.parseObject(valueStrings[i]);
+					Object arrayValue1 = valueAdapter.parse(valueStrings[i]);
 					Array.set(value, i, arrayValue1);
 				}
 			}
@@ -41,7 +41,7 @@ public class XmlValueArrayAdapter implements XmlAdapter {
 				for (int i = 0; i < length; i++)
 				{
 					String elContent = nodeList.item(i).getTextContent();
-					Object arrayValue2 = valueAdapter.parseObject(elContent);
+					Object arrayValue2 = valueAdapter.parse(elContent);
 					Array.set(value, i, arrayValue2);
 				}
 			}

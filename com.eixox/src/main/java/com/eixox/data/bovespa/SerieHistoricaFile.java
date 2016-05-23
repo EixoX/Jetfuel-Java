@@ -10,10 +10,10 @@ import java.io.Reader;
 import java.sql.Timestamp;
 import java.util.Iterator;
 
-import com.eixox.data.adapters.DateYmdAdapter;
-import com.eixox.data.adapters.DoubleAdapter;
-import com.eixox.data.adapters.IntegerAdapter;
-import com.eixox.data.adapters.LongAdapter;
+import com.eixox.adapters.DateYmdAdapter;
+import com.eixox.adapters.DoubleAdapter;
+import com.eixox.adapters.IntegerAdapter;
+import com.eixox.adapters.LongAdapter;
 
 public class SerieHistoricaFile implements Closeable, Iterable<SerieHistoricaFile>, Iterator<SerieHistoricaFile> {
 

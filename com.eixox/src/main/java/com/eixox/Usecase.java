@@ -31,7 +31,7 @@ public abstract class Usecase {
 		for (UIPresentationMember uiMember : this.presentation) {
 			UsecaseAspectMember member = this.aspect.get(uiMember.name);
 			if (member != null)
-				member.parse(this, culture, uiMember.value);
+				member.parse(this, uiMember.value);
 		}
 	}
 	

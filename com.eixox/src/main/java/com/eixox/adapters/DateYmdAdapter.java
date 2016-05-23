@@ -1,4 +1,4 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class DateYmdAdapter implements ValueAdapter<Timestamp> {
+public class DateYmdAdapter implements ValueAdapter<Date> {
 
 	public static final DateYmdAdapter INSTANCE = new DateYmdAdapter();
 
@@ -126,11 +126,11 @@ public class DateYmdAdapter implements ValueAdapter<Timestamp> {
 		return cal == null ? null : new Timestamp(cal.getTimeInMillis());
 	}
 
-	public Class<Timestamp> getDataType() {
-		return Timestamp.class;
+	public final Class<Date> getDataType() {
+		return Date.class;
 	}
 
-	public String format(Timestamp value) {
+	public final String format(Date value) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(value.getTime());
 		int year = calendar.get(Calendar.YEAR);
@@ -148,55 +148,77 @@ public class DateYmdAdapter implements ValueAdapter<Timestamp> {
 				StringAdapter.right("0000" + second, 2));
 	}
 
-	public Timestamp parse(String input) {
-		return parseTimestamp(input);
+	public final Date parse(String input) {
+		return parseDate(input);
 	}
 
-	public void parseIntoField(String source, Field field, Object target) {
+	public final void parseIntoField(String source, Field field, Object target) {
 		try {
-			Timestamp ts = parseTimestamp(source);
-			field.set(target, ts);
+			Date dt = parse(source);
+			field.set(target, dt);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 
 	}
 
-	public void readIntoField(ResultSet source, int position, Field field, Object target) {
+	public final void readIntoField(ResultSet source, int position, Field field, Object target) {
 		try {
 			Timestamp ts = source.getTimestamp(position);
-			field.set(target, ts);
+			field.set(target, ts == null ? null : new Date(ts.getTime()));
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	public void readIntoField(ResultSet source, String name, Field field, Object target) {
+	public final void readIntoField(ResultSet source, String name, Field field, Object target) {
 		try {
 			Timestamp ts = source.getTimestamp(name);
-			field.set(target, ts);
+			field.set(target, ts == null ? null : new Date(ts.getTime()));
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 
 	}
 
-	public void readIntoStatement(Object source, Field field, PreparedStatement target, int position) {
+	public final void readIntoStatement(Object source, Field field, PreparedStatement target, int position) {
 		try {
-			Timestamp vl = (Timestamp) field.get(source);
-			target.setTimestamp(position, vl);
+			Date dt = (Date) field.get(source);
+			target.setTimestamp(position, dt == null ? null : new Timestamp(dt.getTime()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void formatSql(Timestamp source, StringBuilder target) {
+	public final void formatSql(Date source, StringBuilder target) {
 		if (source == null)
 			target.append("NULL");
 		else {
 			target.append("'");
-			target.append(source.toString());
+			target.append(new Timestamp(source.getTime()));
 			target.append("'");
 		}
 	}
+
+	public final Date convert(Object source) {
+		if (source == null)
+			return null;
+		else if (source instanceof Date)
+			return (Date) source;
+		else if (source instanceof java.sql.Date)
+			return (Date) source;
+		else if (source instanceof Timestamp)
+			return (Date) source;
+		else if (source instanceof String)
+			return parse((String) source);
+		else
+			throw new RuntimeException("Can't convert " + source.getClass() + " to Date.");
+	}
+	
+
+	public final String formatObject(Object value) {
+		return format((Date) value);
+	}
+
+
 }

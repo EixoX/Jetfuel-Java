@@ -1,9 +1,10 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
-import java.sql.Timestamp;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class TimestampAdapter implements ValueAdapter<Timestamp> {
 
@@ -70,5 +71,26 @@ public class TimestampAdapter implements ValueAdapter<Timestamp> {
 		}
 
 	}
+
+	public final Timestamp convert(Object source) {
+		if (source == null)
+			return null;
+		else if (source instanceof Timestamp)
+			return ((Timestamp) source);
+		else if (source instanceof Number)
+			return new Timestamp(((Number) source).longValue());
+		else if (source instanceof Date)
+			return new Timestamp(((Date) source).getTime());
+		else if (source instanceof String)
+			return parse((String) source);
+		else
+			throw new RuntimeException("Can't convert " + source.getClass() + " to Timestamp.");
+	}
+	
+
+	public final String formatObject(Object value) {
+		return format((Timestamp) value);
+	}
+
 
 }

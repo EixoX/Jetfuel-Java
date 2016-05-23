@@ -1,4 +1,4 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -13,7 +13,7 @@ public final class ValueAdapterFactory {
 		ADAPTERS.put(Boolean.TYPE, new BooleanAdapter());
 		ADAPTERS.put(Byte.TYPE, new ByteAdapter());
 		ADAPTERS.put(Character.TYPE, new CharAdapter());
-		ADAPTERS.put(Date.class, new DateAdapter());
+		ADAPTERS.put(Date.class, new DateSqlAdapter());
 		ADAPTERS.put(Double.TYPE, new DoubleAdapter());
 		ADAPTERS.put(Float.TYPE, new FloatAdapter());
 		ADAPTERS.put(Integer.TYPE, new IntegerAdapter());

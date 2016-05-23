@@ -29,8 +29,8 @@ public abstract class DatabaseStorageTest {
 		entity.birthDay = new GregorianCalendar(1980, 4, 12).getTime();
 		entity.dateCreated = new Date();
 
-		boolean result = createStorage(TestEntity1.class).insert(entity);
-		Assert.assertTrue(result && entity.id > 0);
+		createStorage(TestEntity1.class).insert(entity);
+		Assert.assertTrue(entity.id > 0);
 
 	}
 
@@ -42,13 +42,13 @@ public abstract class DatabaseStorageTest {
 
 	@Test
 	public void selectSingleResultTest() {
-		TestEntity1 singleResult = createStorage(TestEntity1.class).select().singleResult();
+		TestEntity1 singleResult = createStorage(TestEntity1.class).select().first();
 		Assert.assertNotNull(singleResult);
 	}
 
 	@Test
 	public void selectCountTest() {
-		long count = createStorage(TestEntity1.class).count();
+		long count = createStorage(TestEntity1.class).select().count();
 		Assert.assertTrue(count > 0);
 	}
 
@@ -67,7 +67,7 @@ public abstract class DatabaseStorageTest {
 	@Test
 	public void updateByIdentityTest() {
 		EntityStorage<TestEntity1> storage = createStorage(TestEntity1.class);
-		TestEntity1 entity = storage.select().where("email", "rodrigo.portela@gmail.com").singleResult();
+		TestEntity1 entity = storage.select().where("email", "rodrigo.portela@gmail.com").first();
 		if (entity != null) {
 			entity.cpf = 321312123L;
 			entity.dateUpdated = new Date();
@@ -78,20 +78,12 @@ public abstract class DatabaseStorageTest {
 	@Test
 	public void deleteByIdentityTest() {
 		EntityStorage<TestEntity1> storage = createStorage(TestEntity1.class);
-		TestEntity1 entity = storage.select().where("cpf", 123123123L).singleResult();
+		TestEntity1 entity = storage.select().where("cpf", 123123123L).first();
 		if (entity != null) {
 			Assert.assertTrue(storage.delete(entity) > 0);
 		}
 	}
 
-	@Test
-	public void selectByProcedureTest() {
-		EntityStorage<TestEntity1> storage = createStorage(TestEntity1.class);
-		Database database = (Database) storage.storage;
-		List<TestEntity1> selectRaw = database.executeQuery(storage.aspect, "CALL TestEntity1_read_byEmail(?)", "rodrigo.portela@gmail.com");
-		TestEntity1 entity = selectRaw.size() > 0 ? selectRaw.get(0) : null;
-		Assert.assertNotNull(entity);
-
-	}
+	
 
 }

@@ -1,9 +1,10 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public final class FloatAdapter implements ValueAdapter<Float> {
@@ -88,6 +89,28 @@ public final class FloatAdapter implements ValueAdapter<Float> {
 		else
 			target.append(ENGLISH.numberFormat.format(source));
 	}
+	
+	public final Float convert(Object source) {
+		if (source == null)
+			return null;
+		else if (source instanceof Float)
+			return (Float) source;
+		else if (source instanceof Number)
+			return ((Number) source).floatValue();
+		else if (source instanceof String)
+			return parse((String) source);
+		else if (source instanceof Date)
+			return (float) ((Date) source).getTime();
+		else
+			throw new RuntimeException("Can't convert " + source.getClass() + " to Float.");
+	}
+	
+
+	public final String formatObject(Object value) {
+		return format((Float) value);
+	}
+
+
 
 	public static final FloatAdapter ENGLISH = new FloatAdapter(Locale.ENGLISH);
 

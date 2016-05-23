@@ -5,6 +5,9 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import com.eixox.data.entities.EntityAspect;
+import com.eixox.data.entities.EntityStorage;
+
 public abstract class Database {
 
 	public Driver driver;
@@ -39,4 +42,9 @@ public abstract class Database {
 		return new DatabaseCommand(this);
 	}
 
+	public final <T> EntityStorage<T> createStorage(Class<T> claz) {
+		final EntityAspect<T> aspect = new EntityAspect<T>(claz);
+		final TableStorage ts = new TableStorage(this, aspect.tableName);
+		return new EntityStorage<T>(ts, aspect);
+	}
 }

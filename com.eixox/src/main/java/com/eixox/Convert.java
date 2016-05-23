@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import com.eixox.adapters.ValueAdapters;
+import com.eixox.adapters.ValueAdapterFactory;
 
 public final class Convert {
 
@@ -192,7 +192,7 @@ public final class Convert {
 		else if (expectedType.isInstance(value))
 			return value;
 		else
-			return ValueAdapters.getAdapter(expectedType).convert(value);
+			return ValueAdapterFactory.getAdapter(expectedType).convert(value);
 	}
 
 	public static final Date toDate(Object value, int dateFormat, Locale locale) throws ParseException {

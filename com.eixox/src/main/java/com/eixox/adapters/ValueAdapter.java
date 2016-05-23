@@ -1,4 +1,4 @@
-package com.eixox.data.adapters;
+package com.eixox.adapters;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -9,6 +9,8 @@ public interface ValueAdapter<T> {
 	public Class<T> getDataType();
 
 	public String format(T value);
+	
+	public String formatObject(Object value);
 
 	public T parse(String input);
 
@@ -21,4 +23,8 @@ public interface ValueAdapter<T> {
 	public void readIntoStatement(Object source, Field field, PreparedStatement target, int position);
 
 	public void formatSql(T source, StringBuilder target);
+	
+	public T convert(Object source);
+
+	
 }
