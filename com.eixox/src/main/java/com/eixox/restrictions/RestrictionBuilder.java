@@ -46,7 +46,10 @@ public class RestrictionBuilder {
 			return new NameRestriction();
 
 		try {
-			return (Restriction) Class.forName(annotation.annotationType().getCanonicalName() + "Restriction").getConstructor(annotation.annotationType()).newInstance(annotation);
+			String clazName = annotation.annotationType().getCanonicalName() + "Restriction";
+			Class<?> claz = Class.forName(clazName);
+			
+			return (Restriction) claz.getConstructor(annotation.annotationType()).newInstance(annotation);
 		} catch (Exception e) {
 			return null;
 		}
