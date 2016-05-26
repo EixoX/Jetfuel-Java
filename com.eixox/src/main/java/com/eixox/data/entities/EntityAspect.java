@@ -110,7 +110,7 @@ public class EntityAspect extends AbstractAspect<EntityAspectMember> {
 	protected EntityAspectMember decorate(AspectMember member) {
 		Persistent ps = member.getAnnotation(Persistent.class);
 		if (ps != null) {
-			return new EntityAspectMember(member, ps.type(), ps.name(), ps.nullable(), ps.readonly());
+			return new EntityAspectMember(member, ps.value(), ps.name(), ps.nullable(), ps.readonly());
 		} else
 			return null;
 	}
