@@ -39,7 +39,8 @@ public final class Urls {
 		}
 	}
 
-	public static final Document downloadXml(String url) throws IOException, ParserConfigurationException, SAXException {
+	public static final Document downloadXml(String url)
+			throws IOException, ParserConfigurationException, SAXException {
 
 		URLConnection connection = new URL(url).openConnection();
 		connection.setRequestProperty("Accept", "application/xml");
@@ -137,4 +138,5 @@ public final class Urls {
 	public static String postTo(String url, Pair<String, String>... data) throws IOException {
 		return postTo(url, Strings.urlEncode(data));
 	}
+
 }
