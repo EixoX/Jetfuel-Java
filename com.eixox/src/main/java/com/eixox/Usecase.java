@@ -30,12 +30,17 @@ public abstract class Usecase {
 	public void parsePresentation() {
 		for (UIPresentationMember uiMember : this.presentation) {
 			UsecaseAspectMember member = this.aspect.get(uiMember.name);
-			if (member != null)
-				member.parse(this, uiMember.value);
+			if (member != null) {
+				try {
+					member.parse(this, uiMember.value);
+				} catch (Exception ex) {
+					this.presentation.invalidate(member.getName(), ex.toString());
+				}
+			}
 		}
 	}
-	
-	public final void parsePresentation(Culture culture){
+
+	public final void parsePresentation(Culture culture) {
 		this.culture = culture;
 		parsePresentation();
 	}
@@ -79,7 +84,7 @@ public abstract class Usecase {
 		 */
 	}
 
-	public synchronized boolean validate() {
+	public synchronized UsecaseResultType validate() {
 		int l = this.presentation.size();
 		boolean valid = true;
 		for (int i = 0; i < l; i++) {
@@ -93,7 +98,7 @@ public abstract class Usecase {
 			} else
 				uipm.controlState = ControlState.SUCCESS;
 		}
-		return valid;
+		return valid ? UsecaseResultType.SUCCESS : UsecaseResultType.VALIDATION_FAILED;
 	}
 
 	protected abstract void executeFlow(UsecaseResult result) throws Exception;
@@ -101,13 +106,13 @@ public abstract class Usecase {
 	public synchronized final UsecaseResult execute() {
 		UsecaseResult result = new UsecaseResult();
 		result.presentation = this.presentation;
-		
+
 		try {
-			if (validate()) {
+			result.resultType = validate();
+			if (result.resultType == UsecaseResultType.SUCCESS) {
 				executeFlow(result);
 			} else {
 				result.message = "Os campos estão inválidos";
-				result.resultType = UsecaseResultType.VALIDATION_FAILED;
 			}
 		} catch (Exception ex) {
 			result.exception = ex;
@@ -119,7 +124,7 @@ public abstract class Usecase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return result;
 	}
 

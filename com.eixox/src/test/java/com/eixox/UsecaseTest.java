@@ -70,9 +70,9 @@ public class UsecaseTest {
 		inherited.aStringProperty = "Teste 1,2 3";
 		inherited.anotherProperty = "Hey";
 
-		Assert.assertFalse("The usecase should not validate", inherited.validate());
+		Assert.assertFalse("The usecase should not validate", inherited.validate() != UsecaseResultType.SUCCESS);
 
 		inherited.andAThird = new Date();
-		Assert.assertTrue("The usecase should validate", inherited.validate());
+		Assert.assertTrue("The usecase should validate", inherited.validate() == UsecaseResultType.SUCCESS);
 	}
 }

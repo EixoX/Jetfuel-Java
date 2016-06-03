@@ -19,8 +19,11 @@ public class TimestampAdapter implements ValueAdapter<Timestamp> {
 	public Timestamp parse(String input) {
 		if (input == null || input.isEmpty())
 			return null;
-		else
+		else if (input.length() > 10)
 			return Timestamp.valueOf(input);
+		else
+			return new Timestamp(java.sql.Date.valueOf(input).getTime());
+
 	}
 
 	public void parseIntoField(String source, Field field, Object target) {
@@ -86,11 +89,9 @@ public class TimestampAdapter implements ValueAdapter<Timestamp> {
 		else
 			throw new RuntimeException("Can't convert " + source.getClass() + " to Timestamp.");
 	}
-	
 
 	public final String formatObject(Object value) {
 		return format((Timestamp) value);
 	}
-
 
 }
