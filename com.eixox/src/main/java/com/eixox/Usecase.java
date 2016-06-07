@@ -1,7 +1,5 @@
 package com.eixox;
 
-import com.eixox.globalization.Culture;
-import com.eixox.globalization.Cultures;
 import com.eixox.ui.ControlState;
 import com.eixox.ui.ControlType;
 import com.eixox.ui.UIPresentation;
@@ -11,20 +9,14 @@ public abstract class Usecase {
 
 	public final UsecaseAspect aspect;
 	public final UIPresentation presentation;
-	public Culture culture;
 
-	public Usecase(Culture culture) {
-		this.culture = culture;
+	public Usecase() {
 		this.aspect = UsecaseAspect.getInstance(getClass());
 		this.presentation = new UIPresentation(this.aspect.getCount());
 		for (UsecaseAspectMember member : this.aspect) {
 			if (member.ui.controlType != ControlType.NONE)
 				this.presentation.add(new UIPresentationMember(member.ui));
 		}
-	}
-
-	public Usecase() {
-		this(Cultures.EN_US);
 	}
 
 	public void parsePresentation() {
@@ -40,16 +32,11 @@ public abstract class Usecase {
 		}
 	}
 
-	public final void parsePresentation(Culture culture) {
-		this.culture = culture;
-		parsePresentation();
-	}
-
 	public void formatPresentation() {
 		for (UIPresentationMember uiMember : this.presentation) {
 			UsecaseAspectMember member = this.aspect.get(uiMember.name);
 			if (member != null)
-				uiMember.value = member.getValueToString(this, culture);
+				uiMember.value = member.getValueToString(this);
 		}
 	}
 

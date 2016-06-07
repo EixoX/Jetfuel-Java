@@ -4,8 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import com.eixox.globalization.Culture;
-
 public class AbstractAspectMember implements AspectMember {
 
 	private final AspectMember member;
@@ -62,7 +60,7 @@ public class AbstractAspectMember implements AspectMember {
 		return this.member.getGenericType();
 	}
 
-	public final String getValueToString(Object instance, Culture culture) {
+	public final String getValueToString(Object instance) {
 		Object value = this.member.getValue(instance);
 		if (value == null)
 			return "";

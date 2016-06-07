@@ -5,8 +5,6 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.eixox.globalization.Cultures;
-
 public class UsecaseTest {
 
 	@Test
@@ -20,7 +18,7 @@ public class UsecaseTest {
 
 		example.presentation.get("aLongProperty").value = "1";
 		example.presentation.get("aStringProperty").value = "Teste";
-		example.parsePresentation(Cultures.PT_BR);
+		example.parsePresentation();
 
 		result = example.execute();
 		Assert.assertTrue("Main flow should return successful", result.resultType == UsecaseResultType.SUCCESS);
