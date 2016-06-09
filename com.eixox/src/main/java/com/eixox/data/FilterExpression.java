@@ -1,5 +1,7 @@
 package com.eixox.data;
 
+import java.util.List;
+
 public final class FilterExpression implements Filter {
 
 	public final FilterNode first;
@@ -50,6 +52,10 @@ public final class FilterExpression implements Filter {
 
 	public final FilterType getFilterType() {
 		return FilterType.EXPRESSION;
+	}
+
+	public final boolean evaluate(List<String> cols, Object[] row) {
+		return this.first == null ? true : this.first.evaluate(cols, row);
 	}
 
 }

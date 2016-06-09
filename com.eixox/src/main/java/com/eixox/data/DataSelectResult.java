@@ -24,6 +24,11 @@ public class DataSelectResult {
 		this.cols = new ArrayList<String>();
 	}
 
+	public DataSelectResult(ArrayList<String> cols, int capacity) {
+		this.cols = cols;
+		this.rows = new ArrayList<Object[]>(capacity);
+	}
+
 	public final int getOrdinal(String name) {
 		int s = cols.size();
 		for (int i = 0; i < s; i++)
