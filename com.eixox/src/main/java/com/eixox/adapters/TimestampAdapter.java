@@ -5,50 +5,65 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.Instant;
 import java.util.Date;
 
 import com.eixox.globalization.Culture;
 
 public class TimestampAdapter extends ValueAdapter<Timestamp> {
 
-	protected TimestampAdapter() {
+	public TimestampAdapter() {
 		super(Timestamp.class);
 	}
 
 	@Override
-	public Timestamp parse(Culture culture, String input) {
-		Date dt = culture.parseDate(input);
-		return dt == null ? null : new Timestamp(dt.getTime());
+	public final Timestamp parse(Culture culture, String input) {
+		return input == null ? null : Timestamp.valueOf(input);
 	}
 
 	@Override
-	public int getSqlTypeId() {
+	public final int getSqlTypeId() {
 		return Types.TIMESTAMP;
 	}
 
 	@Override
-	public void setParameterValue(PreparedStatement ps, int parameterIndex, Timestamp value) throws SQLException {
+	public final void setParameterValue(PreparedStatement ps, int parameterIndex, Timestamp value) throws SQLException {
 		ps.setTimestamp(parameterIndex, value);
 	}
 
 	@Override
-	public Timestamp readValue(ResultSet rs, int ordinal) throws SQLException {
+	public final Timestamp readValue(ResultSet rs, int ordinal) throws SQLException {
 		return rs.getTimestamp(ordinal);
 	}
 
 	@Override
-	public String format(Culture culture, Timestamp input) {
+	public final String format(Culture culture, Timestamp input) {
 		return input.toString();
 	}
 
 	@Override
-	public boolean IsNullOrEmpty(Object item) {
-		return item == null;
+	public final boolean IsNullOrEmpty(Object item) {
+		return item == null || ((Timestamp) item).getTime() == 0L;
 	}
 
 	@Override
-	public Timestamp convert(Object value, Culture culture) {
-		return (Timestamp) value;
+	public final Timestamp convert(Object value, Culture culture) {
+		if (value == null)
+			return null;
+		else if (value instanceof Timestamp)
+			return (Timestamp) value;
+		else if (value instanceof Date)
+			return new Timestamp(((Date) value).getTime());
+		else if (value instanceof java.sql.Date)
+			return new Timestamp(((java.sql.Date) value).getTime());
+		else if (value instanceof Instant)
+			return Timestamp.from((Instant) value);
+		else if (value instanceof String)
+			return parse((String) value);
+		else if (value instanceof Number)
+			return new Timestamp(((Number) value).longValue());
+		else
+			throw new RuntimeException("Can't convert " + value.getClass() + " to Timestamp");
 	}
 
 }

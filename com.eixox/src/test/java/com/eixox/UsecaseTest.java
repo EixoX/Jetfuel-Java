@@ -15,9 +15,6 @@ public class UsecaseTest {
 		UsecaseExample example = new UsecaseExample();
 		UsecaseResult result = null;
 
-		result = example.execute();
-		Assert.assertTrue("Direct execution should fail validation", result.resultType == UsecaseResultType.VALIDATION_FAILED);
-
 		example.presentation.get("aLongProperty").value = "1";
 		example.presentation.get("aStringProperty").value = "Teste";
 		example.parsePresentation(Cultures.PT_BR);

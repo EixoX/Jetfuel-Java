@@ -71,7 +71,7 @@ public class DatabaseSelect extends DataSelect {
 		try {
 			Connection conn = database.getConnection();
 			try {
-				return Convert.toBoolean(cmd.executeScalar(conn));
+				return cmd.executeScalar(conn);
 			} finally {
 				conn.close();
 			}
