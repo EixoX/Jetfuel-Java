@@ -91,23 +91,45 @@ public final class Urls {
 		return Normalizer.normalize(builder.toString().toLowerCase(), Normalizer.Form.NFD);
 
 	}
-
-	// _____________________________________________________________________________________________
+	
 	public static String postTo(String url, String postData) throws IOException {
+		return request(url, "POST", postData, null);
+	}
+	
+	public static String postTo(String url, String basicAuth, String postData) throws IOException {
+		return request(url, "POST", postData, basicAuth);
+	}
+	
+	public static String getFrom(String url) throws IOException{
+		return request(url, "GET", null, null);
+	}
+	
+	public static String getFrom(String url, String basicAuth) throws IOException{
+		return request(url, "GET", null, basicAuth);
+	}
+	
+	// _____________________________________________________________________________________________
+	private static String request(String url, String requestMethod, String postData, String basicAuth) throws IOException {
 
 		URL authUrl = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) authUrl.openConnection();
 
-		con.setRequestMethod("POST");
+		con.setRequestMethod(requestMethod);
 
-		con.setRequestProperty("Accept-Charset", "UTF-8");
+		con.setRequestProperty("Accept", "UTF-8");
 		con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		con.setDoOutput(true);
-
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(postData.toString());
-		wr.flush();
-		wr.close();
+		
+		if(basicAuth != null && !basicAuth.isEmpty()){
+			con.setRequestProperty("Authorization", basicAuth);
+		}
+		
+		if(postData != null && !postData.isEmpty()){
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(postData.toString());
+			wr.flush();
+			wr.close();
+		}		
 
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -138,5 +160,9 @@ public final class Urls {
 	public static String postTo(String url, Pair<String, String>... data) throws IOException {
 		return postTo(url, Strings.urlEncode(data));
 	}
-
+	
+	// _____________________________________________________________________________________________
+	public static String postTo(String url, String basicAuth, Pair<String, String>... data) throws IOException {
+		return postTo(url, basicAuth, Strings.urlEncode(data));
+	}
 }
