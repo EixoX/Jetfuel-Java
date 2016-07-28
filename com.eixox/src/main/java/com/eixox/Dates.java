@@ -142,4 +142,22 @@ public final class Dates {
 	public static final Time timeNow() {
 		return new Time(new Date().getTime());
 	}
+
+	public static synchronized Date setTime(Date date, int hour, int minute, int second) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR, hour);
+		cal.set(Calendar.MINUTE, minute);
+		cal.set(Calendar.SECOND, second);
+		return cal.getTime();
+	}
+
+	public static synchronized Date setTime(Date date, int hms) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR, ((hms / 10000) % 100));
+		cal.set(Calendar.MINUTE, ((hms / 100) % 100));
+		cal.set(Calendar.SECOND, hms % 100);
+		return cal.getTime();
+	}
 }

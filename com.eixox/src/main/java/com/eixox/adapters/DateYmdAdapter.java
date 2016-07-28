@@ -122,7 +122,7 @@ public class DateYmdAdapter extends ValueAdapter<Date> {
 				year += 1900;
 		}
 
-		return new GregorianCalendar(year, month, day, hour, minute, second);
+		return new GregorianCalendar(year, month - 1, day, hour, minute, second);
 	}
 
 	@Override
