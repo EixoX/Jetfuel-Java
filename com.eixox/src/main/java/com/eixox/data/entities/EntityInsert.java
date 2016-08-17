@@ -44,6 +44,6 @@ public class EntityInsert {
 	}
 
 	public final Object executeAndScopeIdentity() {
-		return this.insert.executeAndScopeIdentity();
+		return this.insert.executeAndScopeIdentity(aspect.getIdentity().columnName);
 	}
 }
