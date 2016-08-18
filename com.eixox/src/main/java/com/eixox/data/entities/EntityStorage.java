@@ -2,6 +2,8 @@ package com.eixox.data.entities;
 
 import com.eixox.Convert;
 import com.eixox.data.DataUpdate;
+import com.eixox.data.Filter;
+import com.eixox.data.FilterComparison;
 import com.eixox.data.FilterExpression;
 import com.eixox.data.Storage;
 import com.eixox.reflection.AspectMember;
@@ -35,6 +37,28 @@ public class EntityStorage<T> {
 
 	public final EntityUpdate update() {
 		return new EntityUpdate(this.aspect, this.storage);
+	}
+	
+	public final EntitySelect<T> search(String filter) {
+		if(filter == null | filter.isEmpty()){
+			return null;
+		} else if(filter.length() < 3){
+			filter = filter + "%";
+		} else {
+			filter = "%" + filter.replace(' ', '%') + "%";
+		}
+		
+		FilterExpression expression = null;
+		int count = this.aspect.getCount();
+		
+		for(int i = 0; i < count; i++){
+			expression = 
+					expression == null ? 
+							new FilterExpression(aspect.getName(i), FilterComparison.LIKE, filter) :
+							expression.or(aspect.getName(i), FilterComparison.LIKE, filter);
+		}		
+		
+		return new EntitySelect<T>(this.aspect, this.storage).where(expression);
 	}
 
 	public final long delete(T entity) {
