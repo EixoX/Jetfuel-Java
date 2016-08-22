@@ -10,7 +10,7 @@ public abstract class DataInsert extends ArrayList<Object[]> {
 
 	public abstract long execute();
 
-	public abstract Object executeAndScopeIdentity();
+	public abstract Object executeAndScopeIdentity(String identityName);
 
 	public DataInsert(String into) {
 		this.from = into;

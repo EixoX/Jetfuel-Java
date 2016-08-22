@@ -67,14 +67,14 @@ public class DatabaseCommand {
 		}
 	}
 
-	public final Object executeScopeIdentity(Connection conn) throws SQLException {
+	public final Object executeScopeIdentity(Connection conn, String identityName) throws SQLException {
 		PreparedStatement ps = conn.prepareStatement(this.text.toString(), Statement.RETURN_GENERATED_KEYS);
 		putParameters(ps);
 		try {
 			ps.executeUpdate();
 			ResultSet rs = ps.getGeneratedKeys();
 			try {
-				return rs.next() ? rs.getObject(1) : null;
+				return rs.next() ? rs.getObject(identityName) : null;
 			} finally {
 				rs.close();
 			}

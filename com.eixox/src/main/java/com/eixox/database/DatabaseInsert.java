@@ -44,12 +44,12 @@ public class DatabaseInsert extends DataInsert {
 	}
 
 	@Override
-	public Object executeAndScopeIdentity() {
+	public Object executeAndScopeIdentity(String identityName) {
 		DatabaseCommand cmd = database.dialect.buildInsertCommand(this.from, this.cols, this);
 		try {
 			Connection conn = database.getConnection();
 			try {
-				return cmd.executeScopeIdentity(conn);
+				return cmd.executeScopeIdentity(conn, identityName);
 			} finally {
 				conn.close();
 			}

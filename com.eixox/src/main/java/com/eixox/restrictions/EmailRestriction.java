@@ -15,12 +15,12 @@ public class EmailRestriction implements Restriction {
 			.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
 	public static boolean isValid(String email) {
-		return email != null && !email.isEmpty() && rfc2822.matcher(email).matches();
+		return email != null && !email.isEmpty() && rfc2822.matcher(email.toLowerCase()).matches();
 	}
 
 	
 	public boolean validate(Object input) {
-		return input == null || ((String) input).isEmpty() ? true : isValid((String) input);
+		return input == null || ((String) input).isEmpty() ? true : isValid(((String) input).toLowerCase());
 	}
 
 	

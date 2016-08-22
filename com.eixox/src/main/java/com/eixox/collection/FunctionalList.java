@@ -57,6 +57,23 @@ public class FunctionalList<T> extends ArrayList<T> {
 		return map;
 	}
 	
+	public Map<Object, List<T>> groupBy(String key, Class<T> type) {
+		ClassAspect<T> aspect = ClassAspect.getInstance(type);
+		Map<Object, List<T>> map = new HashMap<Object, List<T>>();
+		
+		for (int i = 0; i < this.size(); i++) {
+			T obj = get(i);
+			Object objKey = aspect.get(key).getValue(obj);
+			
+			if (!map.containsKey(objKey))
+				map.put(objKey, new ArrayList<T>());
+			
+			map.get(objKey).add(obj);
+		}
+		
+		return map;
+	}
+	
 	public Map<Object, T> toDictionary(String key, Class<T> type) {
 		ClassAspect<T> aspect = ClassAspect.getInstance(type);
 		Map<Object, T> map = new HashMap<Object, T>();
