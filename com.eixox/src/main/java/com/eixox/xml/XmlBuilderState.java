@@ -1,6 +1,6 @@
 package com.eixox.xml;
 
-public enum XmlWriterState {
+public enum XmlBuilderState {
 
 	BLANK,
 	XML_DECLARATION,

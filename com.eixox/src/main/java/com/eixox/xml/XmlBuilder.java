@@ -1,44 +1,44 @@
 package com.eixox.xml;
 
-public class XmlWriter {
+public class XmlBuilder {
 
 	public final StringBuilder content = new StringBuilder(101204);
-	private XmlWriterState state;
+	private XmlBuilderState state;
 
-	public XmlWriter() {
-		this.state = XmlWriterState.BLANK;
+	public XmlBuilder() {
+		this.state = XmlBuilderState.BLANK;
 	}
 
-	public synchronized final XmlWriter writeXmlDeclaration(String xmlVersion) {
+	public synchronized final XmlBuilder writeXmlDeclaration(String xmlVersion) {
 		content.append("<?xml version=\"");
 		content.append(xmlVersion);
 		content.append("\" encoding=\"UTF-8\"?>\r\n");
-		this.state = XmlWriterState.XML_DECLARATION;
+		this.state = XmlBuilderState.XML_DECLARATION;
 		return this;
 	}
 
-	public synchronized final XmlWriter beginElement(String name) {
-		if (this.state == XmlWriterState.OPEN_TAG)
+	public synchronized final XmlBuilder beginElement(String name) {
+		if (this.state == XmlBuilderState.OPEN_TAG)
 			content.append(">\r\n");
 		content.append("<");
 		content.append(name);
-		this.state = XmlWriterState.OPEN_TAG;
+		this.state = XmlBuilderState.OPEN_TAG;
 		return this;
 	}
 
-	public synchronized final XmlWriter closeElement(String name) {
+	public synchronized final XmlBuilder closeElement(String name) {
 
-		if (this.state == XmlWriterState.OPEN_TAG)
+		if (this.state == XmlBuilderState.OPEN_TAG)
 			content.append(">\r\n");
 		content.append("</");
 		content.append(name);
 		content.append(">\r\n");
-		this.state = XmlWriterState.CLOSE_TAG;
+		this.state = XmlBuilderState.CLOSE_TAG;
 		return this;
 	}
 
-	public synchronized final XmlWriter writeAttribute(String name, String value) {
-		if (this.state != XmlWriterState.OPEN_TAG)
+	public synchronized final XmlBuilder writeAttribute(String name, String value) {
+		if (this.state != XmlBuilderState.OPEN_TAG)
 			throw new RuntimeException("The writer should be in a open tag state.");
 		content.append(" ");
 		content.append(name);
@@ -60,14 +60,14 @@ public class XmlWriter {
 			}
 		}
 		content.append("\"");
-		this.state = XmlWriterState.OPEN_TAG;
+		this.state = XmlBuilderState.OPEN_TAG;
 		return this;
 	}
 
-	public synchronized final XmlWriter writeText(String text) {
-		if (this.state != XmlWriterState.OPEN_TAG && this.state != XmlWriterState.TEXT)
+	public synchronized final XmlBuilder writeText(String text) {
+		if (this.state != XmlBuilderState.OPEN_TAG && this.state != XmlBuilderState.TEXT)
 			throw new RuntimeException("The writer should be in a open tag state.");
-		if (this.state == XmlWriterState.OPEN_TAG)
+		if (this.state == XmlBuilderState.OPEN_TAG)
 			content.append(">");
 
 		if (text != null) {
@@ -97,11 +97,11 @@ public class XmlWriter {
 			}
 		}
 
-		this.state = XmlWriterState.TEXT;
+		this.state = XmlBuilderState.TEXT;
 		return this;
 	}
 
-	public final XmlWriter writeTextElement(String name, String text) {
+	public final XmlBuilder writeTextElement(String name, String text) {
 		return beginElement(name).writeText(text).closeElement(name);
 	}
 

@@ -17,12 +17,12 @@ public class UsecaseResult {
 		res.message = "OK";
 		return res;
 	}
-	
-	public static final UsecaseResult exception(Exception ex){
+
+	public static final UsecaseResult exception(Exception ex) {
 		UsecaseResult res = new UsecaseResult();
 		res.resultType = UsecaseResultType.EXCEPTION;
 		res.message = ex.getLocalizedMessage();
 		res.exception = ex;
-		return res;		
+		return res;
 	}
 }
