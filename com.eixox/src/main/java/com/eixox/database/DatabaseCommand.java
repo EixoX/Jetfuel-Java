@@ -74,7 +74,7 @@ public class DatabaseCommand {
 			ps.executeUpdate();
 			ResultSet rs = ps.getGeneratedKeys();
 			try {
-				return rs.next() ? rs.getObject(identityName) : null;
+				return rs.next() ? rs.getObject("GENERATED_KEYS") : null;
 			} finally {
 				rs.close();
 			}
