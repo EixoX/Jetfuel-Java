@@ -45,10 +45,13 @@ public class RestrictionBuilder {
 		if (annotation instanceof Name)
 			return new NameRestriction();
 
+		if (annotation instanceof CreditCard)
+			return new CreditCardRestriction();
+
 		try {
 			String clazName = annotation.annotationType().getCanonicalName() + "Restriction";
 			Class<?> claz = Class.forName(clazName);
-			
+
 			return (Restriction) claz.getConstructor(annotation.annotationType()).newInstance(annotation);
 		} catch (Exception e) {
 			return null;

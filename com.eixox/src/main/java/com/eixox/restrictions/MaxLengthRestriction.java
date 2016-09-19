@@ -22,12 +22,12 @@ public class MaxLengthRestriction implements Restriction {
 
 	
 	public final boolean validate(Object input) {
-		return input == null || input.toString().length() < _Value;
+		return input == null || input.toString().length() <= _Value;
 	}
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Texto muito grande. Máx de " + this._Value;
+		return validate(input) ? null : "Texto muito grande. Max de " + this._Value;
 	}
 
 	

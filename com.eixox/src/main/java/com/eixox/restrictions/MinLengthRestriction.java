@@ -27,7 +27,7 @@ public class MinLengthRestriction implements Restriction {
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Texto muito pequeno. Min " + this._Value;
+		return validate(input) ? null : "Texto muito pequeno. Min de " + this._Value;
 	}
 
 	
