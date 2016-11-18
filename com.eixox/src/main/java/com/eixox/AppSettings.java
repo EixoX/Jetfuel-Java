@@ -2,6 +2,8 @@ package com.eixox;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 
 public final class AppSettings {
@@ -20,6 +22,12 @@ public final class AppSettings {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static String getResourceUrl() throws MalformedURLException {
+		URL root = AppSettings.class.getProtectionDomain().getCodeSource().getLocation();
+		URL propFile = new URL(root, "/AppSettings.xml");
+		return propFile.toString();
 	}
 
 	public static int count() {

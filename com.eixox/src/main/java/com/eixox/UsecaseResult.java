@@ -17,6 +17,14 @@ public class UsecaseResult {
 		res.message = "OK";
 		return res;
 	}
+	
+	public static final UsecaseResult error(String msg, Object result) {
+		UsecaseResult res = new UsecaseResult();
+		res.result = result;
+		res.resultType = UsecaseResultType.FAILED;
+		res.message = msg;
+		return res;
+	}
 
 	public static final UsecaseResult exception(Exception ex) {
 		UsecaseResult res = new UsecaseResult();
