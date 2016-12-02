@@ -53,7 +53,7 @@ public class EmailRestriction implements Restriction {
 		if (letterCount == 0)
 			return false;
 
-		return letterCount > digitCount;
+		return digitCount < 5 || letterCount > digitCount;
 
 	}
 
