@@ -116,6 +116,11 @@ public final class Dates {
 		greg.add(Calendar.DAY_OF_MONTH, 1);
 		return greg.getTime();
 	}
+	
+	public static final Date today() {
+		Calendar greg = GregorianCalendar.getInstance();
+		return greg.getTime();
+	}
 
 	// ______________________________________________________________________
 	public static final Date getDateWithoutTime(Date date) {
