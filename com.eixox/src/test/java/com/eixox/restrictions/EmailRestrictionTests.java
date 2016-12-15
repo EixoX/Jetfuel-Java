@@ -5,23 +5,21 @@ import org.junit.Test;
 
 public class EmailRestrictionTests {
 
-	
-	
 	@Test
-	public void testNullOrEmpty(){
-		
+	public void testNullOrEmpty() {
+
 		EmailRestriction er = new EmailRestriction();
-		
+
 		Assert.assertTrue(er.validate(null));
 		Assert.assertTrue(er.validate(""));
 		Assert.assertFalse(er.validate("a"));
 	}
-	
+
 	@Test
-	public void testDigitCounters(){
-		
+	public void testDigitCounters() {
+
 		EmailRestriction er = new EmailRestriction();
-		
+
 		Assert.assertFalse(er.validate("5256310018307903@gmail.com"));
 		Assert.assertFalse(er.validate("5256310018920002@gmail.com"));
 		Assert.assertFalse(er.validate("5256620753985444@gmail.com"));
@@ -1048,7 +1046,12 @@ public class EmailRestrictionTests {
 		Assert.assertTrue(er.validate("acamilacorrea@gmail.com"));
 		Assert.assertTrue(er.validate("acampagnoli@globo.com"));
 
-
 	}
-	
+
+	@Test
+	public void testCustomerEmail() {
+		EmailRestriction er = new EmailRestriction();
+		Assert.assertTrue(er.validate("Dr20289@gmail.com"));
+	}
+
 }
