@@ -17,7 +17,6 @@ public class ExcelSelect extends DataSelect {
 
 	@Override
 	public DataSelectResult toResult() {
-		
 
 		try {
 			return Excel.process(new FileInputStream(new File(this.from)), new ExcelProcessor<DataSelectResult>() {
@@ -31,6 +30,10 @@ public class ExcelSelect extends DataSelect {
 				public void process(ExcelProcessorState state) {
 					if (filter == null || filter.evaluate(result.cols, state.row))
 						result.rows.add(state.row);
+				}
+
+				public void finish() {
+
 				}
 
 				public DataSelectResult getOutput() {
@@ -60,6 +63,10 @@ public class ExcelSelect extends DataSelect {
 				public void process(ExcelProcessorState state) {
 					if (filter == null || filter.evaluate(state.cols, state.row))
 						counter++;
+				}
+
+				public void finish() {
+
 				}
 
 				public Long getOutput() {
@@ -95,6 +102,10 @@ public class ExcelSelect extends DataSelect {
 					}
 				}
 
+				public void finish() {
+
+				}
+
 				public Object getOutput() {
 					return first;
 				}
@@ -122,6 +133,10 @@ public class ExcelSelect extends DataSelect {
 						Object val = state.row[ordinal];
 						items.add(val);
 					}
+				}
+
+				public void finish() {
+
 				}
 
 				public List<Object> getOutput() {
@@ -161,6 +176,10 @@ public class ExcelSelect extends DataSelect {
 					}
 				}
 
+				public void finish() {
+
+				}
+
 				public DataSelectResult getOutput() {
 					return items;
 				}
@@ -191,6 +210,10 @@ public class ExcelSelect extends DataSelect {
 							result[i] = state.row[ordinals[i]];
 						state.cancel = true;
 					}
+				}
+
+				public void finish() {
+
 				}
 
 				public Object[] getOutput() {
@@ -230,6 +253,10 @@ public class ExcelSelect extends DataSelect {
 					}
 				}
 
+				public void finish() {
+
+				}
+
 				public Long getOutput() {
 					return (long) (list.size() - initialsize);
 				}
@@ -264,6 +291,10 @@ public class ExcelSelect extends DataSelect {
 								aspect.setValue(entity, i, o);
 							}
 					}
+				}
+
+				public void finish() {
+
 				}
 
 				public T getOutput() {

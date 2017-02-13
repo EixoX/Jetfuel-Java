@@ -67,6 +67,7 @@ public class Excel {
 				}
 			} finally {
 				workbook.close();
+				processor.finish();
 			}
 			return processor.getOutput();
 		} catch (Exception e) {

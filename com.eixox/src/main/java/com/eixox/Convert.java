@@ -1,5 +1,6 @@
 package com.eixox;
 
+import java.net.InetAddress;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -231,7 +232,8 @@ public final class Convert {
 			int c = input[i] & 0xFF;
 			int a = c >> 4;
 			int b = c & 0xF;
-			//System.out.println(input[i] + " -> " + c + " = " + a + " + " + b + " == " + (a * 16 + b));
+			// System.out.println(input[i] + " -> " + c + " = " + a + " + " + b
+			// + " == " + (a * 16 + b));
 			builder.append(HEX_CHARS[a]);
 			builder.append(HEX_CHARS[b]);
 		}
@@ -254,5 +256,19 @@ public final class Convert {
 		}
 
 		return arr;
+	}
+
+	public static long toLong(InetAddress address) {
+		if (address == null) return 0L;
+		
+		byte[] bytes = address.getAddress();
+
+		long val = 0;
+		for (int i = 0; i < bytes.length; i++) {
+			val <<= 8;
+			val |= bytes[i] & 0xff;
+		}
+		
+		return val;
 	}
 }
