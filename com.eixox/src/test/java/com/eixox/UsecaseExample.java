@@ -7,6 +7,9 @@ import com.eixox.restrictions.MinNumberExclusive;
 import com.eixox.restrictions.Required;
 import com.eixox.ui.Control;
 import com.eixox.ui.ControlType;
+import com.eixox.usecase.Usecase;
+import com.eixox.usecase.UsecaseResult;
+import com.eixox.usecase.UsecaseResultType;
 
 public class UsecaseExample extends Usecase {
 

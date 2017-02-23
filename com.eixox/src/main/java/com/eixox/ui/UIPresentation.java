@@ -7,6 +7,7 @@ public class UIPresentation extends ArrayList<UIPresentationMember> {
 	private static final long serialVersionUID = 6539046574902926538L;
 
 	public UIPresentation() {
+		
 	}
 
 	public UIPresentation(int size) {

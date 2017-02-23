@@ -1,4 +1,4 @@
-package com.eixox;
+package com.eixox.usecase;
 
 import com.eixox.ui.UIPresentation;
 
@@ -32,5 +32,21 @@ public class UsecaseResult {
 		res.message = ex.getLocalizedMessage();
 		res.exception = ex;
 		return res;
+	}
+	
+	public final int getResultInt() {
+		switch (resultType) {
+		case EXCEPTION:
+		default:
+			return -1;
+		case FAILED:
+			return 0;
+		case SUCCESS:
+			return 1;
+		case VALIDATION_FAILED:
+			return 2;
+		case HAS_WARNINGS:
+			return 3;
+		}
 	}
 }

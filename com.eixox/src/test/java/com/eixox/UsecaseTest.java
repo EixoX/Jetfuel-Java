@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.eixox.globalization.Cultures;
+import com.eixox.usecase.UsecaseResult;
+import com.eixox.usecase.UsecaseResultType;
 
 public class UsecaseTest {
 

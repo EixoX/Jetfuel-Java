@@ -1,4 +1,4 @@
-package com.eixox;
+package com.eixox.usecase;
 
 import java.lang.annotation.Annotation;
 
