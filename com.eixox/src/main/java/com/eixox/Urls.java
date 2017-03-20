@@ -100,8 +100,6 @@ public final class Urls {
 		return request(url, "GET", null, basicAuth, contentType);
 	}
 	
-	
-	
 	public static String postTo(String url, String postData, String contentType) throws IOException {
 		return request(url, "POST", postData, null, contentType);
 	}
@@ -118,20 +116,29 @@ public final class Urls {
 		return postTo(url, basicAuth, Strings.urlEncode(data), "application/x-www-form-urlencoded");
 	}
 
+	public static String deleteTo(String url, String basicAuth, String data, String contentType) throws IOException {
+		return request(url, "DELETE", data, basicAuth, contentType);
+	}
+	
+	public static String putTo(String url, String basicAuth, String jsonData) throws IOException {
+		return request(url, "PUT", jsonData, basicAuth, "application/json");
+	}
+	
 	// _____________________________________________________________________________________________
-	private static String request(String url, String requestMethod, String postData, String basicAuth,
-			String contentType) throws IOException {
+	private static String request(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
 
 		URL authUrl = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) authUrl.openConnection();
 
+		con.setInstanceFollowRedirects(false);
+
 		con.setRequestMethod(requestMethod);
 
-		con.setRequestProperty("Accept", "UTF-8");
 		con.setRequestProperty("Content-Type", contentType);
+		con.setRequestProperty("Accept", "UTF-8");
 		con.setRequestProperty("Accept", "application/json");
 		con.setDoOutput(true);
-
+		
 		if (basicAuth != null && !basicAuth.isEmpty()) {
 			con.setRequestProperty("Authorization", basicAuth);
 		}
