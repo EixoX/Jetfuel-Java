@@ -2,6 +2,9 @@ package com.eixox.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +46,8 @@ public abstract class Database implements Storage {
 	}
 
 	public final Connection getConnection() throws SQLException {
-		return this.properties == null ? DriverManager.getConnection(this.url)
+		return this.properties == null
+				? DriverManager.getConnection(this.url)
 				: DriverManager.getConnection(this.url, this.properties);
 	}
 
@@ -90,7 +94,36 @@ public abstract class Database implements Storage {
 		try {
 			Connection conn = getConnection();
 			try {
-				return command.executeQueryToResult(conn);
+				PreparedStatement ps = conn.prepareStatement(command.text.toString());
+				DataSelectResult result = new DataSelectResult();
+				command.putParameters(ps);
+
+				try {
+					ResultSet rs = ps.executeQuery();
+					try {
+						if (rs.next()) {
+							ResultSetMetaData metadata = rs.getMetaData();
+							int count = metadata.getColumnCount();
+							for (int i = 0; i < count; i++) {
+								result.cols.add(metadata.getColumnName(i + 1));
+							}
+
+							do {
+								Object[] arr = new Object[count];
+								for (int i = 0; i < arr.length; i++)
+									arr[i] = rs.getObject(i + 1);
+								result.rows.add(arr);
+							} while (rs.next());
+
+						}
+					} finally {
+						rs.close();
+					}
+				} finally {
+					ps.close();
+				}
+
+				return result;
 			} finally {
 				conn.close();
 			}
@@ -132,7 +165,7 @@ public abstract class Database implements Storage {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public synchronized boolean executeSql(String commandText, Object... commandParameters) {
 		DatabaseCommand command = new DatabaseCommand();
 		command.text.append(commandText);

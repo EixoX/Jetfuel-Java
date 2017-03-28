@@ -21,6 +21,10 @@ public class DatabaseDialect {
 		this.nameSuffix = nameSuffix;
 	}
 
+	public boolean supportsOffset() {
+		return false;
+	}
+
 	protected void appendFilter(DatabaseCommand command, Filter filter) {
 		switch (filter.getFilterType()) {
 		case EXPRESSION:
@@ -90,12 +94,12 @@ public class DatabaseDialect {
 				break;
 			case IN:
 				command.text.append(" IN (");
-				appendList(command, (Iterable<?>)value);
+				appendList(command, (Iterable<?>) value);
 				command.text.append(")");
 				break;
 			case NOT_IN:
 				command.text.append(" NOT IN (");
-				appendList(command, (Iterable<?>)value);
+				appendList(command, (Iterable<?>) value);
 				command.text.append(")");
 				break;
 			case NOT_LIKE:
@@ -111,7 +115,7 @@ public class DatabaseDialect {
 					+ filter.getFilterType());
 		}
 	}
-	
+
 	private void appendList(DatabaseCommand command, Iterable<?> iterable) {
 		boolean prependComma = false;
 		for (Object o : iterable) {
@@ -119,7 +123,7 @@ public class DatabaseDialect {
 				command.text.append(",");
 			else
 				prependComma = true;
-			
+
 			command.text.append("?");
 			command.parameters.add(o);
 		}
@@ -233,7 +237,8 @@ public class DatabaseDialect {
 		return command;
 	}
 
-	public DatabaseCommand buildSelectCommand(String tableName, Filter filter, SortExpression sort, int pageSize, int pageOrdinal) {
+	public DatabaseCommand buildSelectCommand(String tableName, Filter filter, SortExpression sort, int pageSize,
+			int pageOrdinal) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
 
@@ -296,7 +301,8 @@ public class DatabaseDialect {
 		return command;
 	}
 
-	public DatabaseCommand buildSelectMemberCommand(String tableName, String colName, Filter filter, SortExpression sort, int pageSize, int pageOrdinal) {
+	public DatabaseCommand buildSelectMemberCommand(String tableName, String colName, Filter filter,
+			SortExpression sort, int pageSize, int pageOrdinal) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
 		if (pageSize > 0 && pageOrdinal >= 0)
@@ -317,7 +323,8 @@ public class DatabaseDialect {
 		return command;
 	}
 
-	public DatabaseCommand buildSelectFirstMemberCommand(String tableName, String colName, Filter filter, SortExpression sort) {
+	public DatabaseCommand buildSelectFirstMemberCommand(String tableName, String colName, Filter filter,
+			SortExpression sort) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
 		prependPage(command, 1, 0);
@@ -336,7 +343,8 @@ public class DatabaseDialect {
 		return command;
 	}
 
-	public DatabaseCommand buildSelectCommand(String tableName, FilterExpression where, SortExpression orderBy, int pageSize, int pageOrdinal) {
+	public DatabaseCommand buildSelectCommand(String tableName, FilterExpression where, SortExpression orderBy,
+			int pageSize, int pageOrdinal) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
 		if (pageSize > 0 && pageOrdinal >= 0)
@@ -356,7 +364,8 @@ public class DatabaseDialect {
 		return command;
 	}
 
-	public DatabaseCommand buildSelectMembersCommand(String tableName, String[] names, FilterExpression filter, SortExpression sort, int pageSize, int pageOrdinal) {
+	public DatabaseCommand buildSelectMembersCommand(String tableName, String[] names, FilterExpression filter,
+			SortExpression sort, int pageSize, int pageOrdinal) {
 		final DatabaseCommand command = new DatabaseCommand();
 		command.text.append("SELECT ");
 		if (pageSize > 0 && pageOrdinal >= 0)
