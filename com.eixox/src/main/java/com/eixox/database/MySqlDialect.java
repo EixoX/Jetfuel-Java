@@ -10,6 +10,11 @@ public class MySqlDialect extends DatabaseDialect {
 	public final boolean supportsPaging() {
 		return true;
 	}
+	
+	@Override
+	public boolean supportsOffset() {
+		return true;
+	}
 
 	@Override
 	protected void appendPage(DatabaseCommand command, int pageSize, int pageOrdinal) {
