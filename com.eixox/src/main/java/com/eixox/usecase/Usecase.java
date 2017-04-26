@@ -34,8 +34,8 @@ public abstract class Usecase {
 				member.parse(this, culture, uiMember.value);
 		}
 	}
-	
-	public final void parsePresentation(Culture culture){
+
+	public final void parsePresentation(Culture culture) {
 		this.culture = culture;
 		parsePresentation();
 	}
@@ -51,27 +51,26 @@ public abstract class Usecase {
 	public String getTitle() {
 		return toString();
 	}
-	
+
 	protected void postExecute(UsecaseResult result) {
-		
+
 	}
-	
+
 	protected void preExecute() {
 	}
 
 	public synchronized boolean validate() {
-		int l = this.presentation.size();
+
 		boolean valid = true;
-		for (int i = 0; i < l; i++) {
-			UsecaseAspectMember uam = this.aspect.get(i);
+		for (UIPresentationMember item : this.presentation) {
+			UsecaseAspectMember uam = this.aspect.get(item.id);
 			Object value = uam.getValue(this);
-			UIPresentationMember uipm = this.presentation.get(i);
-			uipm.message = uam.restrictions.getRestrictionMessageFor(value);
-			if (uipm.message != null && uipm.message.length() > 0) {
-				uipm.controlState = ControlState.ERROR;
+			item.message = uam.restrictions.getRestrictionMessageFor(value);
+			if (item.message != null && item.message.length() > 0) {
+				item.controlState = ControlState.ERROR;
 				valid = false;
 			} else
-				uipm.controlState = ControlState.SUCCESS;
+				item.controlState = ControlState.SUCCESS;
 		}
 		return valid;
 	}
@@ -81,7 +80,7 @@ public abstract class Usecase {
 	public synchronized final UsecaseResult execute() {
 		UsecaseResult result = new UsecaseResult();
 		result.presentation = this.presentation;
-		
+
 		try {
 			preExecute();
 			if (validate()) {
@@ -100,7 +99,7 @@ public abstract class Usecase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return result;
 	}
 
