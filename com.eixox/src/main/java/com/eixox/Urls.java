@@ -5,13 +5,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.text.Normalizer;
 import java.util.HashMap;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -128,10 +128,9 @@ public final class Urls {
 	private static String request(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
 
 		URL authUrl = new URL(url);
-		HttpsURLConnection con = (HttpsURLConnection) authUrl.openConnection();
+		HttpURLConnection con = (HttpURLConnection) authUrl.openConnection();
 
 		con.setInstanceFollowRedirects(false);
-
 		con.setRequestMethod(requestMethod);
 
 		con.setRequestProperty("Content-Type", contentType);
