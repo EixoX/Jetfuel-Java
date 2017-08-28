@@ -2,7 +2,6 @@ package com.eixox.data.entities;
 
 import com.eixox.Convert;
 import com.eixox.data.DataUpdate;
-import com.eixox.data.Filter;
 import com.eixox.data.FilterComparison;
 import com.eixox.data.FilterExpression;
 import com.eixox.data.Storage;

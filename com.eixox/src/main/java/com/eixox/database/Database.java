@@ -25,6 +25,8 @@ public abstract class Database implements Storage {
 	public final Properties properties;
 	public final Class<?> driverClass;
 	public final DatabaseDialect dialect;
+	private String user;
+	private String password;
 
 	public abstract String getDriverClassName();
 
@@ -44,8 +46,18 @@ public abstract class Database implements Storage {
 		this.url = url;
 		this.properties = properties;
 	}
+	
+	public Database(String url, String user, String password) {
+		this(url, null);
+		this.user = user;
+		this.password = password;
+	}
 
 	public final Connection getConnection() throws SQLException {
+		if (this.user != null && !this.user.isEmpty()) {
+			return DriverManager.getConnection(url, this.user, this.password);
+		}
+		
 		return this.properties == null
 				? DriverManager.getConnection(this.url)
 				: DriverManager.getConnection(this.url, this.properties);

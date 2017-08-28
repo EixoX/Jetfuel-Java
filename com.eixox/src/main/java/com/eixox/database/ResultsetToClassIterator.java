@@ -1,10 +1,12 @@
 package com.eixox.database;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import com.eixox.data.entities.EntityAspect;
 
@@ -64,7 +66,6 @@ public final class ResultsetToClassIterator<T> implements Iterable<T>, Iterator<
 	@SuppressWarnings("unchecked")
 	public final T next() {
 		try {
-
 			T entity = (T) aspect.newInstance();
 			for (int i = 0; i < colCount; i++)
 				if (mappings[i] >= 0) {
@@ -75,7 +76,17 @@ public final class ResultsetToClassIterator<T> implements Iterable<T>, Iterator<
 							String s = (String) value;
 							if (!s.isEmpty())
 								aspect.setValue(entity, mappings[i], s.charAt(0));
-						} else
+						} 
+						else if (targetType == UUID.class) {
+							UUID s = UUID.fromString((String)value);
+							if (s != null)
+								aspect.setValue(entity, mappings[i], s);
+						}
+						else if (targetType == BigDecimal.class && value instanceof Double) {
+							BigDecimal bd = new BigDecimal((Double)value);
+							aspect.setValue(entity, mappings[i], bd);
+						}
+						else
 							aspect.setValue(entity, mappings[i], value);
 					}
 				}

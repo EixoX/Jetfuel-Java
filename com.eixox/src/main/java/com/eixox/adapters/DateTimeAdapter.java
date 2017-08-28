@@ -74,6 +74,7 @@ public final class DateTimeAdapter extends ValueAdapter<Date> {
 	}
 
 	public static final SimpleDateFormat DATETIME_PTBR = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	public static final SimpleDateFormat DATE_PTBR = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final Date parsePtBrDateTime(String input) {
 		try {
@@ -81,6 +82,17 @@ public final class DateTimeAdapter extends ValueAdapter<Date> {
 				return null;
 			else
 				return DATETIME_PTBR.parse(input);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static final Date parsePtBrDate(String input) {
+		try {
+			if (input == null || input.isEmpty())
+				return null;
+			else
+				return DATE_PTBR.parse(input);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}

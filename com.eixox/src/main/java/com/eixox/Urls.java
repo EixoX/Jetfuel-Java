@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
@@ -124,9 +125,56 @@ public final class Urls {
 		return request(url, "PUT", jsonData, basicAuth, "application/json");
 	}
 	
-	// _____________________________________________________________________________________________
-	private static String request(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
+	private static String httpRequest(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
+		URL authUrl = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) authUrl.openConnection();
 
+		con.setInstanceFollowRedirects(false);
+
+		con.setRequestMethod(requestMethod);
+
+		con.setRequestProperty("Content-Type", contentType);
+		con.setRequestProperty("Accept", "UTF-8");
+		con.setRequestProperty("Accept", "application/json");
+		con.setDoOutput(true);
+		
+		if (basicAuth != null && !basicAuth.isEmpty()) {
+			con.setRequestProperty("Authorization", basicAuth);
+		}
+
+		if (postData != null && !postData.isEmpty()) {
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(postData.toString());
+			wr.flush();
+			wr.close();
+		}
+
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuilder response = new StringBuilder();
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			return response.toString();
+		} catch (IOException ioe) {
+			InputStream errorStream = con.getErrorStream();
+			if (errorStream != null) {
+
+				String errorContent;
+				try {
+					errorContent = Streams.readText(errorStream, Charset.forName("UTF-8"));
+				} catch (Exception e) {
+					throw ioe;
+				}
+				throw new RuntimeException(errorContent, ioe);
+			} else
+				throw ioe;
+		}
+	}
+	
+	private static String httpsRequest(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
 		URL authUrl = new URL(url);
 		HttpsURLConnection con = (HttpsURLConnection) authUrl.openConnection();
 
@@ -173,5 +221,14 @@ public final class Urls {
 			} else
 				throw ioe;
 		}
+	}
+	
+	
+	// _____________________________________________________________________________________________
+	private static String request(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
+		if (url.toLowerCase().startsWith("https"))
+			return httpsRequest(url, requestMethod, postData, basicAuth, contentType);
+		else
+			return httpRequest(url, requestMethod, postData, basicAuth, contentType);
 	}
 }

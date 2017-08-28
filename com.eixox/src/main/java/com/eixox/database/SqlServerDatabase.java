@@ -133,7 +133,6 @@ public class SqlServerDatabase extends Database {
 		final SchemaDb db = new SchemaDb();
 		readSchemaTablesAndViews(db);
 		return db;
-
 	}
 
 }

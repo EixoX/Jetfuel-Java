@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,8 +71,18 @@ public class DatabaseCommand {
 			ps.executeUpdate();
 			ResultSet rs = ps.getGeneratedKeys();
 			try {
-				return rs.next() ? rs.getObject("GENERATED_KEYS") : null;
-			} finally {
+				if (!rs.next())
+					return null;
+				
+				Object generatedKeys = rs.getObject("GENERATED_KEYS");
+				return generatedKeys;
+			}
+			catch (Exception ex) {
+				Object generatedKeys = rs.getObject(identityName);
+				
+				return generatedKeys;
+			}
+			finally {
 				rs.close();
 			}
 		} finally {
@@ -150,9 +159,7 @@ public class DatabaseCommand {
 		int s = this.parameters.size();
 		for (int i = 0; i < s; i++) {
 			Object pvalue = this.parameters.get(i);
-			if (pvalue == null)
-				ps.setNull(i + 1, Types.NULL);
-			else if (pvalue instanceof Character)
+			if (pvalue instanceof Character)
 				ps.setObject(i + 1, pvalue.toString());
 			else
 				ps.setObject(i + 1, pvalue);
