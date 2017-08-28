@@ -86,23 +86,14 @@ public class UIAspectMember extends AbstractAspectMember {
 	public UIAspectMember(AspectMember member) {
 		super(member);
 		this.controlType = getControlType(member);
-		if (this.controlType != ControlType.NONE) {
-			this.label = getLabel(member);
-			this.hint = getHint(member);
-			this.placeholder = getPlaceHolder(member);
-			this.required = getRequired(member);
-			this.maxlength = getMaxlength(member);
-			this.appendCss = getAppendCss(member);
-			this.options = getOptionList(member);
-		} else {
-			this.label = null;
-			this.hint = null;
-			this.placeholder = null;
-			this.required = false;
-			this.maxlength = 0;
-			this.appendCss = null;
-			this.options = null;
-		}
+		this.label = getLabel(member);
+		this.hint = getHint(member);
+		this.placeholder = getPlaceHolder(member);
+		this.required = getRequired(member);
+		this.maxlength = getMaxlength(member);
+		this.appendCss = getAppendCss(member);
+		this.options = getOptionList(member);
+
 	}
 
 	public final UIPresentationMember buildPresentation() {
