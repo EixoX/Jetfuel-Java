@@ -13,6 +13,8 @@ public class FunctionalList<T> extends ArrayList<T> {
 	
 	@SuppressWarnings("unchecked")
 	public FunctionalList(List<?> oldList) {
+		if (oldList == null) return;
+		
 		for (Object o : oldList) {
 			this.add((T)o);
 		}
