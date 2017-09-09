@@ -26,7 +26,7 @@ public class MinNumberExclusiveRestriction implements Restriction {
 
 	
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : "Número abaixo do mínimo (exclusivo) " + _Value;
+		return validate(input) ? null : "Numero abaixo do maximo exclusivo de " + _Value;
 	}
 
 	

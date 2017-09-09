@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class CpfGenerator {
 
-	public static final String[] Localidades = new String[] { "Rio Grande do Sul", "Distrito Federal, Goi·s, Mato Grosso, Mato Grosso do Sul e Tocantins",
-			"Amazonas, Par·, Roraima, Amap·, Acre e RondÙnia", "Cear·, Maranh„o e PiauÌ", "ParaÌba, Pernambuco, Alagoas e Rio Grande do Norte",
-			"Bahia e Sergipe", "Minas Gerais", "Rio de Janeiro e EspÌrito Santo", "S„o Paulo", "Paran· e Santa Catarina" };
+	public static final String[] Localidades = new String[] { "Rio Grande do Sul", "Distrito Federal, Goi√°s, Mato Grosso, Mato Grosso do Sul e Tocantins",
+			"Amazonas, Par√°, Roraima, Amap√°, Acre e Rond√¥nia", "Cear√°, Maranh√£o e Piau√≠", "Para√≠ba, Pernambuco, Alagoas e Rio Grande do Norte",
+			"Bahia e Sergipe", "Minas Gerais", "Rio de Janeiro e Esp√≠rito Santo", "S√£o Paulo", "Paran√° e Santa Catarina" };
 
 	public static final String getLocalidade(int ordinal) {
 		return ordinal < 0 || ordinal > 9 ? null : Localidades[ordinal];
