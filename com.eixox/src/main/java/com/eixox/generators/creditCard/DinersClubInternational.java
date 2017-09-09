@@ -15,7 +15,7 @@ public class DinersClubInternational extends CreditCardGenerator {
 
 	@Override
 	public String getSummary() {
-		return "Números de cartões de crédito válidos Diners Club International.";
+		return "NÃºmeros de cartÃ£o de crÃ©dito vÃ¡lidos da Diners Club International.";
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public class Mastercard extends CreditCardGenerator {
 
 	@Override
 	public String getSummary() {
-		return "Números de cartões de crédito válidos Mastercard.";
+		return "NÃºmeros de cartÃ£o de crÃ©dito vÃ¡lidos da Mastercard.";
 	}
 
 	@Override

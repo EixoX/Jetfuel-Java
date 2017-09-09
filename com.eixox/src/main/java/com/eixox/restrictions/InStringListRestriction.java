@@ -34,7 +34,7 @@ public class InStringListRestriction implements Restriction {
 	}
 
 	public final String getRestrictionMessageFor(Object input) {
-		return validate(input) ? null : ("Não é um valor permitido");
+		return validate(input) ? null : "Este nao e um valor permitido";
 	}
 
 	public final void assertValid(Object input) throws RestrictionException {

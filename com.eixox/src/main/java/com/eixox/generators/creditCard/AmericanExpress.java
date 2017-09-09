@@ -16,7 +16,7 @@ public class AmericanExpress extends CreditCardGenerator {
 
 	@Override
 	public String getSummary() {
-		return "Números de cartões de crédito válidos american express.";
+		return "NÃºmeros de cartÃ£o de crÃ©dito vÃ¡lidos da American Express.";
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public class Visa extends CreditCardGenerator {
 
 	@Override
 	public String getSummary() {
-		return "Números de cartões de crédito válidos Visa.";
+		return "NÃºmeros de cartÃ£o de crÃ©dito vÃ¡lidos da Visa.";
 	}
 
 	@Override

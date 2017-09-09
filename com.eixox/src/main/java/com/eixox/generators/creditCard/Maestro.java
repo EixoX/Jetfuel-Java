@@ -16,7 +16,7 @@ public class Maestro extends CreditCardGenerator {
 
 	@Override
 	public String getSummary() {
-		return "Números de cartões de crédito válidos Maestro.";
+		return "NÃºmeros de cartÃ£o de crÃ©dito vÃ¡lidos Maestro.";
 	}
 
 	@Override
