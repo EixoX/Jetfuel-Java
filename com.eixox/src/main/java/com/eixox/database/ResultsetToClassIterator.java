@@ -76,17 +76,17 @@ public final class ResultsetToClassIterator<T> implements Iterable<T>, Iterator<
 							String s = (String) value;
 							if (!s.isEmpty())
 								aspect.setValue(entity, mappings[i], s.charAt(0));
-						} 
-						else if (targetType == UUID.class) {
-							UUID s = UUID.fromString((String)value);
+						} else if (targetType == UUID.class) {
+							UUID s = UUID.fromString((String) value);
 							if (s != null)
 								aspect.setValue(entity, mappings[i], s);
-						}
-						else if (targetType == BigDecimal.class && value instanceof Double) {
-							BigDecimal bd = new BigDecimal((Double)value);
+						} else if (targetType == BigDecimal.class && value instanceof Double) {
+							BigDecimal bd = new BigDecimal((Double) value);
 							aspect.setValue(entity, mappings[i], bd);
-						}
-						else
+						} else if ((targetType.equals(Double.class) || targetType.equals(Double.TYPE)) && value instanceof BigDecimal) {
+							BigDecimal bd = (BigDecimal) value;
+							aspect.setValue(entity, mappings[i], bd.doubleValue());
+						} else
 							aspect.setValue(entity, mappings[i], value);
 					}
 				}

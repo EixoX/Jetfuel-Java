@@ -17,7 +17,7 @@ public class UsecaseResult {
 		res.message = "OK";
 		return res;
 	}
-	
+
 	public static final UsecaseResult error(String msg, Object result) {
 		UsecaseResult res = new UsecaseResult();
 		res.result = result;
@@ -33,20 +33,24 @@ public class UsecaseResult {
 		res.exception = ex;
 		return res;
 	}
-	
+
 	public final int getResultInt() {
-		switch (resultType) {
-		case EXCEPTION:
-		default:
+
+		if (resultType == null)
 			return -1;
-		case FAILED:
-			return 0;
-		case SUCCESS:
-			return 1;
-		case VALIDATION_FAILED:
-			return 2;
-		case HAS_WARNINGS:
-			return 3;
-		}
+		else
+			switch (resultType) {
+			case EXCEPTION:
+			default:
+				return -1;
+			case FAILED:
+				return 0;
+			case SUCCESS:
+				return 1;
+			case VALIDATION_FAILED:
+				return 2;
+			case HAS_WARNINGS:
+				return 3;
+			}
 	}
 }
