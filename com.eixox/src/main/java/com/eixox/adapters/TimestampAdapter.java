@@ -18,7 +18,20 @@ public class TimestampAdapter extends ValueAdapter<Timestamp> {
 
 	@Override
 	public final Timestamp parse(Culture culture, String input) {
-		return input == null ? null : Timestamp.valueOf(input);
+		try {
+
+			if (input == null || input.isEmpty() || "null".equalsIgnoreCase(input))
+				return null;
+			else if (input.indexOf('-') < 0)
+				return new Timestamp(Long.parseLong(input));
+			else if(input.indexOf('T') > 0)
+				return Timestamp.valueOf(input.replace('T', ' ').substring(0,  19));
+			else
+				return Timestamp.valueOf(input);
+		} catch (Exception e) {
+			throw new RuntimeException(input, e);
+		}
+
 	}
 
 	@Override
