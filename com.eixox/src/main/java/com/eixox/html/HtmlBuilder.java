@@ -88,40 +88,55 @@ public final class HtmlBuilder {
 		return appendAttribute(name, value == null ? null : value.toString());
 	}
 
+	/**
+	 * Html encodes a string;
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public static final String encode(String s) {
+
+		return s == null || s.isEmpty()
+				? ""
+				: new HtmlBuilder(s.length())
+						.appendContent(s).builder
+								.toString();
+	}
+
 	private final void appendHtml(char c) {
 		switch (c) {
-			case 34:
-				builder.append("&quot;");
-				break;
-			case 38:
-				builder.append("&amp;");
-				break;
-			case 60:
-				builder.append("&lt;");
-				break;
-			case 62:
-				builder.append("&gt;");
-				break;
-			default:
-				String entity = charToEntity.get(c);
-				if (entity == null)
-					builder.append(c);
-				else
-					builder.append(entity);
+		case 34:
+			builder.append("&quot;");
+			break;
+		case 38:
+			builder.append("&amp;");
+			break;
+		case 60:
+			builder.append("&lt;");
+			break;
+		case 62:
+			builder.append("&gt;");
+			break;
+		default:
+			String entity = charToEntity.get(c);
+			if (entity == null)
+				builder.append(c);
+			else
+				builder.append(entity);
 		}
 	}
 
 	private final void appendAttribute(char c) {
 		switch (c) {
-			case 34:
-				builder.append("&quot;");
-				break;
-			default:
-				String entity = charToEntity.get(c);
-				if (entity == null)
-					builder.append(c);
-				else
-					builder.append(entity);
+		case 34:
+			builder.append("&quot;");
+			break;
+		default:
+			String entity = charToEntity.get(c);
+			if (entity == null)
+				builder.append(c);
+			else
+				builder.append(entity);
 		}
 	}
 
