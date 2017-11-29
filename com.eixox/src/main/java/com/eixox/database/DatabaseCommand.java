@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eixox.Dates;
 import com.eixox.data.entities.EntityAspect;
 
 public class DatabaseCommand {
@@ -161,10 +163,11 @@ public class DatabaseCommand {
 			Object pvalue = this.parameters.get(i);
 			if (pvalue instanceof Character)
 				ps.setObject(i + 1, pvalue.toString());
+			else if (pvalue instanceof Timestamp)
+				ps.setTimestamp(i + 1, (Timestamp) pvalue, Dates.defaultTimeZone());
 			else
 				ps.setObject(i + 1, pvalue);
 		}
-
 	}
 
 	public final <T> T executeQuery(Connection conn, ResultSetProcessor<T> processor) throws SQLException {

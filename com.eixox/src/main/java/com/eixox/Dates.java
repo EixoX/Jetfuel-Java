@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public final class Dates {
 	private static final int[] daysInMonthArray = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -135,7 +136,14 @@ public final class Dates {
 
 	// ______________________________________________________________________
 	public static final Timestamp timestampNow() {
-		return new Timestamp(new Date().getTime());
+		return new Timestamp(Calendar.getInstance(TimeZone.getTimeZone("America/Sao_Paulo")).getTime().getTime());
+	}
+	
+	public static final Calendar defaultTimeZone() {
+		Calendar now = Calendar.getInstance();
+		now.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
+		
+		return now;
 	}
 
 	// ______________________________________________________________________
