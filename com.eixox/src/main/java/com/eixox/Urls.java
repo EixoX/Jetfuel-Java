@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -181,7 +182,7 @@ public final class Urls {
 		con.setRequestMethod(requestMethod);
 
 		con.setRequestProperty("Content-Type", contentType);
-		con.setRequestProperty("Accept", "UTF-8");
+		con.setRequestProperty("Accept", "charset=utf-8");
 		con.setRequestProperty("Accept", "application/json");
 		con.setDoOutput(true);
 		
@@ -190,10 +191,10 @@ public final class Urls {
 		}
 
 		if (postData != null && !postData.isEmpty()) {
-			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-			wr.writeBytes(postData.toString());
-			wr.flush();
-			wr.close();
+			OutputStreamWriter osw = new OutputStreamWriter(con.getOutputStream(), Charset.forName("UTF-8"));
+			osw.write(postData);
+			osw.flush();
+			osw.close();
 		}
 
 		try {
