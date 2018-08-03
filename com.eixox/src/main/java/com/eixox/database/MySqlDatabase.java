@@ -15,6 +15,10 @@ public class MySqlDatabase extends Database {
 	public MySqlDatabase(String url, Properties properties) {
 		super(url, properties);
 	}
+	
+	public MySqlDatabase(String url, String username, String password) {
+		super(url, username, password);
+	}
 
 	@Override
 	public final String getDriverClassName() {

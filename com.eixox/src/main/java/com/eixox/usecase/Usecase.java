@@ -9,8 +9,8 @@ import com.eixox.ui.UIPresentationMember;
 
 public abstract class Usecase {
 
-	public final UsecaseAspect aspect;
-	public final UIPresentation presentation;
+	public UsecaseAspect aspect;
+	public UIPresentation presentation;
 	public Culture culture;
 
 	public Usecase(Culture culture) {
