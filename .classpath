@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="com.eixox.jetfuel/src/main/java"/>
+	<classpathentry kind="src" path="com.eixox.jetfuel/src/test/java"/>
+	<classpathentry kind="src" path="com.eixox.poi/src/main/java"/>
+	<classpathentry kind="src" path="com.eixox.poi/src/test/java"/>
+	<classpathentry kind="src" path="com.eixox.web/src/main/java"/>
+	<classpathentry kind="src" path="com.eixox/src/main/java"/>
+	<classpathentry kind="src" path="com.eixox/src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="com.eixox/target/classes"/>
+</classpath>

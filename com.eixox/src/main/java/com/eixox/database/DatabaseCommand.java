@@ -80,9 +80,14 @@ public class DatabaseCommand {
 				return generatedKeys;
 			}
 			catch (Exception ex) {
-				Object generatedKeys = rs.getObject(identityName);
-				
-				return generatedKeys;
+				try {
+					Object generatedKeys = rs.getObject(identityName); 
+					return generatedKeys;
+					
+				} catch (Exception e) {
+					Object generatedKeys = rs.getObject("GENERATED_KEY");
+					return generatedKeys;
+				}
 			}
 			finally {
 				rs.close();
