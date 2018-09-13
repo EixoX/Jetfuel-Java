@@ -8,7 +8,7 @@ import com.eixox.Convert;
 public class PasswordGenerator {
 	
 	private static final Random random = new Random();
-	private static final String allowedChars = "ABCDEFGHJIJKLMNOPQRSTUVWXYZ123456890-_";
+	private static final String allowedChars = "ABCDEFGHJIJKLMNOPQRSTUVWXYZ123456890";
 	
 	public static String getRandomPassword(int length) {
 		String password = "";

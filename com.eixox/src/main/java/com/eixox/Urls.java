@@ -125,7 +125,7 @@ public final class Urls {
 		return request(url, "PUT", jsonData, basicAuth, "application/json");
 	}
 	
-	private static String httpRequest(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
+	public static String httpRequest(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
 		URL authUrl = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) authUrl.openConnection();
 
@@ -174,13 +174,13 @@ public final class Urls {
 		}
 	}
 	
-	private static String httpsRequest(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
+	public static String httpsRequest(String url, String requestMethod, String postData, String basicAuth, String contentType) throws IOException {
 		URL authUrl = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) authUrl.openConnection();
 
 		con.setInstanceFollowRedirects(false);
 		con.setRequestMethod(requestMethod);
-
+		
 		con.setRequestProperty("Content-Type", contentType);
 		con.setRequestProperty("Accept", "charset=utf-8");
 		con.setRequestProperty("Accept", "application/json");
