@@ -109,10 +109,12 @@ public final class Urls {
 		return request(url, "POST", postData, basicAuth, contentType);
 	}
 	
+	@SafeVarargs
 	public static String postTo(String url, Pair<String, String>... data) throws IOException {
 		return postTo(url, Strings.urlEncode(data), "application/x-www-form-urlencoded");
 	}
 
+	@SafeVarargs
 	public static String postTo(String url, String basicAuth, Pair<String, String>... data) throws IOException {
 		return postTo(url, basicAuth, Strings.urlEncode(data), "application/x-www-form-urlencoded");
 	}

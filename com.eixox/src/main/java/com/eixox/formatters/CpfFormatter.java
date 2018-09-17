@@ -13,7 +13,7 @@ public class CpfFormatter implements ValueFormatter<Long> {
 				".",
 				((l / 100L) % 1000),
 				"-",
-				l % 100);
+				(l % 100 == 0 ? "00" : l % 100));
 	}
 
 	public String format(Long value, Culture culture) {
